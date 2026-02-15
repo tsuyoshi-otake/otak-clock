@@ -2,6 +2,21 @@
 
 All notable changes to the "otak-clock" extension will be documented in this file.
 
+## [1.1.5] - 2026-02-15
+
+### Changed
+- Reduced clock update overhead (cached formatters and smarter refresh scheduling).
+- Reduced alarm check frequency to once per minute to lower CPU usage.
+
+### Fixed
+- Improved daily alarm reset behavior across restarts and upgrades.
+
+### Security
+- Updated dev dependencies via `npm audit fix` (0 known vulnerabilities).
+
+### Updated
+- Updated README.md structure to match the standard format.
+
 ## [1.1.4] - 2025-03-01
 
 ### Updated
