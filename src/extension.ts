@@ -2,11 +2,6 @@
 import * as vscode from 'vscode';
 import { AlarmManager } from './alarm/AlarmManager';
 
-let defaultStatusBar: vscode.StatusBarItem;
-let gmtStatusBar: vscode.StatusBarItem;
-let updateInterval: NodeJS.Timeout;
-let extensionContext: vscode.ExtensionContext;
-
 interface TimeZoneInfo {
     label: string;
     timeZoneId: string; // IANA timezone ID
@@ -71,82 +66,336 @@ const timeZones: TimeZoneInfo[] = [
     { label: 'New Zealand (Auckland)', timeZoneId: 'Pacific/Auckland', region: 'Oceania', baseUtcOffset: 12 }
 ];
 
+type FormatterPair = {
+    time: Intl.DateTimeFormat;
+    date: Intl.DateTimeFormat;
+};
+
+const TIME_ZONE_1_KEY = 'timeZone1';
+const TIME_ZONE_2_KEY = 'timeZone2';
+const DEFAULT_TIME_ZONE_1_ID = 'UTC';
+const DEFAULT_TIME_ZONE_2_ID = 'Asia/Tokyo';
+
+function coerceTimeZoneId(value: unknown): string | undefined {
+    if (!value || typeof value !== 'object') {
+        return undefined;
+    }
+
+    const v = value as { timeZoneId?: unknown };
+    return typeof v.timeZoneId === 'string' ? v.timeZoneId : undefined;
+}
+
+function findTimeZoneById(timeZoneId: string): TimeZoneInfo | undefined {
+    return timeZones.find(tz => tz.timeZoneId === timeZoneId);
+}
+
+function formatUtcOffsetLabel(offsetHours: number): string {
+    const sign = offsetHours >= 0 ? '+' : '-';
+    const totalMinutes = Math.round(Math.abs(offsetHours) * 60);
+    const hh = Math.floor(totalMinutes / 60).toString().padStart(2, '0');
+    const mm = (totalMinutes % 60).toString().padStart(2, '0');
+    return `UTC${sign}${hh}:${mm}`;
+}
+
+function msUntilNextSecond(nowMs: number): number {
+    const remainder = nowMs % 1000;
+    return remainder === 0 ? 1000 : 1000 - remainder;
+}
+
+function msUntilNextMinute(nowMs: number): number {
+    const remainder = nowMs % 60000;
+    return remainder === 0 ? 60000 : 60000 - remainder;
+}
+
+class ClockController implements vscode.Disposable {
+    private context: vscode.ExtensionContext;
+    private statusBar1: vscode.StatusBarItem;
+    private statusBar2: vscode.StatusBarItem;
+    private alarmManager: AlarmManager;
+
+    private timeZone1: TimeZoneInfo;
+    private timeZone2: TimeZoneInfo;
+
+    private formatterCache = new Map<string, FormatterPair>();
+
+    private lastTime1: string | undefined;
+    private lastTime2: string | undefined;
+    private lastDate1: string | undefined;
+    private lastDate2: string | undefined;
+
+    private focused: boolean;
+    private lastMinuteBucket: number | undefined;
+    private tickHandle: NodeJS.Timeout | undefined;
+    private windowStateDisposable: vscode.Disposable;
+    private disposed: boolean = false;
+
+    constructor(
+        context: vscode.ExtensionContext,
+        statusBar1: vscode.StatusBarItem,
+        statusBar2: vscode.StatusBarItem,
+        alarmManager: AlarmManager
+    ) {
+        this.context = context;
+        this.statusBar1 = statusBar1;
+        this.statusBar2 = statusBar2;
+        this.alarmManager = alarmManager;
+
+        this.focused = vscode.window.state.focused;
+
+        const loaded1 = this.loadTimeZone(TIME_ZONE_1_KEY, DEFAULT_TIME_ZONE_1_ID);
+        this.timeZone1 = loaded1.timeZone;
+        if (loaded1.needsPersist) {
+            void this.context.globalState.update(TIME_ZONE_1_KEY, this.timeZone1);
+        }
+
+        const loaded2 = this.loadTimeZone(TIME_ZONE_2_KEY, DEFAULT_TIME_ZONE_2_ID);
+        this.timeZone2 = loaded2.timeZone;
+        if (loaded2.needsPersist) {
+            void this.context.globalState.update(TIME_ZONE_2_KEY, this.timeZone2);
+        }
+
+        this.windowStateDisposable = vscode.window.onDidChangeWindowState((e) => {
+            const wasFocused = this.focused;
+            this.focused = e.focused;
+
+            if (this.focused && !wasFocused) {
+                this.refresh(true);
+            }
+
+            this.scheduleNextTick(true);
+        });
+
+        this.refresh(true);
+        this.scheduleNextTick(true);
+    }
+
+    setTimeZone1(timeZone: TimeZoneInfo): void {
+        if (timeZone.timeZoneId === this.timeZone1.timeZoneId) {
+            return;
+        }
+
+        this.timeZone1 = timeZone;
+        void this.context.globalState.update(TIME_ZONE_1_KEY, timeZone);
+        this.refresh(true);
+    }
+
+    setTimeZone2(timeZone: TimeZoneInfo): void {
+        if (timeZone.timeZoneId === this.timeZone2.timeZoneId) {
+            return;
+        }
+
+        this.timeZone2 = timeZone;
+        void this.context.globalState.update(TIME_ZONE_2_KEY, timeZone);
+        this.refresh(true);
+    }
+
+    private loadTimeZone(key: string, fallbackId: string): { timeZone: TimeZoneInfo; needsPersist: boolean } {
+        const fallback = findTimeZoneById(fallbackId) ?? timeZones[0];
+
+        const stored = this.context.globalState.get<unknown>(key);
+        const storedId = coerceTimeZoneId(stored);
+        if (!storedId) {
+            return { timeZone: fallback, needsPersist: true };
+        }
+
+        const timeZone = findTimeZoneById(storedId);
+        if (!timeZone) {
+            return { timeZone: fallback, needsPersist: true };
+        }
+
+        // Validate that the runtime supports the IANA timeZoneId.
+        try {
+            void this.getFormatters(timeZone.timeZoneId);
+        } catch {
+            return { timeZone: fallback, needsPersist: true };
+        }
+
+        return { timeZone, needsPersist: false };
+    }
+
+    private getFormatters(timeZoneId: string): FormatterPair {
+        const cached = this.formatterCache.get(timeZoneId);
+        if (cached) {
+            return cached;
+        }
+
+        const formatters: FormatterPair = {
+            time: new Intl.DateTimeFormat('en-US', {
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit',
+                hour12: false,
+                timeZone: timeZoneId
+            }),
+            date: new Intl.DateTimeFormat('en-US', {
+                year: 'numeric',
+                month: '2-digit',
+                day: '2-digit',
+                timeZone: timeZoneId
+            })
+        };
+
+        // Guardrail to prevent unbounded growth if a user cycles through many time zones.
+        if (this.formatterCache.size >= 32) {
+            this.formatterCache.clear();
+        }
+
+        this.formatterCache.set(timeZoneId, formatters);
+        return formatters;
+    }
+
+    private refresh(forceTooltips: boolean): void {
+        const now = new Date();
+        this.updateClockText(now, true);
+        this.runMinuteTick(now, true);
+        this.updateTooltips(now, forceTooltips);
+    }
+
+    private onTick(): void {
+        this.tickHandle = undefined;
+        if (this.disposed) {
+            return;
+        }
+
+        const now = new Date();
+        this.runMinuteTick(now, false);
+        this.updateClockText(now, false);
+
+        this.scheduleNextTick(false);
+    }
+
+    private runMinuteTick(now: Date, force: boolean): void {
+        const minuteBucket = Math.floor(now.getTime() / 60000);
+        if (!force && this.lastMinuteBucket === minuteBucket) {
+            return;
+        }
+        this.lastMinuteBucket = minuteBucket;
+
+        // Alarm logic runs even when the VS Code window is not focused.
+        this.alarmManager.tick(now);
+
+        if (this.focused) {
+            this.updateTooltips(now, false);
+        }
+    }
+
+    private updateClockText(now: Date, force: boolean): void {
+        const time1 = this.getFormatters(this.timeZone1.timeZoneId).time.format(now);
+        if (force || time1 !== this.lastTime1) {
+            this.statusBar1.text = time1;
+            this.lastTime1 = time1;
+        }
+
+        const time2 = this.getFormatters(this.timeZone2.timeZoneId).time.format(now);
+        if (force || time2 !== this.lastTime2) {
+            this.statusBar2.text = time2;
+            this.lastTime2 = time2;
+        }
+    }
+
+    private updateTooltips(now: Date, force: boolean): void {
+        const date1 = this.getFormatters(this.timeZone1.timeZoneId).date.format(now);
+        if (force || date1 !== this.lastDate1) {
+            this.statusBar1.tooltip = `${this.timeZone1.label} (${this.timeZone1.timeZoneId})\n${date1} ${formatUtcOffsetLabel(this.timeZone1.baseUtcOffset)}`;
+            this.lastDate1 = date1;
+        }
+
+        const date2 = this.getFormatters(this.timeZone2.timeZoneId).date.format(now);
+        if (force || date2 !== this.lastDate2) {
+            this.statusBar2.tooltip = `${this.timeZone2.label} (${this.timeZone2.timeZoneId})\n${date2} ${formatUtcOffsetLabel(this.timeZone2.baseUtcOffset)}`;
+            this.lastDate2 = date2;
+        }
+    }
+
+    private scheduleNextTick(forceReschedule: boolean): void {
+        if (this.disposed) {
+            return;
+        }
+
+        if (forceReschedule && this.tickHandle) {
+            clearTimeout(this.tickHandle);
+            this.tickHandle = undefined;
+        }
+
+        if (this.tickHandle) {
+            return;
+        }
+
+        const nowMs = Date.now();
+        const delay = this.focused ? msUntilNextSecond(nowMs) : msUntilNextMinute(nowMs);
+
+        this.tickHandle = setTimeout(() => this.onTick(), delay);
+    }
+
+    dispose(): void {
+        if (this.disposed) {
+            return;
+        }
+
+        this.disposed = true;
+        if (this.tickHandle) {
+            clearTimeout(this.tickHandle);
+            this.tickHandle = undefined;
+        }
+        this.windowStateDisposable.dispose();
+    }
+}
+
+let clockController: ClockController | undefined;
+
 // This method is called when your extension is activated
 export function activate(context: vscode.ExtensionContext) {
-    extensionContext = context;
-    console.log('Congratulations, your extension "otak-clock" is now active!');
+    // ステータスバーアイテムを作成
+    const statusBar1 = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left, 100);
+    statusBar1.command = 'otak-clock.selectTimeZone1';
+    context.subscriptions.push(statusBar1);
 
-    // デフォルトのステータスバーアイテムを作成 (UTC)
-    defaultStatusBar = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left, 100);
-    defaultStatusBar.command = 'otak-clock.selectTimeZone1';
-    context.subscriptions.push(defaultStatusBar);
-
-    // 2番目のステータスバーアイテムを作成（デフォルトはJST）
-    gmtStatusBar = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left, 99);
-    gmtStatusBar.command = 'otak-clock.selectTimeZone2';
-    context.subscriptions.push(gmtStatusBar);
-
-    // コマンドを登録
-    let disposable1 = vscode.commands.registerCommand('otak-clock.selectTimeZone1', async () => {
-        const selectedTimeZone = await selectTimeZoneWithRegion();
-        if (selectedTimeZone) {
-            extensionContext.globalState.update('timeZone1', selectedTimeZone);
-            updateClocks();
-        }
-    });
-
-    let disposable2 = vscode.commands.registerCommand('otak-clock.selectTimeZone2', async () => {
-        const selectedTimeZone = await selectTimeZoneWithRegion();
-        if (selectedTimeZone) {
-            extensionContext.globalState.update('timeZone2', selectedTimeZone);
-            updateClocks();
-        }
-    });
+    const statusBar2 = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left, 99);
+    statusBar2.command = 'otak-clock.selectTimeZone2';
+    context.subscriptions.push(statusBar2);
 
     // アラームマネージャーを初期化
-    const alarmManager = new AlarmManager(context, [defaultStatusBar, gmtStatusBar]);
+    const alarmManager = new AlarmManager(context, [statusBar1, statusBar2]);
+    context.subscriptions.push(alarmManager);
+
+    clockController = new ClockController(context, statusBar1, statusBar2, alarmManager);
+    context.subscriptions.push(clockController);
+
+    // コマンドを登録
+    const disposable1 = vscode.commands.registerCommand('otak-clock.selectTimeZone1', async () => {
+        const selectedTimeZone = await selectTimeZoneWithRegion();
+        if (selectedTimeZone) {
+            clockController?.setTimeZone1(selectedTimeZone);
+        }
+    });
+
+    const disposable2 = vscode.commands.registerCommand('otak-clock.selectTimeZone2', async () => {
+        const selectedTimeZone = await selectTimeZoneWithRegion();
+        if (selectedTimeZone) {
+            clockController?.setTimeZone2(selectedTimeZone);
+        }
+    });
 
     // アラーム関連のコマンドを登録
-    let disposableSetAlarm = vscode.commands.registerCommand('otak-clock.setAlarm', () => {
-        alarmManager.setAlarm();
+    const disposableSetAlarm = vscode.commands.registerCommand('otak-clock.setAlarm', () => {
+        return alarmManager.setAlarm();
     });
-    let disposableToggleAlarm = vscode.commands.registerCommand('otak-clock.toggleAlarm', () => {
+    const disposableToggleAlarm = vscode.commands.registerCommand('otak-clock.toggleAlarm', () => {
         vscode.window.showInformationMessage('Use the command palette to manage alarms');
-    }); 
+    });
 
-    context.subscriptions.push(disposable1);
-    context.subscriptions.push(disposable2);
-    context.subscriptions.push(disposableSetAlarm, disposableToggleAlarm, alarmManager);
+    context.subscriptions.push(disposable1, disposable2, disposableSetAlarm, disposableToggleAlarm);
 
-    // 初期値を設定
-    const initialTimeZone1 = extensionContext.globalState.get<TimeZoneInfo>('timeZone1');
-    const initialTimeZone2 = extensionContext.globalState.get<TimeZoneInfo>('timeZone2');
-
-    if (!initialTimeZone1) {
-        extensionContext.globalState.update('timeZone1', timeZones.find(tz => tz.timeZoneId === 'UTC')); // UTC
-    }
-    if (!initialTimeZone2) {
-        extensionContext.globalState.update('timeZone2', timeZones.find(tz => tz.timeZoneId === 'Asia/Tokyo')); // JST
-    }
-
-    // 時計を表示
-    defaultStatusBar.show();
-    gmtStatusBar.show();
-
-    // 時計を更新
-    updateClocks();
-
-    // 1秒ごとに更新
-    updateInterval = setInterval(updateClocks, 1000);
-    
-    // アラームのチェックも毎秒実行
-    setInterval(() => alarmManager.checkAlarms(), 1000);
+    // 表示
+    statusBar1.show();
+    statusBar2.show();
 }
 
 // This method is called when your extension is deactivated
 export function deactivate() {
-    if (updateInterval) {
-        clearInterval(updateInterval);
+    if (clockController) {
+        clockController.dispose();
+        clockController = undefined;
     }
 }
 
@@ -154,8 +403,12 @@ export function deactivate() {
 async function selectTimeZoneWithRegion(): Promise<TimeZoneInfo | undefined> {
     // まず地域を選択
     const regions = [...new Set(timeZones.map(tz => tz.region))].sort((a, b) => {
-        if (a === 'Universal Time') return -1;
-        if (b === 'Universal Time') return 1;
+        if (a === 'Universal Time') {
+            return -1;
+        }
+        if (b === 'Universal Time') {
+            return 1;
+        }
         return a.localeCompare(b);
     });
 
@@ -172,7 +425,7 @@ async function selectTimeZoneWithRegion(): Promise<TimeZoneInfo | undefined> {
     const selectedLabel = await vscode.window.showQuickPick(
         timeZonesInRegion.map(tz => ({
             label: tz.label,
-            description: `(UTC${tz.baseUtcOffset >= 0 ? '+' : ''}${tz.baseUtcOffset}:00)`,
+            description: `(${formatUtcOffsetLabel(tz.baseUtcOffset)})`,
             detail: tz.timeZoneId
         })),
         {
@@ -185,88 +438,4 @@ async function selectTimeZoneWithRegion(): Promise<TimeZoneInfo | undefined> {
     }
 
     return timeZones.find(tz => tz.label === selectedLabel.label);
-}
-
-// 時計を更新する関数
-function updateClocks() {
-    const now = new Date();
-
-    // 保存されているタイムゾーン設定を取得
-    const timeZone1 = extensionContext.globalState.get<TimeZoneInfo>('timeZone1') ?? 
-        timeZones.find(tz => tz.timeZoneId === 'UTC');
-    
-    const timeZone2 = extensionContext.globalState.get<TimeZoneInfo>('timeZone2') ?? 
-        timeZones.find(tz => tz.timeZoneId === 'Asia/Tokyo');
-
-    if (timeZone1) {
-        const time1 = formatTimeWithTimeZone(now, timeZone1.timeZoneId);
-        defaultStatusBar.text = time1;
-        defaultStatusBar.tooltip = `${timeZone1.label} (${timeZone1.timeZoneId})\n${formatDateWithTimeZone(now, timeZone1.timeZoneId)} UTC${timeZone1.baseUtcOffset >= 0 ? '+' : ''}${timeZone1.baseUtcOffset}:00`;
-    }
-
-    if (timeZone2) {
-        const time2 = formatTimeWithTimeZone(now, timeZone2.timeZoneId);
-        gmtStatusBar.text = time2;
-        gmtStatusBar.tooltip = `${timeZone2.label} (${timeZone2.timeZoneId})\n${formatDateWithTimeZone(now, timeZone2.timeZoneId)} UTC${timeZone2.baseUtcOffset >= 0 ? '+' : ''}${timeZone2.baseUtcOffset}:00`;
-    }
-}
-
-// 指定したタイムゾーンでの時刻をフォーマットする関数
-function formatTimeWithTimeZone(date: Date, timeZoneId: string): string {
-    return new Intl.DateTimeFormat('en-US', {
-        hour: '2-digit',
-        minute: '2-digit',
-        second: '2-digit',
-        hour12: false,
-        timeZone: timeZoneId
-    }).format(date);
-}
-
-// 指定したタイムゾーンでの日付をフォーマットする関数
-function formatDateWithTimeZone(date: Date, timeZoneId: string): string {
-    return new Intl.DateTimeFormat('en-US', {
-        year: 'numeric',
-        month: '2-digit',
-        day: '2-digit',
-        timeZone: timeZoneId
-    }).format(date);
-}
-
-// サマータイム判定関数
-function isCurrentlyDST(date: Date, timeZoneId: string): boolean {
-    if (timeZoneId === 'UTC' || timeZoneId === 'Etc/GMT') {
-        return false;
-    }
-
-    const january = new Date(date.getFullYear(), 0, 1);
-    const july = new Date(date.getFullYear(), 6, 1);
-
-    const januaryOffset = getTimezoneOffset(january, timeZoneId);
-    const julyOffset = getTimezoneOffset(july, timeZoneId);
-    const currentOffset = getTimezoneOffset(date, timeZoneId);
-
-    // 夏時間の方がオフセットが大きい（時間が進む）
-    return Math.max(januaryOffset, julyOffset) === currentOffset;
-}
-
-// タイムゾーンのオフセットを取得する関数
-function getTimezoneOffset(date: Date, timeZoneId: string): number {
-    const formatter = new Intl.DateTimeFormat('en-US', {
-        timeZone: timeZoneId,
-        year: 'numeric',
-        month: '2-digit',
-        day: '2-digit',
-        hour: '2-digit',
-        minute: '2-digit',
-        second: '2-digit',
-        hour12: false
-    });
-    
-    const parts = formatter.formatToParts(date);
-    const formatted = `${parts.find(p => p.type === 'year')?.value}-${parts.find(p => p.type === 'month')?.value}-${parts.find(p => p.type === 'day')?.value}T${parts.find(p => p.type === 'hour')?.value}:${parts.find(p => p.type === 'minute')?.value}:${parts.find(p => p.type === 'second')?.value}`;
-    
-    const localDate = new Date(formatted);
-    const utcDate = new Date(date.toISOString());
-    
-    return (utcDate.getTime() - localDate.getTime()) / (60 * 1000);
 }

@@ -3,6 +3,11 @@ export interface AlarmSettings {
     hour: number;
     minute: number;
     triggered: boolean;
+    /**
+     * Local date key when the alarm last triggered (YYYY-MM-DD).
+     * Used to reset `triggered` safely across restarts.
+     */
+    lastTriggeredOn?: string;
 }
 
 export function createDefaultAlarm(): AlarmSettings {

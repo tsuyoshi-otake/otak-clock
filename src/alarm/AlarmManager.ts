@@ -2,16 +2,24 @@ import * as vscode from 'vscode';
 import { flashStatusBars } from '../utils/color';
 import { AlarmSettings, createDefaultAlarm, formatTime } from './AlarmSettings';
 
+function toLocalDateKey(now: Date): string {
+    const yyyy = now.getFullYear();
+    const mm = (now.getMonth() + 1).toString().padStart(2, '0');
+    const dd = now.getDate().toString().padStart(2, '0');
+    return `${yyyy}-${mm}-${dd}`;
+}
+
 export class AlarmManager implements vscode.Disposable {
     private context: vscode.ExtensionContext;
     private statusBars: vscode.StatusBarItem[];
     private alarmStatusBar: vscode.StatusBarItem;
-    private checkInterval: NodeJS.Timeout | undefined;
+    private alarm: AlarmSettings | undefined;
     private lastNotificationTime: number = 0;
 
     constructor(context: vscode.ExtensionContext, statusBars: vscode.StatusBarItem[]) {
         this.context = context;
         this.statusBars = statusBars;
+        this.alarm = this.context.globalState.get<AlarmSettings>('alarm');
 
         // アラーム設定用のステータスバーを作成
         this.alarmStatusBar = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left, 98);
@@ -20,21 +28,21 @@ export class AlarmManager implements vscode.Disposable {
         this.alarmStatusBar.show();
 
         context.subscriptions.push(this.alarmStatusBar);
-        this.setupMidnightReset();
     }
 
     /**
      * アラーム設定を取得
      */
     private getAlarm(): AlarmSettings | undefined {
-        return this.context.globalState.get<AlarmSettings>('alarm');
+        return this.alarm;
     }
 
     /**
      * アラーム設定を保存
      */
     private saveAlarm(alarm: AlarmSettings | undefined): void {
-        this.context.globalState.update('alarm', alarm);
+        this.alarm = alarm;
+        void this.context.globalState.update('alarm', alarm);
         this.updateAlarmStatusBar();
     }
 
@@ -70,15 +78,36 @@ export class AlarmManager implements vscode.Disposable {
     }
 
     /**
-     * アラームのチェックと通知
+     * 1分に1回呼び出される想定のティック処理
      */
-    checkAlarms(): void {
-        const now = new Date();
+    tick(now: Date): void {
         const currentHour = now.getHours();
         const currentMinute = now.getMinutes();
 
         const alarm = this.getAlarm();
-        if (!alarm || !alarm.enabled || alarm.triggered) {
+        if (!alarm || !alarm.enabled) {
+            return;
+        }
+
+        // Reset "triggered" when the local day changes. This works even if VS Code
+        // was closed at midnight.
+        const todayKey = toLocalDateKey(now);
+        if (alarm.triggered) {
+            if (!alarm.lastTriggeredOn) {
+                // Migration: older versions didn't track the date. Assume "today"
+                // to avoid double-firing within the same minute after upgrade.
+                alarm.lastTriggeredOn = todayKey;
+                this.saveAlarm(alarm);
+                return;
+            }
+
+            if (alarm.lastTriggeredOn !== todayKey) {
+                alarm.triggered = false;
+                this.saveAlarm(alarm);
+            }
+        }
+
+        if (alarm.triggered) {
             return;
         }
 
@@ -89,14 +118,14 @@ export class AlarmManager implements vscode.Disposable {
                 return;
             }
             this.lastNotificationTime = currentTime;
-            this.triggerAlarm(alarm);
+            this.triggerAlarm(alarm, todayKey);
         }
     }
 
     /**
      * アラームを発動
      */
-    private triggerAlarm(alarm: AlarmSettings): void {
+    private triggerAlarm(alarm: AlarmSettings, todayKey: string): void {
         // 5秒で自動的に消える通知を表示
         vscode.window.withProgress({
             location: vscode.ProgressLocation.Notification,
@@ -104,6 +133,7 @@ export class AlarmManager implements vscode.Disposable {
             cancellable: false
         }, () => new Promise(resolve => {
             alarm.triggered = true;
+            alarm.lastTriggeredOn = todayKey;
             this.saveAlarm(alarm);
             setTimeout(resolve, 5000);
         }));
@@ -128,28 +158,9 @@ export class AlarmManager implements vscode.Disposable {
     }
 
     /**
-     * 真夜中にアラームの状態をリセット
-     */
-    private setupMidnightReset(): void {
-        this.checkInterval = setInterval(() => {
-            const now = new Date();
-            if (now.getHours() === 0 && now.getMinutes() === 0) {
-                const alarm = this.getAlarm();
-                if (alarm) {
-                    alarm.triggered = false;
-                    this.saveAlarm(alarm);
-                }
-            }
-        }, 60000); // 1分ごとにチェック
-    }
-
-    /**
      * リソースの解放
      */
     dispose(): void {
-        if (this.checkInterval) {
-            clearInterval(this.checkInterval);
-        }
         this.alarmStatusBar.dispose();
     }
 }
