@@ -94,11 +94,23 @@ export class AlarmManager implements vscode.Disposable {
         const todayKey = toLocalDateKey(now);
         if (alarm.triggered) {
             if (!alarm.lastTriggeredOn) {
-                // Migration: older versions didn't track the date. Assume "today"
-                // to avoid double-firing within the same minute after upgrade.
-                alarm.lastTriggeredOn = todayKey;
-                this.saveAlarm(alarm);
-                return;
+                // Migration: older versions didn't track the date. Infer whether we should
+                // allow the alarm to trigger today.
+                const alarmMinuteOfDay = alarm.hour * 60 + alarm.minute;
+                const currentMinuteOfDay = currentHour * 60 + currentMinute;
+
+                if (currentMinuteOfDay <= alarmMinuteOfDay) {
+                    // It's not past today's alarm time yet, so treat this as a carry-over
+                    // from a previous day and allow the alarm to trigger again today.
+                    alarm.triggered = false;
+                    this.saveAlarm(alarm);
+                } else {
+                    // Today's alarm time already passed. Treat this as already triggered today
+                    // to avoid firing unexpectedly after an upgrade.
+                    alarm.lastTriggeredOn = todayKey;
+                    this.saveAlarm(alarm);
+                    return;
+                }
             }
 
             if (alarm.lastTriggeredOn !== todayKey) {
