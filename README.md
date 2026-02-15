@@ -1,111 +1,100 @@
 <p align="center">
   <h1 align="center">otak-clock</h1>
-  <p align="center">
-    VSCode extension for displaying dual time zones with alarm functionality - Supports all global time zones with intuitive interface and visual notifications.
-  </p>
+  <p align="center">Dual time zone clock and a simple daily alarm for VS Code.</p>
 </p>
 
 ---
 
-## Usage
+Show two clocks in the status bar and keep an eye on another time zone while you code.
 
-For Time Zone Display:
+![otak-clock](images/otak-clock.png)
 
-![Time Zone Display](images/otak-clock.png)
+## Quick Start
 
-1. Click on either time display in the status bar
-2. Select a region from the dropdown menu
-3. Choose a specific timezone from the available options
-4. The extension will:
-   - Display the selected time zone in 24-hour format (HH:mm:ss)
-   - Show detailed timezone information on hover
-   - Update in real-time
-   - Maintain your preferences between sessions
+### Time Zones
 
-For Setting Alarms:
+1. Click a clock in the status bar.
+2. Select a region.
+3. Choose a time zone.
 
-1. Click the bell icon ($(bell)) in the status bar
-2. Enter your desired alarm time in HH:mm format
-3. The alarm will:
-   - Display in the status bar for quick reference
-   - Trigger visual notifications at the specified time
-   - Auto-dismiss after notification
-   - Maintain a simple, one-alarm-at-a-time system
+The clocks display time in 24-hour format (`HH:mm:ss`) and show date/time zone details on hover.
+
+### Alarm
+
+1. Click the bell icon (`$(bell)`) in the status bar.
+2. Enter a time in `HH:mm`.
+
+When the alarm triggers, otak-clock shows a notification and flashes the clock status bar items. The alarm uses your local system time and triggers once per day (it resets at midnight).
 
 ## Features
 
-otak-clock is a powerful VSCode extension that provides dual time zone display and alarm functionality for developers working across different time zones.
+- **Dual time zone clocks** — Two independent time zones in the status bar.
+- **Region-based selection** — Pick from common IANA time zones grouped by region.
+- **Helpful tooltips** — Hover to see date and time zone details.
+- **Simple alarm** — One alarm with a notification and a short status bar flash.
+- **Persistent preferences** — Keeps your selected time zones and alarm time between sessions.
 
-### Key Features
+## How It Works
 
-- **Dual Time Zone Display**:
-  - Real-time display of two different time zones
-  - Comprehensive list of time zones grouped by region
-  - 24-hour time format (HH:mm:ss)
-  - Detailed timezone information on hover
-  - Persistent timezone preferences
+### Status Bar
 
-- **Simple Alarm System**:
-  - Single alarm with visual notifications
-  - Easy time setting (HH:mm format)
-  - Status bar alarm time display
-  - Visual notification feedback
-  - Auto-dismissing notifications
+- Two clock items: click to change each time zone.
+- Alarm item: click to set or change the alarm.
 
-- **Status Bar Integration**:
-  - Clean and intuitive interface
-  - Quick access to time zone selection
-  - Clear alarm status indicators
-  - Efficient screen space usage
+### Status Indicators
+
+- `$(bell) HH:mm` — Alarm enabled
+- `$(bell) $(add)` — No alarm set (click to set)
+- `HH:mm:ss` — Clock time for the selected time zone
+
+## Configuration
+
+No configuration is required.
 
 ## Commands
 
-- **`otak-clock.selectTimeZone1`**: Change the first time zone
-- **`otak-clock.selectTimeZone2`**: Change the second time zone
-- **`otak-clock.setAlarm`**: Set a new alarm time
+Access via the Command Palette (`Cmd/Ctrl+Shift+P`):
 
-## Extension Settings
+- `Select Time Zone 1`
+- `Select Time Zone 2`
+- `Set Alarm Time`
 
-This extension is designed to be simple and user-friendly with no additional configuration required. All features are accessible through the status bar interface:
+## Requirements
 
-- Time zone displays can be clicked to change settings
-- Alarm icon shows current status and settings
-- Visual indicators for active alarms
+- Visual Studio Code 1.90.0 or higher
 
-### Status Bar Indicators
+## Installation
 
-- $(bell) HH:mm - Shows active alarm and its time
-- $(bell) $(add) - Indicates no active alarm, clickable to set
-- HH:mm:ss - Current time in selected time zones
+1. Install from the [VS Code Marketplace](https://marketplace.visualstudio.com/items?itemName=odangoo.otak-clock).
+2. Click a clock (or the bell) in the status bar to get started.
+
+## Security & Privacy
+
+- No telemetry or usage analytics.
+- No network requests: everything runs locally.
+- Time zones and alarm settings are stored in VS Code extension storage.
+
+## Troubleshooting
+
+- **Clocks not updating**: Reload the VS Code window and confirm the extension is enabled.
+- **Alarm did not fire**: Verify your system time and that the alarm is enabled (shows `$(bell) HH:mm`).
 
 ## Related Extensions
-Check out our other VS Code extensions.
 
-### [otak-monitor](https://marketplace.visualstudio.com/items?itemName=odangoo.otak-monitor)
-Real-time system monitoring in VS Code. Track CPU, memory, and disk usage through the status bar with comprehensive tooltips and 1-minute averages.
-
-### [otak-proxy](https://marketplace.visualstudio.com/items?itemName=odangoo.otak-proxy)
-One-click proxy configuration for VS Code and Git. Perfect for environments where network settings change frequently.
-
-### [otak-committer](https://marketplace.visualstudio.com/items?itemName=odangoo.otak-committer)
-Intelligent SCM operations with AI support. Features multilingual commit message generation (25 languages supported) and upcoming PR management capabilities.
-
-### [otak-restart](https://marketplace.visualstudio.com/items?itemName=odangoo.otak-restart)
-Quick restart operations for Extension Host and VS Code window via status bar tooltip. Streamlines your development workflow.
-
-### [otak-clock](https://marketplace.visualstudio.com/items?itemName=odangoo.otak-clock)
-Display date and time for two time zones from around the world in VS Code. Essential for working across different time zones.
-
-### [otak-pomodoro](https://marketplace.visualstudio.com/items?itemName=odangoo.otak-pomodoro)
-Enhance your productivity with this Pomodoro Timer extension. Helps balance focused work sessions with refreshing breaks using the Pomodoro Technique.
-
-### [otak-zen](https://marketplace.visualstudio.com/items?itemName=odangoo.otak-zen)
-Experience a distraction-free workflow with otak-zen. This extension transforms your VS Code interface into a minimalist environment by hiding non-essential UI elements, allowing you to focus solely on coding. Customize which components to show or hide, and toggle zen mode quickly via commands or the status bar.
+- **[otak-monitor](https://marketplace.visualstudio.com/items?itemName=odangoo.otak-monitor)** — Real-time system monitoring in VS Code.
+- **[otak-proxy](https://marketplace.visualstudio.com/items?itemName=odangoo.otak-proxy)** — One-click proxy management for VS Code, Git, npm, and terminals.
+- **[otak-committer](https://marketplace.visualstudio.com/items?itemName=odangoo.otak-committer)** — AI-assisted commit messages, pull requests, and issues.
+- **[otak-restart](https://marketplace.visualstudio.com/items?itemName=odangoo.otak-restart)** — Quick reload shortcuts.
+- **[otak-clock](https://marketplace.visualstudio.com/items?itemName=odangoo.otak-clock)** — Dual time zone clock for VS Code.
+- **[otak-pomodoro](https://marketplace.visualstudio.com/items?itemName=odangoo.otak-pomodoro)** — Pomodoro timer in VS Code.
+- **[otak-zen](https://marketplace.visualstudio.com/items?itemName=odangoo.otak-zen)** — Minimal, distraction-free VS Code UI.
 
 ## License
 
-This project is licensed under the MIT License - see the LICENSE file for details.
+MIT License - see the [LICENSE](LICENSE) file for details.
 
----
+## Links
 
-For more information, visit the [GitHub repository](https://github.com/tsuyoshi-otake-system-exe-jp/otak-clock).
+- **[VS Code Marketplace](https://marketplace.visualstudio.com/items?itemName=odangoo.otak-clock)**
+- **[GitHub](https://github.com/tsuyoshi-otake/otak-clock)**
+- **[Issues](https://github.com/tsuyoshi-otake/otak-clock/issues)**
