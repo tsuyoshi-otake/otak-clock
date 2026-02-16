@@ -13,7 +13,7 @@
     "url": "https://github.com/tsuyoshi-otake/otak-clock/issues"
   },
   "homepage": "https://github.com/tsuyoshi-otake/otak-clock#readme",
-  "version": "1.1.6",
+  "version": "1.1.7",
   "engines": {
     "vscode": "^1.90.0"
   },
@@ -33,6 +33,10 @@
       {
         "command": "otak-clock.selectTimeZone2",
         "title": "Select Time Zone 2"
+      },
+      {
+        "command": "otak-clock.swapTimeZones",
+        "title": "Swap Time Zones"
       },
       {
         "command": "otak-clock.setAlarm",

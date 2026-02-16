@@ -90,12 +90,67 @@ function findTimeZoneById(timeZoneId: string): TimeZoneInfo | undefined {
     return timeZones.find(tz => tz.timeZoneId === timeZoneId);
 }
 
-function formatUtcOffsetLabel(offsetHours: number): string {
-    const sign = offsetHours >= 0 ? '+' : '-';
-    const totalMinutes = Math.round(Math.abs(offsetHours) * 60);
+function formatUtcOffsetLabel(offsetMinutes: number): string {
+    const sign = offsetMinutes >= 0 ? '+' : '-';
+    const totalMinutes = Math.abs(offsetMinutes);
     const hh = Math.floor(totalMinutes / 60).toString().padStart(2, '0');
     const mm = (totalMinutes % 60).toString().padStart(2, '0');
     return `UTC${sign}${hh}:${mm}`;
+}
+
+const offsetPartsFormatterCache = new Map<string, Intl.DateTimeFormat>();
+
+function getOffsetPartsFormatter(timeZoneId: string): Intl.DateTimeFormat {
+    const cached = offsetPartsFormatterCache.get(timeZoneId);
+    if (cached) {
+        return cached;
+    }
+
+    const formatter = new Intl.DateTimeFormat('en-US', {
+        timeZone: timeZoneId,
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit',
+        hour12: false,
+        hourCycle: 'h23'
+    });
+
+    // Guardrail to prevent unbounded growth if a user cycles through many time zones.
+    if (offsetPartsFormatterCache.size >= 32) {
+        offsetPartsFormatterCache.clear();
+    }
+
+    offsetPartsFormatterCache.set(timeZoneId, formatter);
+    return formatter;
+}
+
+function getUtcOffsetMinutes(date: Date, timeZoneId: string): number {
+    const parts = getOffsetPartsFormatter(timeZoneId).formatToParts(date);
+    const values = Object.fromEntries(parts.map(p => [p.type, p.value]));
+
+    const year = Number(values.year);
+    const month = Number(values.month);
+    const day = Number(values.day);
+    const hour = Number(values.hour);
+    const minute = Number(values.minute);
+    const second = Number(values.second);
+
+    if (
+        Number.isNaN(year) ||
+        Number.isNaN(month) ||
+        Number.isNaN(day) ||
+        Number.isNaN(hour) ||
+        Number.isNaN(minute) ||
+        Number.isNaN(second)
+    ) {
+        return 0;
+    }
+
+    const asUtc = Date.UTC(year, month - 1, day, hour, minute, second);
+    return Math.round((asUtc - date.getTime()) / 60000);
 }
 
 function msUntilNextSecond(nowMs: number): number {
@@ -121,8 +176,8 @@ class ClockController implements vscode.Disposable {
 
     private lastTime1: string | undefined;
     private lastTime2: string | undefined;
-    private lastDate1: string | undefined;
-    private lastDate2: string | undefined;
+    private lastTooltip1: string | undefined;
+    private lastTooltip2: string | undefined;
 
     private focused: boolean;
     private lastMinuteBucket: number | undefined;
@@ -192,6 +247,16 @@ class ClockController implements vscode.Disposable {
 
         this.timeZone2 = timeZone;
         void this.context.globalState.update(TIME_ZONE_2_KEY, timeZone);
+        this.refresh(true);
+    }
+
+    swapTimeZones(): void {
+        const tmp = this.timeZone1;
+        this.timeZone1 = this.timeZone2;
+        this.timeZone2 = tmp;
+
+        void this.context.globalState.update(TIME_ZONE_1_KEY, this.timeZone1);
+        void this.context.globalState.update(TIME_ZONE_2_KEY, this.timeZone2);
         this.refresh(true);
     }
 
@@ -309,15 +374,27 @@ class ClockController implements vscode.Disposable {
 
     private updateTooltips(now: Date, force: boolean): void {
         const date1 = this.getFormatters(this.timeZone1.timeZoneId).date.format(now);
-        if (force || date1 !== this.lastDate1) {
-            this.statusBar1.tooltip = `${this.timeZone1.label} (${this.timeZone1.timeZoneId})\n${date1} ${formatUtcOffsetLabel(this.timeZone1.baseUtcOffset)}`;
-            this.lastDate1 = date1;
+        const baseOffsetMinutes1 = Math.round(this.timeZone1.baseUtcOffset * 60);
+        const offsetMinutes1 = getUtcOffsetMinutes(now, this.timeZone1.timeZoneId);
+        const dstInfo1 = offsetMinutes1 !== baseOffsetMinutes1
+            ? ` (DST; base ${formatUtcOffsetLabel(baseOffsetMinutes1)})`
+            : '';
+        const tooltip1 = `${this.timeZone1.label} (${this.timeZone1.timeZoneId})\n${date1} ${formatUtcOffsetLabel(offsetMinutes1)}${dstInfo1}\nClick to change`;
+        if (force || tooltip1 !== this.lastTooltip1) {
+            this.statusBar1.tooltip = tooltip1;
+            this.lastTooltip1 = tooltip1;
         }
 
         const date2 = this.getFormatters(this.timeZone2.timeZoneId).date.format(now);
-        if (force || date2 !== this.lastDate2) {
-            this.statusBar2.tooltip = `${this.timeZone2.label} (${this.timeZone2.timeZoneId})\n${date2} ${formatUtcOffsetLabel(this.timeZone2.baseUtcOffset)}`;
-            this.lastDate2 = date2;
+        const baseOffsetMinutes2 = Math.round(this.timeZone2.baseUtcOffset * 60);
+        const offsetMinutes2 = getUtcOffsetMinutes(now, this.timeZone2.timeZoneId);
+        const dstInfo2 = offsetMinutes2 !== baseOffsetMinutes2
+            ? ` (DST; base ${formatUtcOffsetLabel(baseOffsetMinutes2)})`
+            : '';
+        const tooltip2 = `${this.timeZone2.label} (${this.timeZone2.timeZoneId})\n${date2} ${formatUtcOffsetLabel(offsetMinutes2)}${dstInfo2}\nClick to change`;
+        if (force || tooltip2 !== this.lastTooltip2) {
+            this.statusBar2.tooltip = tooltip2;
+            this.lastTooltip2 = tooltip2;
         }
     }
 
@@ -390,6 +467,10 @@ export function activate(context: vscode.ExtensionContext) {
         }
     });
 
+    const disposableSwapTimeZones = vscode.commands.registerCommand('otak-clock.swapTimeZones', () => {
+        clockController?.swapTimeZones();
+    });
+
     // アラーム関連のコマンドを登録
     const disposableSetAlarm = vscode.commands.registerCommand('otak-clock.setAlarm', () => {
         return alarmManager.setAlarm();
@@ -411,6 +492,7 @@ export function activate(context: vscode.ExtensionContext) {
     context.subscriptions.push(
         disposable1,
         disposable2,
+        disposableSwapTimeZones,
         disposableSetAlarm,
         disposableToggleAlarm,
         disposableEditAlarm,
@@ -453,13 +535,22 @@ async function selectTimeZoneWithRegion(): Promise<TimeZoneInfo | undefined> {
     }
 
     // 選択された地域のタイムゾーンを表示
+    const now = new Date();
     const timeZonesInRegion = timeZones.filter(tz => tz.region === selectedRegion);
     const selectedLabel = await vscode.window.showQuickPick(
-        timeZonesInRegion.map(tz => ({
-            label: tz.label,
-            description: `(${formatUtcOffsetLabel(tz.baseUtcOffset)})`,
-            detail: tz.timeZoneId
-        })),
+        timeZonesInRegion.map(tz => {
+            const baseOffsetMinutes = Math.round(tz.baseUtcOffset * 60);
+            let offsetMinutes = getUtcOffsetMinutes(now, tz.timeZoneId);
+            if (offsetMinutes === 0 && baseOffsetMinutes !== 0) {
+                offsetMinutes = baseOffsetMinutes;
+            }
+            const dstSuffix = offsetMinutes !== baseOffsetMinutes ? ' DST' : '';
+            return {
+                label: tz.label,
+                description: `(${formatUtcOffsetLabel(offsetMinutes)}${dstSuffix})`,
+                detail: tz.timeZoneId
+            };
+        }),
         {
             placeHolder: 'Select Timezone',
             matchOnDescription: true,
@@ -471,5 +562,5 @@ async function selectTimeZoneWithRegion(): Promise<TimeZoneInfo | undefined> {
         return undefined;
     }
 
-    return timeZones.find(tz => tz.label === selectedLabel.label);
+    return timeZones.find(tz => tz.timeZoneId === selectedLabel.detail);
 }

@@ -42,6 +42,7 @@ When the alarm triggers, otak-clock shows a notification and flashes the clock s
 ### Status Bar
 
 - Two clock items: click to change each time zone.
+- Use `Swap Time Zones` to quickly flip Time Zone 1 and 2.
 - Alarm item: click to manage the alarm (set, edit, toggle, delete).
 
 ### Status Indicators
@@ -62,6 +63,7 @@ Access via the Command Palette (`Cmd/Ctrl+Shift+P`):
 
 - `Select Time Zone 1`
 - `Select Time Zone 2`
+- `Swap Time Zones`
 - `Set Alarm Time`
 - `Toggle Alarm`
 - `Edit Alarm`

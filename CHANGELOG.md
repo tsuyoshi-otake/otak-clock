@@ -2,6 +2,15 @@
 
 All notable changes to the "otak-clock" extension will be documented in this file.
 
+## [1.1.7] - 2026-02-16
+
+### Added
+- Swap Time Zones command.
+
+### Changed
+- Show DST-aware UTC offsets in clock tooltips and the time zone picker.
+- Improved clock tooltips with clearer action hints.
+
 ## [1.1.6] - 2026-02-16
 
 ### Added
