@@ -23,7 +23,7 @@ export class AlarmManager implements vscode.Disposable {
 
         // アラーム設定用のステータスバーを作成
         this.alarmStatusBar = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left, 98);
-        this.alarmStatusBar.command = 'otak-clock.setAlarm';
+        this.alarmStatusBar.command = 'otak-clock.listAlarms';
         this.updateAlarmStatusBar();
         this.alarmStatusBar.show();
 
@@ -46,13 +46,11 @@ export class AlarmManager implements vscode.Disposable {
         this.updateAlarmStatusBar();
     }
 
-    /**
-     * 新しいアラームを設定
-     */
-    async setAlarm(): Promise<void> {
+    private async promptForAlarmTime(initialValue?: string): Promise<{ hour: number; minute: number } | undefined> {
         const timeInput = await vscode.window.showInputBox({
             prompt: 'Set alarm time (HH:mm)',
             placeHolder: 'e.g., 09:00',
+            value: initialValue,
             validateInput: (value) => {
                 const timeRegex = /^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/;
                 return timeRegex.test(value) ? null : 'Please enter a valid time format (HH:mm)';
@@ -60,21 +58,152 @@ export class AlarmManager implements vscode.Disposable {
         });
 
         if (!timeInput) {
-            return;
+            return undefined;
         }
 
         const [hour, minute] = timeInput.split(':').map(Number);
+        if (Number.isNaN(hour) || Number.isNaN(minute)) {
+            return undefined;
+        }
+
+        return { hour, minute };
+    }
+
+    /**
+     * 新しいアラームを設定
+     */
+    async setAlarm(): Promise<void> {
+        const picked = await this.promptForAlarmTime();
+        if (!picked) {
+            return;
+        }
+
         const alarm = createDefaultAlarm();
-        alarm.hour = hour;
-        alarm.minute = minute;
+        alarm.hour = picked.hour;
+        alarm.minute = picked.minute;
+        alarm.triggered = false;
+        alarm.lastTriggeredOn = undefined;
 
         this.saveAlarm(alarm);
 
         vscode.window.withProgress({
             location: vscode.ProgressLocation.Notification,
-            title: `Alarm set for ${formatTime(hour, minute)}`,
+            title: `Alarm set for ${formatTime(picked.hour, picked.minute)}`,
             cancellable: false
         }, () => new Promise(resolve => setTimeout(resolve, 3000)));
+    }
+
+    async editAlarm(): Promise<void> {
+        const alarm = this.getAlarm();
+        if (!alarm) {
+            return this.setAlarm();
+        }
+
+        const picked = await this.promptForAlarmTime(formatTime(alarm.hour, alarm.minute));
+        if (!picked) {
+            return;
+        }
+
+        const updated: AlarmSettings = {
+            ...alarm,
+            hour: picked.hour,
+            minute: picked.minute,
+            triggered: false,
+            lastTriggeredOn: undefined
+        };
+        this.saveAlarm(updated);
+
+        vscode.window.withProgress({
+            location: vscode.ProgressLocation.Notification,
+            title: `Alarm updated to ${formatTime(picked.hour, picked.minute)}`,
+            cancellable: false
+        }, () => new Promise(resolve => setTimeout(resolve, 3000)));
+    }
+
+    async toggleAlarm(): Promise<void> {
+        const alarm = this.getAlarm();
+        if (!alarm) {
+            const action = await vscode.window.showInformationMessage('No alarm set.', 'Set Alarm');
+            if (action === 'Set Alarm') {
+                await this.setAlarm();
+            }
+            return;
+        }
+
+        alarm.enabled = !alarm.enabled;
+        this.saveAlarm(alarm);
+
+        const message = alarm.enabled ? `Alarm enabled (${formatTime(alarm.hour, alarm.minute)})` : 'Alarm disabled';
+        void vscode.window.showInformationMessage(message);
+    }
+
+    async deleteAlarm(): Promise<void> {
+        const alarm = this.getAlarm();
+        if (!alarm) {
+            void vscode.window.showInformationMessage('No alarm set.');
+            return;
+        }
+
+        const confirmation = await vscode.window.showWarningMessage(
+            `Delete alarm (${formatTime(alarm.hour, alarm.minute)})?`,
+            { modal: true },
+            'Delete'
+        );
+
+        if (confirmation !== 'Delete') {
+            return;
+        }
+
+        this.saveAlarm(undefined);
+        void vscode.window.showInformationMessage('Alarm deleted.');
+    }
+
+    async showAlarmMenu(): Promise<void> {
+        type AlarmAction = 'set' | 'toggle' | 'edit' | 'delete';
+        type AlarmMenuItem = vscode.QuickPickItem & { action: AlarmAction };
+
+        const alarm = this.getAlarm();
+        const time = alarm ? formatTime(alarm.hour, alarm.minute) : undefined;
+        const status = alarm ? (alarm.enabled ? 'Enabled' : 'Disabled') : 'Not set';
+        const fired = alarm?.enabled && alarm.triggered ? ' (Triggered today)' : '';
+
+        const items: AlarmMenuItem[] = [];
+        if (!alarm) {
+            items.push({ label: 'Set Alarm Time', description: 'Create an alarm', action: 'set' });
+        } else {
+            items.push({
+                label: alarm.enabled ? 'Disable Alarm' : 'Enable Alarm',
+                description: time,
+                action: 'toggle'
+            });
+            items.push({ label: 'Edit Alarm Time', description: time, action: 'edit' });
+            items.push({ label: 'Delete Alarm', description: time, action: 'delete' });
+        }
+
+        const picked = await vscode.window.showQuickPick(items, {
+            placeHolder: `Alarm: ${time ?? '—'} (${status})${fired}`
+        });
+
+        if (!picked) {
+            return;
+        }
+
+        switch (picked.action) {
+            case 'set':
+                await this.setAlarm();
+                break;
+            case 'toggle':
+                await this.toggleAlarm();
+                break;
+            case 'edit':
+                await this.editAlarm();
+                break;
+            case 'delete':
+                await this.deleteAlarm();
+                break;
+            default:
+                break;
+        }
     }
 
     /**
@@ -160,13 +289,24 @@ export class AlarmManager implements vscode.Disposable {
     private updateAlarmStatusBar(): void {
         const alarm = this.getAlarm();
 
-        if (alarm?.enabled && !alarm.triggered) {
-            this.alarmStatusBar.text = `$(bell) ${formatTime(alarm.hour, alarm.minute)}`;
-            this.alarmStatusBar.tooltip = `Alarm set for ${formatTime(alarm.hour, alarm.minute)}\nClick to change`;
-        } else {
+        if (!alarm) {
             this.alarmStatusBar.text = '$(bell) $(add)';
-            this.alarmStatusBar.tooltip = 'Click to set alarm';
+            this.alarmStatusBar.tooltip = 'No alarm set\nClick to manage';
+            return;
         }
+
+        const time = formatTime(alarm.hour, alarm.minute);
+        this.alarmStatusBar.text = alarm.enabled ? `$(bell) ${time}` : `$(bell-slash) ${time}`;
+
+        const lines: string[] = [
+            `Alarm: ${time}`,
+            `Status: ${alarm.enabled ? 'Enabled' : 'Disabled'}`
+        ];
+        if (alarm.enabled && alarm.triggered) {
+            lines.push('Triggered: Today');
+        }
+        lines.push('Click to manage');
+        this.alarmStatusBar.tooltip = lines.join('\n');
     }
 
     /**

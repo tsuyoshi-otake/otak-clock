@@ -67,7 +67,8 @@ const timeZones: TimeZoneInfo[] = [
 ];
 
 type FormatterPair = {
-    time: Intl.DateTimeFormat;
+    timeWithSeconds: Intl.DateTimeFormat;
+    timeNoSeconds: Intl.DateTimeFormat;
     date: Intl.DateTimeFormat;
 };
 
@@ -158,8 +159,13 @@ class ClockController implements vscode.Disposable {
             const wasFocused = this.focused;
             this.focused = e.focused;
 
+            const now = new Date();
+            this.runMinuteTick(now, false);
+            // Switch between HH:mm:ss (focused) and HH:mm (unfocused) immediately.
+            this.updateClockText(now, true);
+
             if (this.focused && !wasFocused) {
-                this.refresh(true);
+                this.updateTooltips(now, true);
             }
 
             this.scheduleNextTick(true);
@@ -220,10 +226,16 @@ class ClockController implements vscode.Disposable {
         }
 
         const formatters: FormatterPair = {
-            time: new Intl.DateTimeFormat('en-US', {
+            timeWithSeconds: new Intl.DateTimeFormat('en-US', {
                 hour: '2-digit',
                 minute: '2-digit',
                 second: '2-digit',
+                hour12: false,
+                timeZone: timeZoneId
+            }),
+            timeNoSeconds: new Intl.DateTimeFormat('en-US', {
+                hour: '2-digit',
+                minute: '2-digit',
                 hour12: false,
                 timeZone: timeZoneId
             }),
@@ -280,13 +292,15 @@ class ClockController implements vscode.Disposable {
     }
 
     private updateClockText(now: Date, force: boolean): void {
-        const time1 = this.getFormatters(this.timeZone1.timeZoneId).time.format(now);
+        const formatters1 = this.getFormatters(this.timeZone1.timeZoneId);
+        const time1 = (this.focused ? formatters1.timeWithSeconds : formatters1.timeNoSeconds).format(now);
         if (force || time1 !== this.lastTime1) {
             this.statusBar1.text = time1;
             this.lastTime1 = time1;
         }
 
-        const time2 = this.getFormatters(this.timeZone2.timeZoneId).time.format(now);
+        const formatters2 = this.getFormatters(this.timeZone2.timeZoneId);
+        const time2 = (this.focused ? formatters2.timeWithSeconds : formatters2.timeNoSeconds).format(now);
         if (force || time2 !== this.lastTime2) {
             this.statusBar2.text = time2;
             this.lastTime2 = time2;
@@ -381,10 +395,28 @@ export function activate(context: vscode.ExtensionContext) {
         return alarmManager.setAlarm();
     });
     const disposableToggleAlarm = vscode.commands.registerCommand('otak-clock.toggleAlarm', () => {
-        vscode.window.showInformationMessage('Use the command palette to manage alarms');
+        return alarmManager.toggleAlarm();
     });
 
-    context.subscriptions.push(disposable1, disposable2, disposableSetAlarm, disposableToggleAlarm);
+    const disposableEditAlarm = vscode.commands.registerCommand('otak-clock.editAlarm', () => {
+        return alarmManager.editAlarm();
+    });
+    const disposableDeleteAlarm = vscode.commands.registerCommand('otak-clock.deleteAlarm', () => {
+        return alarmManager.deleteAlarm();
+    });
+    const disposableListAlarms = vscode.commands.registerCommand('otak-clock.listAlarms', () => {
+        return alarmManager.showAlarmMenu();
+    });
+
+    context.subscriptions.push(
+        disposable1,
+        disposable2,
+        disposableSetAlarm,
+        disposableToggleAlarm,
+        disposableEditAlarm,
+        disposableDeleteAlarm,
+        disposableListAlarms
+    );
 
     // 表示
     statusBar1.show();
@@ -429,7 +461,9 @@ async function selectTimeZoneWithRegion(): Promise<TimeZoneInfo | undefined> {
             detail: tz.timeZoneId
         })),
         {
-            placeHolder: 'Select Timezone'
+            placeHolder: 'Select Timezone',
+            matchOnDescription: true,
+            matchOnDetail: true
         }
     );
 

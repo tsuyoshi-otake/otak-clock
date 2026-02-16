@@ -19,10 +19,13 @@ Show two clocks in the status bar and keep an eye on another time zone while you
 
 The clocks display time in 24-hour format (`HH:mm:ss`) and show date/time zone details on hover.
 
+To reduce CPU usage, otak-clock updates once per minute (and shows `HH:mm`) when the VS Code window is not focused.
+
 ### Alarm
 
 1. Click the bell icon (`$(bell)`) in the status bar.
-2. Enter a time in `HH:mm`.
+2. Select an action (Set, Edit, Toggle, Delete).
+3. Enter a time in `HH:mm` (when setting or editing).
 
 When the alarm triggers, otak-clock shows a notification and flashes the clock status bar items. The alarm uses your local system time and triggers once per day (it resets at midnight).
 
@@ -39,13 +42,15 @@ When the alarm triggers, otak-clock shows a notification and flashes the clock s
 ### Status Bar
 
 - Two clock items: click to change each time zone.
-- Alarm item: click to set or change the alarm.
+- Alarm item: click to manage the alarm (set, edit, toggle, delete).
 
 ### Status Indicators
 
 - `$(bell) HH:mm` — Alarm enabled
+- `$(bell-slash) HH:mm` — Alarm disabled
 - `$(bell) $(add)` — No alarm set (click to set)
-- `HH:mm:ss` — Clock time for the selected time zone
+- `HH:mm:ss` — Clock time (when focused)
+- `HH:mm` — Clock time (when unfocused)
 
 ## Configuration
 
@@ -58,6 +63,10 @@ Access via the Command Palette (`Cmd/Ctrl+Shift+P`):
 - `Select Time Zone 1`
 - `Select Time Zone 2`
 - `Set Alarm Time`
+- `Toggle Alarm`
+- `Edit Alarm`
+- `Delete Alarm`
+- `Manage Alarm`
 
 ## Requirements
 

@@ -2,6 +2,16 @@
 
 All notable changes to the "otak-clock" extension will be documented in this file.
 
+## [1.1.6] - 2026-02-16
+
+### Added
+- Alarm management menu from the status bar (set, edit, toggle, delete).
+
+### Changed
+- Improved status bar indicators for alarm enabled/disabled state.
+- When the VS Code window is not focused, the clocks update once per minute and display `HH:mm` to reduce CPU usage.
+- Removed unused settings entry (`otakClock.alarmSounds`).
+
 ## [1.1.5] - 2026-02-15
 
 ### Changed

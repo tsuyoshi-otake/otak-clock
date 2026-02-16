@@ -13,7 +13,7 @@
     "url": "https://github.com/tsuyoshi-otake/otak-clock/issues"
   },
   "homepage": "https://github.com/tsuyoshi-otake/otak-clock#readme",
-  "version": "1.1.5",
+  "version": "1.1.6",
   "engines": {
     "vscode": "^1.90.0"
   },
@@ -44,7 +44,7 @@
       },
       {
         "command": "otak-clock.editAlarm",
-        "title": "Edit Alarm"
+        "title": "Edit Alarm Time"
       },
       {
         "command": "otak-clock.deleteAlarm",
@@ -52,25 +52,9 @@
       },
       {
         "command": "otak-clock.listAlarms",
-        "title": "List Alarms"
+        "title": "Manage Alarm"
       }
-    ],
-    "configuration": {
-      "title": "Otak Clock",
-      "properties": {
-        "otakClock.alarmSounds": {
-          "type": "object",
-          "default": {
-            "defaultAlarm": "sounds/default.mp3",
-            "bell": "sounds/bell.mp3",
-            "chime": "sounds/chime.mp3",
-            "digital": "sounds/digital.mp3",
-            "ICQ": "sounds/icq-ooh.mp3"
-          },
-          "description": "Available alarm sounds"
-        }
-      }
-    }
+    ]
   },
   "scripts": {
     "vscode:prepublish": "npm run compile",
