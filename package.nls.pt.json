@@ -1,0 +1,12 @@
+{
+  "command.selectTimeZone1": "Selecionar fuso horário 1",
+  "command.selectTimeZone2": "Selecionar fuso horário 2",
+  "command.swapTimeZones": "Trocar fusos horários",
+  "command.setAlarm": "Definir hora do alarme",
+  "command.toggleAlarm": "Ativar/desativar alarme",
+  "command.editAlarm": "Editar hora do alarme",
+  "command.deleteAlarm": "Excluir alarme",
+  "command.manageAlarm": "Gerenciar alarme",
+  "config.showTimeZoneInStatusBar": "Mostrar um rótulo curto de fuso horário (por exemplo, UTC, JST) ao lado de cada relógio na barra de status."
+}
+

@@ -36,6 +36,7 @@ When the alarm triggers, otak-clock shows a notification and flashes the clock s
 - **Helpful tooltips** — Hover to see date and time zone details.
 - **Simple alarm** — One alarm with a notification and a short status bar flash.
 - **Persistent preferences** — Keeps your selected time zones and alarm time between sessions.
+- **Localized UI** — Supported UI languages: `ar` (Arabic), `de` (German), `en` (English), `es` (Spanish), `fr` (French), `hi` (Hindi), `id` (Indonesian), `it` (Italian), `ja` (Japanese), `ko` (Korean), `nl` (Dutch), `pt` (Portuguese), `ru` (Russian), `th` (Thai), `tr` (Turkish), `vi` (Vietnamese), `zh-cn` (Chinese, Simplified), `zh-tw` (Chinese, Traditional).
 
 ## How It Works
 
@@ -52,10 +53,13 @@ When the alarm triggers, otak-clock shows a notification and flashes the clock s
 - `$(bell) $(add)` — No alarm set (click to set)
 - `HH:mm:ss` — Clock time (when focused)
 - `HH:mm` — Clock time (when unfocused)
+- `HH:mm:ss UTC` / `HH:mm JST` — Clock time with a short time zone label (default; toggle via `otak-clock.showTimeZoneInStatusBar`)
 
 ## Configuration
 
-No configuration is required.
+No configuration is required, but you can optionally toggle:
+
+- `otak-clock.showTimeZoneInStatusBar` — Show a short time zone label (e.g., UTC, JST) next to each clock in the status bar (default: `true`).
 
 ## Commands
 

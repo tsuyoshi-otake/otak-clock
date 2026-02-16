@@ -1,0 +1,59 @@
+{
+  "command.selectTimeZone1": "Chọn múi giờ 1",
+  "command.selectTimeZone2": "Chọn múi giờ 2",
+  "command.swapTimeZones": "Hoán đổi múi giờ",
+  "command.setAlarm": "Đặt giờ báo thức",
+  "command.toggleAlarm": "Bật/tắt báo thức",
+  "command.editAlarm": "Sửa giờ báo thức",
+  "command.deleteAlarm": "Xóa báo thức",
+  "command.manageAlarm": "Quản lý báo thức",
+
+  "config.showTimeZoneInStatusBar": "Hiển thị nhãn múi giờ ngắn (ví dụ: UTC, JST) bên cạnh mỗi đồng hồ trên thanh trạng thái.",
+
+  "prompt.selectRegion": "Chọn khu vực",
+  "prompt.selectTimeZone": "Chọn múi giờ",
+
+  "region.universal": "Thời gian chung",
+  "region.americas": "Châu Mỹ",
+  "region.europe": "Châu Âu",
+  "region.africaMiddleEast": "Châu Phi & Trung Đông",
+  "region.asia": "Châu Á",
+  "region.oceania": "Châu Đại Dương",
+
+  "clock.tooltip.clickToChange": "Nhấp để thay đổi",
+  "clock.dstInfo": " (DST; cơ sở {base})",
+  "clock.dstSuffix": " DST",
+
+  "alarm.input.prompt": "Đặt giờ báo thức (HH:mm)",
+  "alarm.input.placeholder": "ví dụ: 09:00",
+  "alarm.input.invalidFormat": "Vui lòng nhập định dạng thời gian hợp lệ (HH:mm)",
+
+  "alarm.message.set": "Đã đặt báo thức lúc {time}",
+  "alarm.message.updated": "Đã cập nhật báo thức thành {time}",
+  "alarm.message.noAlarmSet": "Chưa đặt báo thức.",
+  "alarm.action.setAlarm": "Đặt báo thức",
+  "alarm.message.enabled": "Đã bật báo thức ({time})",
+  "alarm.message.disabled": "Đã tắt báo thức",
+  "alarm.confirm.delete": "Xóa báo thức ({time})?",
+  "alarm.action.delete": "Xóa",
+  "alarm.message.deleted": "Đã xóa báo thức.",
+
+  "alarm.status.enabled": "Bật",
+  "alarm.status.disabled": "Tắt",
+  "alarm.status.notSet": "Chưa đặt",
+  "alarm.status.firedTodaySuffix": " (Đã kích hoạt hôm nay)",
+
+  "alarm.menu.createDescription": "Tạo báo thức",
+  "alarm.menu.enable": "Bật báo thức",
+  "alarm.menu.disable": "Tắt báo thức",
+  "alarm.menu.placeholder": "Báo thức: {time} ({status}){fired}",
+
+  "alarm.notification.title": "Báo thức: {time}",
+
+  "alarm.statusBar.noAlarmSet": "Chưa đặt báo thức",
+  "alarm.statusBar.clickToManage": "Nhấp để quản lý",
+  "alarm.statusBar.alarm": "Báo thức: {time}",
+  "alarm.statusBar.status": "Trạng thái: {status}",
+  "alarm.statusBar.triggeredToday": "Đã kích hoạt: Hôm nay"
+}
+

@@ -1,0 +1,12 @@
+{
+  "command.selectTimeZone1": "시간대 1 선택",
+  "command.selectTimeZone2": "시간대 2 선택",
+  "command.swapTimeZones": "시간대 교체",
+  "command.setAlarm": "알람 시간 설정",
+  "command.toggleAlarm": "알람 켜기/끄기",
+  "command.editAlarm": "알람 시간 편집",
+  "command.deleteAlarm": "알람 삭제",
+  "command.manageAlarm": "알람 관리",
+  "config.showTimeZoneInStatusBar": "상태 표시줄의 각 시계 옆에 짧은 시간대 라벨(예: UTC, JST)을 표시합니다."
+}
+

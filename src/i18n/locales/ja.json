@@ -1,0 +1,59 @@
+{
+  "command.selectTimeZone1": "タイムゾーン1を選択",
+  "command.selectTimeZone2": "タイムゾーン2を選択",
+  "command.swapTimeZones": "タイムゾーンを入れ替え",
+  "command.setAlarm": "アラーム時刻を設定",
+  "command.toggleAlarm": "アラームを有効/無効",
+  "command.editAlarm": "アラーム時刻を編集",
+  "command.deleteAlarm": "アラームを削除",
+  "command.manageAlarm": "アラームを管理",
+
+  "config.showTimeZoneInStatusBar": "ステータスバーの各時計の横にタイムゾーンの短いラベル（例: UTC, JST）を表示します。",
+
+  "prompt.selectRegion": "地域を選択",
+  "prompt.selectTimeZone": "タイムゾーンを選択",
+
+  "region.universal": "ユニバーサルタイム",
+  "region.americas": "アメリカ",
+  "region.europe": "ヨーロッパ",
+  "region.africaMiddleEast": "アフリカ・中東",
+  "region.asia": "アジア",
+  "region.oceania": "オセアニア",
+
+  "clock.tooltip.clickToChange": "クリックして変更",
+  "clock.dstInfo": " (DST; 基準 {base})",
+  "clock.dstSuffix": " DST",
+
+  "alarm.input.prompt": "アラーム時刻を設定 (HH:mm)",
+  "alarm.input.placeholder": "例: 09:00",
+  "alarm.input.invalidFormat": "正しい時刻形式(HH:mm)で入力してください",
+
+  "alarm.message.set": "アラームを{time}に設定しました",
+  "alarm.message.updated": "アラームを{time}に更新しました",
+  "alarm.message.noAlarmSet": "アラームが設定されていません。",
+  "alarm.action.setAlarm": "アラームを設定",
+  "alarm.message.enabled": "アラームを有効にしました ({time})",
+  "alarm.message.disabled": "アラームを無効にしました",
+  "alarm.confirm.delete": "アラーム({time})を削除しますか？",
+  "alarm.action.delete": "削除",
+  "alarm.message.deleted": "アラームを削除しました。",
+
+  "alarm.status.enabled": "有効",
+  "alarm.status.disabled": "無効",
+  "alarm.status.notSet": "未設定",
+  "alarm.status.firedTodaySuffix": " (本日発動済み)",
+
+  "alarm.menu.createDescription": "アラームを作成",
+  "alarm.menu.enable": "アラームを有効化",
+  "alarm.menu.disable": "アラームを無効化",
+  "alarm.menu.placeholder": "アラーム: {time} ({status}){fired}",
+
+  "alarm.notification.title": "アラーム: {time}",
+
+  "alarm.statusBar.noAlarmSet": "アラーム未設定",
+  "alarm.statusBar.clickToManage": "クリックして管理",
+  "alarm.statusBar.alarm": "アラーム: {time}",
+  "alarm.statusBar.status": "状態: {status}",
+  "alarm.statusBar.triggeredToday": "発動: 本日"
+}
+

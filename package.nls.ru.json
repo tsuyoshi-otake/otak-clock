@@ -1,0 +1,12 @@
+{
+  "command.selectTimeZone1": "Выбрать часовой пояс 1",
+  "command.selectTimeZone2": "Выбрать часовой пояс 2",
+  "command.swapTimeZones": "Поменять часовые пояса",
+  "command.setAlarm": "Установить время будильника",
+  "command.toggleAlarm": "Включить/выключить будильник",
+  "command.editAlarm": "Изменить время будильника",
+  "command.deleteAlarm": "Удалить будильник",
+  "command.manageAlarm": "Управление будильником",
+  "config.showTimeZoneInStatusBar": "Показывать короткую метку часового пояса (например, UTC, JST) рядом с каждым часами в строке состояния."
+}
+

@@ -1,0 +1,59 @@
+{
+  "command.selectTimeZone1": "Tijdzone 1 selecteren",
+  "command.selectTimeZone2": "Tijdzone 2 selecteren",
+  "command.swapTimeZones": "Tijdzones omwisselen",
+  "command.setAlarm": "Alarmtijd instellen",
+  "command.toggleAlarm": "Alarm in-/uitschakelen",
+  "command.editAlarm": "Alarmtijd bewerken",
+  "command.deleteAlarm": "Alarm verwijderen",
+  "command.manageAlarm": "Alarm beheren",
+
+  "config.showTimeZoneInStatusBar": "Toon een korte tijdzoneaanduiding (bijv. UTC, JST) naast elke klok in de statusbalk.",
+
+  "prompt.selectRegion": "Regio selecteren",
+  "prompt.selectTimeZone": "Tijdzone selecteren",
+
+  "region.universal": "Universele tijd",
+  "region.americas": "Amerika's",
+  "region.europe": "Europa",
+  "region.africaMiddleEast": "Afrika en Midden-Oosten",
+  "region.asia": "Azië",
+  "region.oceania": "Oceanië",
+
+  "clock.tooltip.clickToChange": "Klik om te wijzigen",
+  "clock.dstInfo": " (Zomertijd; basis {base})",
+  "clock.dstSuffix": " DST",
+
+  "alarm.input.prompt": "Alarmtijd instellen (HH:mm)",
+  "alarm.input.placeholder": "bijv. 09:00",
+  "alarm.input.invalidFormat": "Voer een geldig tijdformaat in (HH:mm)",
+
+  "alarm.message.set": "Alarm ingesteld voor {time}",
+  "alarm.message.updated": "Alarm bijgewerkt naar {time}",
+  "alarm.message.noAlarmSet": "Geen alarm ingesteld.",
+  "alarm.action.setAlarm": "Alarm instellen",
+  "alarm.message.enabled": "Alarm ingeschakeld ({time})",
+  "alarm.message.disabled": "Alarm uitgeschakeld",
+  "alarm.confirm.delete": "Alarm ({time}) verwijderen?",
+  "alarm.action.delete": "Verwijderen",
+  "alarm.message.deleted": "Alarm verwijderd.",
+
+  "alarm.status.enabled": "Ingeschakeld",
+  "alarm.status.disabled": "Uitgeschakeld",
+  "alarm.status.notSet": "Niet ingesteld",
+  "alarm.status.firedTodaySuffix": " (Vandaag afgegaan)",
+
+  "alarm.menu.createDescription": "Alarm maken",
+  "alarm.menu.enable": "Alarm inschakelen",
+  "alarm.menu.disable": "Alarm uitschakelen",
+  "alarm.menu.placeholder": "Alarm: {time} ({status}){fired}",
+
+  "alarm.notification.title": "Alarm: {time}",
+
+  "alarm.statusBar.noAlarmSet": "Geen alarm ingesteld",
+  "alarm.statusBar.clickToManage": "Klik om te beheren",
+  "alarm.statusBar.alarm": "Alarm: {time}",
+  "alarm.statusBar.status": "Status: {status}",
+  "alarm.statusBar.triggeredToday": "Afgegaan: Vandaag"
+}
+

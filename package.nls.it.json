@@ -1,0 +1,12 @@
+{
+  "command.selectTimeZone1": "Seleziona fuso orario 1",
+  "command.selectTimeZone2": "Seleziona fuso orario 2",
+  "command.swapTimeZones": "Scambia fusi orari",
+  "command.setAlarm": "Imposta ora sveglia",
+  "command.toggleAlarm": "Attiva/disattiva sveglia",
+  "command.editAlarm": "Modifica ora sveglia",
+  "command.deleteAlarm": "Elimina sveglia",
+  "command.manageAlarm": "Gestisci sveglia",
+  "config.showTimeZoneInStatusBar": "Mostra un'etichetta breve del fuso orario (ad es. UTC, JST) accanto a ogni orologio nella barra di stato."
+}
+

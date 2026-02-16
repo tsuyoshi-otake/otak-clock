@@ -1,0 +1,12 @@
+{
+  "command.selectTimeZone1": "タイムゾーン1を選択",
+  "command.selectTimeZone2": "タイムゾーン2を選択",
+  "command.swapTimeZones": "タイムゾーンを入れ替え",
+  "command.setAlarm": "アラーム時刻を設定",
+  "command.toggleAlarm": "アラームを有効/無効",
+  "command.editAlarm": "アラーム時刻を編集",
+  "command.deleteAlarm": "アラームを削除",
+  "command.manageAlarm": "アラームを管理",
+  "config.showTimeZoneInStatusBar": "ステータスバーの各時計の横にタイムゾーンの短いラベル（例: UTC, JST）を表示します。"
+}
+

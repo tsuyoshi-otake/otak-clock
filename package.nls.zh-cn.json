@@ -1,0 +1,12 @@
+{
+  "command.selectTimeZone1": "选择时区 1",
+  "command.selectTimeZone2": "选择时区 2",
+  "command.swapTimeZones": "交换时区",
+  "command.setAlarm": "设置闹钟时间",
+  "command.toggleAlarm": "切换闹钟",
+  "command.editAlarm": "编辑闹钟时间",
+  "command.deleteAlarm": "删除闹钟",
+  "command.manageAlarm": "管理闹钟",
+  "config.showTimeZoneInStatusBar": "在状态栏中在每个时钟旁显示简短的时区标签（例如 UTC、JST）。"
+}
+

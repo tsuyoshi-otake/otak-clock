@@ -1,0 +1,59 @@
+{
+  "command.selectTimeZone1": "选择时区 1",
+  "command.selectTimeZone2": "选择时区 2",
+  "command.swapTimeZones": "交换时区",
+  "command.setAlarm": "设置闹钟时间",
+  "command.toggleAlarm": "切换闹钟",
+  "command.editAlarm": "编辑闹钟时间",
+  "command.deleteAlarm": "删除闹钟",
+  "command.manageAlarm": "管理闹钟",
+
+  "config.showTimeZoneInStatusBar": "在状态栏中在每个时钟旁显示简短的时区标签（例如 UTC、JST）。",
+
+  "prompt.selectRegion": "选择区域",
+  "prompt.selectTimeZone": "选择时区",
+
+  "region.universal": "通用时间",
+  "region.americas": "美洲",
+  "region.europe": "欧洲",
+  "region.africaMiddleEast": "非洲和中东",
+  "region.asia": "亚洲",
+  "region.oceania": "大洋洲",
+
+  "clock.tooltip.clickToChange": "点击更改",
+  "clock.dstInfo": " (夏令时; 基准 {base})",
+  "clock.dstSuffix": " 夏令时",
+
+  "alarm.input.prompt": "设置闹钟时间 (HH:mm)",
+  "alarm.input.placeholder": "例如：09:00",
+  "alarm.input.invalidFormat": "请输入有效的时间格式 (HH:mm)",
+
+  "alarm.message.set": "闹钟已设置为 {time}",
+  "alarm.message.updated": "闹钟已更新为 {time}",
+  "alarm.message.noAlarmSet": "未设置闹钟。",
+  "alarm.action.setAlarm": "设置闹钟",
+  "alarm.message.enabled": "闹钟已启用（{time}）",
+  "alarm.message.disabled": "闹钟已禁用",
+  "alarm.confirm.delete": "删除闹钟（{time}）？",
+  "alarm.action.delete": "删除",
+  "alarm.message.deleted": "闹钟已删除。",
+
+  "alarm.status.enabled": "已启用",
+  "alarm.status.disabled": "已禁用",
+  "alarm.status.notSet": "未设置",
+  "alarm.status.firedTodaySuffix": " (今日已触发)",
+
+  "alarm.menu.createDescription": "创建闹钟",
+  "alarm.menu.enable": "启用闹钟",
+  "alarm.menu.disable": "禁用闹钟",
+  "alarm.menu.placeholder": "闹钟: {time} ({status}){fired}",
+
+  "alarm.notification.title": "闹钟: {time}",
+
+  "alarm.statusBar.noAlarmSet": "未设置闹钟",
+  "alarm.statusBar.clickToManage": "点击管理",
+  "alarm.statusBar.alarm": "闹钟: {time}",
+  "alarm.statusBar.status": "状态: {status}",
+  "alarm.statusBar.triggeredToday": "触发: 今天"
+}
+

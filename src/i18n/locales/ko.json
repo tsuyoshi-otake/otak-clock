@@ -1,0 +1,59 @@
+{
+  "command.selectTimeZone1": "시간대 1 선택",
+  "command.selectTimeZone2": "시간대 2 선택",
+  "command.swapTimeZones": "시간대 교체",
+  "command.setAlarm": "알람 시간 설정",
+  "command.toggleAlarm": "알람 켜기/끄기",
+  "command.editAlarm": "알람 시간 편집",
+  "command.deleteAlarm": "알람 삭제",
+  "command.manageAlarm": "알람 관리",
+
+  "config.showTimeZoneInStatusBar": "상태 표시줄의 각 시계 옆에 짧은 시간대 라벨(예: UTC, JST)을 표시합니다.",
+
+  "prompt.selectRegion": "지역 선택",
+  "prompt.selectTimeZone": "시간대 선택",
+
+  "region.universal": "세계 표준시",
+  "region.americas": "아메리카",
+  "region.europe": "유럽",
+  "region.africaMiddleEast": "아프리카 및 중동",
+  "region.asia": "아시아",
+  "region.oceania": "오세아니아",
+
+  "clock.tooltip.clickToChange": "클릭하여 변경",
+  "clock.dstInfo": " (서머타임; 기준 {base})",
+  "clock.dstSuffix": " 서머타임",
+
+  "alarm.input.prompt": "알람 시간 설정 (HH:mm)",
+  "alarm.input.placeholder": "예: 09:00",
+  "alarm.input.invalidFormat": "올바른 시간 형식(HH:mm)으로 입력하세요",
+
+  "alarm.message.set": "알람이 {time}에 설정되었습니다",
+  "alarm.message.updated": "알람이 {time}로 업데이트되었습니다",
+  "alarm.message.noAlarmSet": "알람이 설정되어 있지 않습니다.",
+  "alarm.action.setAlarm": "알람 설정",
+  "alarm.message.enabled": "알람이 활성화되었습니다 ({time})",
+  "alarm.message.disabled": "알람이 비활성화되었습니다",
+  "alarm.confirm.delete": "알람({time})을 삭제할까요?",
+  "alarm.action.delete": "삭제",
+  "alarm.message.deleted": "알람이 삭제되었습니다.",
+
+  "alarm.status.enabled": "활성화됨",
+  "alarm.status.disabled": "비활성화됨",
+  "alarm.status.notSet": "미설정",
+  "alarm.status.firedTodaySuffix": " (오늘 이미 울림)",
+
+  "alarm.menu.createDescription": "알람 만들기",
+  "alarm.menu.enable": "알람 활성화",
+  "alarm.menu.disable": "알람 비활성화",
+  "alarm.menu.placeholder": "알람: {time} ({status}){fired}",
+
+  "alarm.notification.title": "알람: {time}",
+
+  "alarm.statusBar.noAlarmSet": "알람 미설정",
+  "alarm.statusBar.clickToManage": "클릭하여 관리",
+  "alarm.statusBar.alarm": "알람: {time}",
+  "alarm.statusBar.status": "상태: {status}",
+  "alarm.statusBar.triggeredToday": "트리거: 오늘"
+}
+

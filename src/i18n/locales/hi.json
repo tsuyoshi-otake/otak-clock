@@ -1,0 +1,59 @@
+{
+  "command.selectTimeZone1": "समय क्षेत्र 1 चुनें",
+  "command.selectTimeZone2": "समय क्षेत्र 2 चुनें",
+  "command.swapTimeZones": "समय क्षेत्र अदला-बदली करें",
+  "command.setAlarm": "अलार्म समय सेट करें",
+  "command.toggleAlarm": "अलार्म चालू/बंद करें",
+  "command.editAlarm": "अलार्म समय संपादित करें",
+  "command.deleteAlarm": "अलार्म हटाएँ",
+  "command.manageAlarm": "अलार्म प्रबंधित करें",
+
+  "config.showTimeZoneInStatusBar": "स्टेटस बार में प्रत्येक घड़ी के पास एक छोटा समय-क्षेत्र लेबल (जैसे UTC, JST) दिखाएँ।",
+
+  "prompt.selectRegion": "क्षेत्र चुनें",
+  "prompt.selectTimeZone": "समय क्षेत्र चुनें",
+
+  "region.universal": "सार्वभौमिक समय",
+  "region.americas": "अमेरिका",
+  "region.europe": "यूरोप",
+  "region.africaMiddleEast": "अफ्रीका और मध्य पूर्व",
+  "region.asia": "एशिया",
+  "region.oceania": "ओशिनिया",
+
+  "clock.tooltip.clickToChange": "बदलने के लिए क्लिक करें",
+  "clock.dstInfo": " (DST; आधार {base})",
+  "clock.dstSuffix": " DST",
+
+  "alarm.input.prompt": "अलार्म समय सेट करें (HH:mm)",
+  "alarm.input.placeholder": "उदा., 09:00",
+  "alarm.input.invalidFormat": "कृपया मान्य समय प्रारूप (HH:mm) दर्ज करें",
+
+  "alarm.message.set": "अलार्म {time} के लिए सेट किया गया",
+  "alarm.message.updated": "अलार्म {time} पर अपडेट किया गया",
+  "alarm.message.noAlarmSet": "कोई अलार्म सेट नहीं है।",
+  "alarm.action.setAlarm": "अलार्म सेट करें",
+  "alarm.message.enabled": "अलार्म चालू ({time})",
+  "alarm.message.disabled": "अलार्म बंद",
+  "alarm.confirm.delete": "अलार्म ({time}) हटाएँ?",
+  "alarm.action.delete": "हटाएँ",
+  "alarm.message.deleted": "अलार्म हटाया गया।",
+
+  "alarm.status.enabled": "चालू",
+  "alarm.status.disabled": "बंद",
+  "alarm.status.notSet": "सेट नहीं है",
+  "alarm.status.firedTodaySuffix": " (आज ट्रिगर हुआ)",
+
+  "alarm.menu.createDescription": "अलार्म बनाएँ",
+  "alarm.menu.enable": "अलार्म चालू करें",
+  "alarm.menu.disable": "अलार्म बंद करें",
+  "alarm.menu.placeholder": "अलार्म: {time} ({status}){fired}",
+
+  "alarm.notification.title": "अलार्म: {time}",
+
+  "alarm.statusBar.noAlarmSet": "कोई अलार्म सेट नहीं है",
+  "alarm.statusBar.clickToManage": "प्रबंधित करने के लिए क्लिक करें",
+  "alarm.statusBar.alarm": "अलार्म: {time}",
+  "alarm.statusBar.status": "स्थिति: {status}",
+  "alarm.statusBar.triggeredToday": "ट्रिगर: आज"
+}
+

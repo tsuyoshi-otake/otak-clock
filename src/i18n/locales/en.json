@@ -1,0 +1,59 @@
+{
+  "command.selectTimeZone1": "Select Time Zone 1",
+  "command.selectTimeZone2": "Select Time Zone 2",
+  "command.swapTimeZones": "Swap Time Zones",
+  "command.setAlarm": "Set Alarm Time",
+  "command.toggleAlarm": "Toggle Alarm",
+  "command.editAlarm": "Edit Alarm Time",
+  "command.deleteAlarm": "Delete Alarm",
+  "command.manageAlarm": "Manage Alarm",
+
+  "config.showTimeZoneInStatusBar": "Show a short time zone label (e.g., UTC, JST) next to each clock in the status bar.",
+
+  "prompt.selectRegion": "Select Region",
+  "prompt.selectTimeZone": "Select Time Zone",
+
+  "region.universal": "Universal Time",
+  "region.americas": "Americas",
+  "region.europe": "Europe",
+  "region.africaMiddleEast": "Africa & Middle East",
+  "region.asia": "Asia",
+  "region.oceania": "Oceania",
+
+  "clock.tooltip.clickToChange": "Click to change",
+  "clock.dstInfo": " (DST; base {base})",
+  "clock.dstSuffix": " DST",
+
+  "alarm.input.prompt": "Set alarm time (HH:mm)",
+  "alarm.input.placeholder": "e.g., 09:00",
+  "alarm.input.invalidFormat": "Please enter a valid time format (HH:mm)",
+
+  "alarm.message.set": "Alarm set for {time}",
+  "alarm.message.updated": "Alarm updated to {time}",
+  "alarm.message.noAlarmSet": "No alarm set.",
+  "alarm.action.setAlarm": "Set Alarm",
+  "alarm.message.enabled": "Alarm enabled ({time})",
+  "alarm.message.disabled": "Alarm disabled",
+  "alarm.confirm.delete": "Delete alarm ({time})?",
+  "alarm.action.delete": "Delete",
+  "alarm.message.deleted": "Alarm deleted.",
+
+  "alarm.status.enabled": "Enabled",
+  "alarm.status.disabled": "Disabled",
+  "alarm.status.notSet": "Not set",
+  "alarm.status.firedTodaySuffix": " (Triggered today)",
+
+  "alarm.menu.createDescription": "Create an alarm",
+  "alarm.menu.enable": "Enable Alarm",
+  "alarm.menu.disable": "Disable Alarm",
+  "alarm.menu.placeholder": "Alarm: {time} ({status}){fired}",
+
+  "alarm.notification.title": "Alarm: {time}",
+
+  "alarm.statusBar.noAlarmSet": "No alarm set",
+  "alarm.statusBar.clickToManage": "Click to manage",
+  "alarm.statusBar.alarm": "Alarm: {time}",
+  "alarm.statusBar.status": "Status: {status}",
+  "alarm.statusBar.triggeredToday": "Triggered: Today"
+}
+

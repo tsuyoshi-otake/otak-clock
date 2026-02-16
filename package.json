@@ -13,7 +13,7 @@
     "url": "https://github.com/tsuyoshi-otake/otak-clock/issues"
   },
   "homepage": "https://github.com/tsuyoshi-otake/otak-clock#readme",
-  "version": "1.1.7",
+  "version": "1.1.13",
   "engines": {
     "vscode": "^1.90.0"
   },
@@ -28,42 +28,53 @@
     "commands": [
       {
         "command": "otak-clock.selectTimeZone1",
-        "title": "Select Time Zone 1"
+        "title": "%command.selectTimeZone1%"
       },
       {
         "command": "otak-clock.selectTimeZone2",
-        "title": "Select Time Zone 2"
+        "title": "%command.selectTimeZone2%"
       },
       {
         "command": "otak-clock.swapTimeZones",
-        "title": "Swap Time Zones"
+        "title": "%command.swapTimeZones%"
       },
       {
         "command": "otak-clock.setAlarm",
-        "title": "Set Alarm Time"
+        "title": "%command.setAlarm%"
       },
       {
         "command": "otak-clock.toggleAlarm",
-        "title": "Toggle Alarm"
+        "title": "%command.toggleAlarm%"
       },
       {
         "command": "otak-clock.editAlarm",
-        "title": "Edit Alarm Time"
+        "title": "%command.editAlarm%"
       },
       {
         "command": "otak-clock.deleteAlarm",
-        "title": "Delete Alarm"
+        "title": "%command.deleteAlarm%"
       },
       {
         "command": "otak-clock.listAlarms",
-        "title": "Manage Alarm"
+        "title": "%command.manageAlarm%"
       }
-    ]
+    ],
+    "configuration": {
+      "title": "otak-clock",
+      "properties": {
+        "otak-clock.showTimeZoneInStatusBar": {
+          "type": "boolean",
+          "default": true,
+          "description": "%config.showTimeZoneInStatusBar%",
+          "scope": "application"
+        }
+      }
+    }
   },
   "scripts": {
     "vscode:prepublish": "npm run compile",
-    "compile": "tsc -p ./",
-    "watch": "tsc -watch -p ./",
+    "compile": "tsc -p ./ && node -e \"require('fs').cpSync('src/i18n/locales', 'out/i18n/locales', {recursive: true})\"",
+    "watch": "node -e \"require('fs').cpSync('src/i18n/locales', 'out/i18n/locales', {recursive: true})\" && tsc -watch -p ./",
     "pretest": "npm run compile && npm run lint",
     "lint": "eslint src",
     "test": "vscode-test"

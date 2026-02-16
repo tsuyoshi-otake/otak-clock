@@ -1,0 +1,59 @@
+{
+  "command.selectTimeZone1": "اختر المنطقة الزمنية 1",
+  "command.selectTimeZone2": "اختر المنطقة الزمنية 2",
+  "command.swapTimeZones": "بدّل المناطق الزمنية",
+  "command.setAlarm": "تعيين وقت المنبه",
+  "command.toggleAlarm": "تشغيل/إيقاف المنبه",
+  "command.editAlarm": "تعديل وقت المنبه",
+  "command.deleteAlarm": "حذف المنبه",
+  "command.manageAlarm": "إدارة المنبه",
+
+  "config.showTimeZoneInStatusBar": "إظهار تسمية قصيرة للمنطقة الزمنية (مثل UTC وJST) بجانب كل ساعة في شريط الحالة.",
+
+  "prompt.selectRegion": "اختر المنطقة",
+  "prompt.selectTimeZone": "اختر المنطقة الزمنية",
+
+  "region.universal": "الوقت العالمي",
+  "region.americas": "الأمريكتان",
+  "region.europe": "أوروبا",
+  "region.africaMiddleEast": "أفريقيا والشرق الأوسط",
+  "region.asia": "آسيا",
+  "region.oceania": "أوقيانوسيا",
+
+  "clock.tooltip.clickToChange": "انقر للتغيير",
+  "clock.dstInfo": " (التوقيت الصيفي؛ الأساس {base})",
+  "clock.dstSuffix": " DST",
+
+  "alarm.input.prompt": "تعيين وقت المنبه (HH:mm)",
+  "alarm.input.placeholder": "مثال: 09:00",
+  "alarm.input.invalidFormat": "يرجى إدخال تنسيق وقت صالح (HH:mm)",
+
+  "alarm.message.set": "تم تعيين المنبه على {time}",
+  "alarm.message.updated": "تم تحديث المنبه إلى {time}",
+  "alarm.message.noAlarmSet": "لا يوجد منبه مضبوط.",
+  "alarm.action.setAlarm": "تعيين منبه",
+  "alarm.message.enabled": "تم تشغيل المنبه ({time})",
+  "alarm.message.disabled": "تم إيقاف المنبه",
+  "alarm.confirm.delete": "حذف المنبه ({time})؟",
+  "alarm.action.delete": "حذف",
+  "alarm.message.deleted": "تم حذف المنبه.",
+
+  "alarm.status.enabled": "مفعّل",
+  "alarm.status.disabled": "معطّل",
+  "alarm.status.notSet": "غير مضبوط",
+  "alarm.status.firedTodaySuffix": " (تم تشغيله اليوم)",
+
+  "alarm.menu.createDescription": "إنشاء منبه",
+  "alarm.menu.enable": "تشغيل المنبه",
+  "alarm.menu.disable": "إيقاف المنبه",
+  "alarm.menu.placeholder": "المنبه: {time} ({status}){fired}",
+
+  "alarm.notification.title": "المنبه: {time}",
+
+  "alarm.statusBar.noAlarmSet": "لا يوجد منبه",
+  "alarm.statusBar.clickToManage": "انقر للإدارة",
+  "alarm.statusBar.alarm": "المنبه: {time}",
+  "alarm.statusBar.status": "الحالة: {status}",
+  "alarm.statusBar.triggeredToday": "تم تشغيله: اليوم"
+}
+

@@ -1,0 +1,12 @@
+{
+  "command.selectTimeZone1": "Select Time Zone 1",
+  "command.selectTimeZone2": "Select Time Zone 2",
+  "command.swapTimeZones": "Swap Time Zones",
+  "command.setAlarm": "Set Alarm Time",
+  "command.toggleAlarm": "Toggle Alarm",
+  "command.editAlarm": "Edit Alarm Time",
+  "command.deleteAlarm": "Delete Alarm",
+  "command.manageAlarm": "Manage Alarm",
+  "config.showTimeZoneInStatusBar": "Show a short time zone label (e.g., UTC, JST) next to each clock in the status bar."
+}
+

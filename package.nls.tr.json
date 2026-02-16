@@ -1,0 +1,12 @@
+{
+  "command.selectTimeZone1": "Saat dilimi 1'i seç",
+  "command.selectTimeZone2": "Saat dilimi 2'yi seç",
+  "command.swapTimeZones": "Saat dilimlerini takas et",
+  "command.setAlarm": "Alarm saatini ayarla",
+  "command.toggleAlarm": "Alarmı aç/kapat",
+  "command.editAlarm": "Alarm saatini düzenle",
+  "command.deleteAlarm": "Alarmı sil",
+  "command.manageAlarm": "Alarmı yönet",
+  "config.showTimeZoneInStatusBar": "Durum çubuğunda her saatin yanında kısa bir saat dilimi etiketi (ör. UTC, JST) göster."
+}
+

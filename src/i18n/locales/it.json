@@ -1,0 +1,59 @@
+{
+  "command.selectTimeZone1": "Seleziona fuso orario 1",
+  "command.selectTimeZone2": "Seleziona fuso orario 2",
+  "command.swapTimeZones": "Scambia fusi orari",
+  "command.setAlarm": "Imposta ora sveglia",
+  "command.toggleAlarm": "Attiva/disattiva sveglia",
+  "command.editAlarm": "Modifica ora sveglia",
+  "command.deleteAlarm": "Elimina sveglia",
+  "command.manageAlarm": "Gestisci sveglia",
+
+  "config.showTimeZoneInStatusBar": "Mostra un'etichetta breve del fuso orario (ad es. UTC, JST) accanto a ogni orologio nella barra di stato.",
+
+  "prompt.selectRegion": "Seleziona regione",
+  "prompt.selectTimeZone": "Seleziona fuso orario",
+
+  "region.universal": "Tempo universale",
+  "region.americas": "Americhe",
+  "region.europe": "Europa",
+  "region.africaMiddleEast": "Africa e Medio Oriente",
+  "region.asia": "Asia",
+  "region.oceania": "Oceania",
+
+  "clock.tooltip.clickToChange": "Clicca per cambiare",
+  "clock.dstInfo": " (Ora legale; base {base})",
+  "clock.dstSuffix": " DST",
+
+  "alarm.input.prompt": "Imposta ora sveglia (HH:mm)",
+  "alarm.input.placeholder": "es.: 09:00",
+  "alarm.input.invalidFormat": "Inserisci un formato orario valido (HH:mm)",
+
+  "alarm.message.set": "Sveglia impostata per {time}",
+  "alarm.message.updated": "Sveglia aggiornata a {time}",
+  "alarm.message.noAlarmSet": "Nessuna sveglia impostata.",
+  "alarm.action.setAlarm": "Imposta sveglia",
+  "alarm.message.enabled": "Sveglia attivata ({time})",
+  "alarm.message.disabled": "Sveglia disattivata",
+  "alarm.confirm.delete": "Eliminare la sveglia ({time})?",
+  "alarm.action.delete": "Elimina",
+  "alarm.message.deleted": "Sveglia eliminata.",
+
+  "alarm.status.enabled": "Attivata",
+  "alarm.status.disabled": "Disattivata",
+  "alarm.status.notSet": "Non impostata",
+  "alarm.status.firedTodaySuffix": " (Attivata oggi)",
+
+  "alarm.menu.createDescription": "Crea una sveglia",
+  "alarm.menu.enable": "Attiva sveglia",
+  "alarm.menu.disable": "Disattiva sveglia",
+  "alarm.menu.placeholder": "Sveglia: {time} ({status}){fired}",
+
+  "alarm.notification.title": "Sveglia: {time}",
+
+  "alarm.statusBar.noAlarmSet": "Nessuna sveglia impostata",
+  "alarm.statusBar.clickToManage": "Clicca per gestire",
+  "alarm.statusBar.alarm": "Sveglia: {time}",
+  "alarm.statusBar.status": "Stato: {status}",
+  "alarm.statusBar.triggeredToday": "Attivata: Oggi"
+}
+

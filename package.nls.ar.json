@@ -1,0 +1,12 @@
+{
+  "command.selectTimeZone1": "اختر المنطقة الزمنية 1",
+  "command.selectTimeZone2": "اختر المنطقة الزمنية 2",
+  "command.swapTimeZones": "بدّل المناطق الزمنية",
+  "command.setAlarm": "تعيين وقت المنبه",
+  "command.toggleAlarm": "تشغيل/إيقاف المنبه",
+  "command.editAlarm": "تعديل وقت المنبه",
+  "command.deleteAlarm": "حذف المنبه",
+  "command.manageAlarm": "إدارة المنبه",
+  "config.showTimeZoneInStatusBar": "إظهار تسمية قصيرة للمنطقة الزمنية (مثل UTC وJST) بجانب كل ساعة في شريط الحالة."
+}
+

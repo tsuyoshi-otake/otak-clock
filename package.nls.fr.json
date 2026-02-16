@@ -1,0 +1,12 @@
+{
+  "command.selectTimeZone1": "Sélectionner le fuseau horaire 1",
+  "command.selectTimeZone2": "Sélectionner le fuseau horaire 2",
+  "command.swapTimeZones": "Échanger les fuseaux horaires",
+  "command.setAlarm": "Définir l'heure de l'alarme",
+  "command.toggleAlarm": "Activer/désactiver l'alarme",
+  "command.editAlarm": "Modifier l'heure de l'alarme",
+  "command.deleteAlarm": "Supprimer l'alarme",
+  "command.manageAlarm": "Gérer l'alarme",
+  "config.showTimeZoneInStatusBar": "Afficher une étiquette courte de fuseau horaire (ex. UTC, JST) à côté de chaque horloge dans la barre d'état."
+}
+

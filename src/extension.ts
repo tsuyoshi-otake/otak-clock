@@ -1,6 +1,7 @@
 // The module 'vscode' contains the VS Code extensibility API
 import * as vscode from 'vscode';
 import { AlarmManager } from './alarm/AlarmManager';
+import { I18nManager } from './i18n/I18nManager';
 
 interface TimeZoneInfo {
     label: string;
@@ -66,16 +67,36 @@ const timeZones: TimeZoneInfo[] = [
     { label: 'New Zealand (Auckland)', timeZoneId: 'Pacific/Auckland', region: 'Oceania', baseUtcOffset: 12 }
 ];
 
+const regionTranslationKeys: Record<string, string> = {
+    'Universal Time': 'region.universal',
+    'Americas': 'region.americas',
+    'Europe': 'region.europe',
+    'Africa & Middle East': 'region.africaMiddleEast',
+    'Asia': 'region.asia',
+    'Oceania': 'region.oceania'
+};
+
+function localizeRegion(region: string, i18n: I18nManager): string {
+    const key = regionTranslationKeys[region];
+    return key ? i18n.t(key) : region;
+}
+
 type FormatterPair = {
     timeWithSeconds: Intl.DateTimeFormat;
     timeNoSeconds: Intl.DateTimeFormat;
     date: Intl.DateTimeFormat;
+    timeZoneName: Intl.DateTimeFormat;
 };
 
 const TIME_ZONE_1_KEY = 'timeZone1';
 const TIME_ZONE_2_KEY = 'timeZone2';
 const DEFAULT_TIME_ZONE_1_ID = 'UTC';
 const DEFAULT_TIME_ZONE_2_ID = 'Asia/Tokyo';
+const SHOW_TIME_ZONE_IN_STATUS_BAR_SETTING = 'otak-clock.showTimeZoneInStatusBar';
+
+function readShowTimeZoneInStatusBar(): boolean {
+    return vscode.workspace.getConfiguration('otak-clock').get<boolean>('showTimeZoneInStatusBar', true);
+}
 
 function coerceTimeZoneId(value: unknown): string | undefined {
     if (!value || typeof value !== 'object') {
@@ -168,6 +189,7 @@ class ClockController implements vscode.Disposable {
     private statusBar1: vscode.StatusBarItem;
     private statusBar2: vscode.StatusBarItem;
     private alarmManager: AlarmManager;
+    private i18n: I18nManager;
 
     private timeZone1: TimeZoneInfo;
     private timeZone2: TimeZoneInfo;
@@ -183,6 +205,8 @@ class ClockController implements vscode.Disposable {
     private lastMinuteBucket: number | undefined;
     private tickHandle: NodeJS.Timeout | undefined;
     private windowStateDisposable: vscode.Disposable;
+    private configurationDisposable: vscode.Disposable;
+    private showTimeZoneInStatusBar: boolean;
     private disposed: boolean = false;
 
     constructor(
@@ -195,6 +219,7 @@ class ClockController implements vscode.Disposable {
         this.statusBar1 = statusBar1;
         this.statusBar2 = statusBar2;
         this.alarmManager = alarmManager;
+        this.i18n = I18nManager.getInstance();
 
         this.focused = vscode.window.state.focused;
 
@@ -209,6 +234,21 @@ class ClockController implements vscode.Disposable {
         if (loaded2.needsPersist) {
             void this.context.globalState.update(TIME_ZONE_2_KEY, this.timeZone2);
         }
+
+        this.showTimeZoneInStatusBar = readShowTimeZoneInStatusBar();
+        this.configurationDisposable = vscode.workspace.onDidChangeConfiguration((e) => {
+            if (!e.affectsConfiguration(SHOW_TIME_ZONE_IN_STATUS_BAR_SETTING)) {
+                return;
+            }
+
+            const next = readShowTimeZoneInStatusBar();
+            if (next === this.showTimeZoneInStatusBar) {
+                return;
+            }
+
+            this.showTimeZoneInStatusBar = next;
+            this.refresh(true);
+        });
 
         this.windowStateDisposable = vscode.window.onDidChangeWindowState((e) => {
             const wasFocused = this.focused;
@@ -309,6 +349,10 @@ class ClockController implements vscode.Disposable {
                 month: '2-digit',
                 day: '2-digit',
                 timeZone: timeZoneId
+            }),
+            timeZoneName: new Intl.DateTimeFormat('en-US', {
+                timeZone: timeZoneId,
+                timeZoneName: 'short'
             })
         };
 
@@ -319,6 +363,26 @@ class ClockController implements vscode.Disposable {
 
         this.formatterCache.set(timeZoneId, formatters);
         return formatters;
+    }
+
+    private getStatusBarTimeZoneLabel(now: Date, timeZone: TimeZoneInfo, formatters: FormatterPair): string {
+        // Intl.DateTimeFormat('en-US', { timeZoneName: 'short' }) returns "GMT+9" for Asia/Tokyo,
+        // but Japanese developers commonly expect "JST" for quick scanning in the status bar.
+        if (timeZone.timeZoneId === 'Asia/Tokyo') {
+            return 'JST';
+        }
+
+        const tzPart = formatters.timeZoneName.formatToParts(now).find(p => p.type === 'timeZoneName')?.value;
+        if (!tzPart) {
+            return timeZone.timeZoneId;
+        }
+
+        // Normalize "GMT+X" to "UTC+X" for consistency with other UI strings in this extension.
+        if (tzPart.startsWith('GMT')) {
+            return `UTC${tzPart.slice(3)}`;
+        }
+
+        return tzPart;
     }
 
     private refresh(forceTooltips: boolean): void {
@@ -359,16 +423,22 @@ class ClockController implements vscode.Disposable {
     private updateClockText(now: Date, force: boolean): void {
         const formatters1 = this.getFormatters(this.timeZone1.timeZoneId);
         const time1 = (this.focused ? formatters1.timeWithSeconds : formatters1.timeNoSeconds).format(now);
-        if (force || time1 !== this.lastTime1) {
-            this.statusBar1.text = time1;
-            this.lastTime1 = time1;
+        const text1 = this.showTimeZoneInStatusBar
+            ? `${time1} ${this.getStatusBarTimeZoneLabel(now, this.timeZone1, formatters1)}`
+            : time1;
+        if (force || text1 !== this.lastTime1) {
+            this.statusBar1.text = text1;
+            this.lastTime1 = text1;
         }
 
         const formatters2 = this.getFormatters(this.timeZone2.timeZoneId);
         const time2 = (this.focused ? formatters2.timeWithSeconds : formatters2.timeNoSeconds).format(now);
-        if (force || time2 !== this.lastTime2) {
-            this.statusBar2.text = time2;
-            this.lastTime2 = time2;
+        const text2 = this.showTimeZoneInStatusBar
+            ? `${time2} ${this.getStatusBarTimeZoneLabel(now, this.timeZone2, formatters2)}`
+            : time2;
+        if (force || text2 !== this.lastTime2) {
+            this.statusBar2.text = text2;
+            this.lastTime2 = text2;
         }
     }
 
@@ -377,9 +447,9 @@ class ClockController implements vscode.Disposable {
         const baseOffsetMinutes1 = Math.round(this.timeZone1.baseUtcOffset * 60);
         const offsetMinutes1 = getUtcOffsetMinutes(now, this.timeZone1.timeZoneId);
         const dstInfo1 = offsetMinutes1 !== baseOffsetMinutes1
-            ? ` (DST; base ${formatUtcOffsetLabel(baseOffsetMinutes1)})`
+            ? this.i18n.t('clock.dstInfo', { base: formatUtcOffsetLabel(baseOffsetMinutes1) })
             : '';
-        const tooltip1 = `${this.timeZone1.label} (${this.timeZone1.timeZoneId})\n${date1} ${formatUtcOffsetLabel(offsetMinutes1)}${dstInfo1}\nClick to change`;
+        const tooltip1 = `${this.timeZone1.label} (${this.timeZone1.timeZoneId})\n${date1} ${formatUtcOffsetLabel(offsetMinutes1)}${dstInfo1}\n${this.i18n.t('clock.tooltip.clickToChange')}`;
         if (force || tooltip1 !== this.lastTooltip1) {
             this.statusBar1.tooltip = tooltip1;
             this.lastTooltip1 = tooltip1;
@@ -389,9 +459,9 @@ class ClockController implements vscode.Disposable {
         const baseOffsetMinutes2 = Math.round(this.timeZone2.baseUtcOffset * 60);
         const offsetMinutes2 = getUtcOffsetMinutes(now, this.timeZone2.timeZoneId);
         const dstInfo2 = offsetMinutes2 !== baseOffsetMinutes2
-            ? ` (DST; base ${formatUtcOffsetLabel(baseOffsetMinutes2)})`
+            ? this.i18n.t('clock.dstInfo', { base: formatUtcOffsetLabel(baseOffsetMinutes2) })
             : '';
-        const tooltip2 = `${this.timeZone2.label} (${this.timeZone2.timeZoneId})\n${date2} ${formatUtcOffsetLabel(offsetMinutes2)}${dstInfo2}\nClick to change`;
+        const tooltip2 = `${this.timeZone2.label} (${this.timeZone2.timeZoneId})\n${date2} ${formatUtcOffsetLabel(offsetMinutes2)}${dstInfo2}\n${this.i18n.t('clock.tooltip.clickToChange')}`;
         if (force || tooltip2 !== this.lastTooltip2) {
             this.statusBar2.tooltip = tooltip2;
             this.lastTooltip2 = tooltip2;
@@ -429,6 +499,7 @@ class ClockController implements vscode.Disposable {
             this.tickHandle = undefined;
         }
         this.windowStateDisposable.dispose();
+        this.configurationDisposable.dispose();
     }
 }
 
@@ -436,6 +507,9 @@ let clockController: ClockController | undefined;
 
 // This method is called when your extension is activated
 export function activate(context: vscode.ExtensionContext) {
+    // Initialize i18n early so all UI strings use the detected locale.
+    I18nManager.getInstance().initialize();
+
     // ステータスバーアイテムを作成
     const statusBar1 = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left, 100);
     statusBar1.command = 'otak-clock.selectTimeZone1';
@@ -515,6 +589,8 @@ export function deactivate() {
 
 // 地域選択を含むタイムゾーン選択関数
 async function selectTimeZoneWithRegion(): Promise<TimeZoneInfo | undefined> {
+    const i18n = I18nManager.getInstance();
+
     // まず地域を選択
     const regions = [...new Set(timeZones.map(tz => tz.region))].sort((a, b) => {
         if (a === 'Universal Time') {
@@ -523,11 +599,23 @@ async function selectTimeZoneWithRegion(): Promise<TimeZoneInfo | undefined> {
         if (b === 'Universal Time') {
             return 1;
         }
-        return a.localeCompare(b);
+        return localizeRegion(a, i18n).localeCompare(localizeRegion(b, i18n));
     });
 
-    const selectedRegion = await vscode.window.showQuickPick(regions, {
-        placeHolder: 'Select Region'
+    type RegionPickItem = vscode.QuickPickItem & { region: string };
+
+    const regionItems: RegionPickItem[] = regions.map(region => {
+        const localized = localizeRegion(region, i18n);
+        return {
+            label: localized,
+            description: localized !== region ? region : undefined,
+            region
+        };
+    });
+
+    const selectedRegion = await vscode.window.showQuickPick(regionItems, {
+        placeHolder: i18n.t('prompt.selectRegion'),
+        matchOnDescription: true
     });
 
     if (!selectedRegion) {
@@ -536,7 +624,7 @@ async function selectTimeZoneWithRegion(): Promise<TimeZoneInfo | undefined> {
 
     // 選択された地域のタイムゾーンを表示
     const now = new Date();
-    const timeZonesInRegion = timeZones.filter(tz => tz.region === selectedRegion);
+    const timeZonesInRegion = timeZones.filter(tz => tz.region === selectedRegion.region);
     const selectedLabel = await vscode.window.showQuickPick(
         timeZonesInRegion.map(tz => {
             const baseOffsetMinutes = Math.round(tz.baseUtcOffset * 60);
@@ -544,7 +632,7 @@ async function selectTimeZoneWithRegion(): Promise<TimeZoneInfo | undefined> {
             if (offsetMinutes === 0 && baseOffsetMinutes !== 0) {
                 offsetMinutes = baseOffsetMinutes;
             }
-            const dstSuffix = offsetMinutes !== baseOffsetMinutes ? ' DST' : '';
+            const dstSuffix = offsetMinutes !== baseOffsetMinutes ? i18n.t('clock.dstSuffix') : '';
             return {
                 label: tz.label,
                 description: `(${formatUtcOffsetLabel(offsetMinutes)}${dstSuffix})`,
@@ -552,7 +640,7 @@ async function selectTimeZoneWithRegion(): Promise<TimeZoneInfo | undefined> {
             };
         }),
         {
-            placeHolder: 'Select Timezone',
+            placeHolder: i18n.t('prompt.selectTimeZone'),
             matchOnDescription: true,
             matchOnDetail: true
         }

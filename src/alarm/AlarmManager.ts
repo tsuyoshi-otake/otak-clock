@@ -1,6 +1,7 @@
 import * as vscode from 'vscode';
 import { flashStatusBars } from '../utils/color';
 import { AlarmSettings, createDefaultAlarm, formatTime } from './AlarmSettings';
+import { I18nManager } from '../i18n/I18nManager';
 
 function toLocalDateKey(now: Date): string {
     const yyyy = now.getFullYear();
@@ -15,11 +16,13 @@ export class AlarmManager implements vscode.Disposable {
     private alarmStatusBar: vscode.StatusBarItem;
     private alarm: AlarmSettings | undefined;
     private lastNotificationTime: number = 0;
+    private i18n: I18nManager;
 
     constructor(context: vscode.ExtensionContext, statusBars: vscode.StatusBarItem[]) {
         this.context = context;
         this.statusBars = statusBars;
         this.alarm = this.context.globalState.get<AlarmSettings>('alarm');
+        this.i18n = I18nManager.getInstance();
 
         // アラーム設定用のステータスバーを作成
         this.alarmStatusBar = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left, 98);
@@ -48,12 +51,12 @@ export class AlarmManager implements vscode.Disposable {
 
     private async promptForAlarmTime(initialValue?: string): Promise<{ hour: number; minute: number } | undefined> {
         const timeInput = await vscode.window.showInputBox({
-            prompt: 'Set alarm time (HH:mm)',
-            placeHolder: 'e.g., 09:00',
+            prompt: this.i18n.t('alarm.input.prompt'),
+            placeHolder: this.i18n.t('alarm.input.placeholder'),
             value: initialValue,
             validateInput: (value) => {
                 const timeRegex = /^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/;
-                return timeRegex.test(value) ? null : 'Please enter a valid time format (HH:mm)';
+                return timeRegex.test(value) ? null : this.i18n.t('alarm.input.invalidFormat');
             }
         });
 
@@ -88,7 +91,7 @@ export class AlarmManager implements vscode.Disposable {
 
         vscode.window.withProgress({
             location: vscode.ProgressLocation.Notification,
-            title: `Alarm set for ${formatTime(picked.hour, picked.minute)}`,
+            title: this.i18n.t('alarm.message.set', { time: formatTime(picked.hour, picked.minute) }),
             cancellable: false
         }, () => new Promise(resolve => setTimeout(resolve, 3000)));
     }
@@ -115,7 +118,7 @@ export class AlarmManager implements vscode.Disposable {
 
         vscode.window.withProgress({
             location: vscode.ProgressLocation.Notification,
-            title: `Alarm updated to ${formatTime(picked.hour, picked.minute)}`,
+            title: this.i18n.t('alarm.message.updated', { time: formatTime(picked.hour, picked.minute) }),
             cancellable: false
         }, () => new Promise(resolve => setTimeout(resolve, 3000)));
     }
@@ -123,8 +126,9 @@ export class AlarmManager implements vscode.Disposable {
     async toggleAlarm(): Promise<void> {
         const alarm = this.getAlarm();
         if (!alarm) {
-            const action = await vscode.window.showInformationMessage('No alarm set.', 'Set Alarm');
-            if (action === 'Set Alarm') {
+            const setAlarmLabel = this.i18n.t('alarm.action.setAlarm');
+            const action = await vscode.window.showInformationMessage(this.i18n.t('alarm.message.noAlarmSet'), setAlarmLabel);
+            if (action === setAlarmLabel) {
                 await this.setAlarm();
             }
             return;
@@ -133,29 +137,31 @@ export class AlarmManager implements vscode.Disposable {
         alarm.enabled = !alarm.enabled;
         this.saveAlarm(alarm);
 
-        const message = alarm.enabled ? `Alarm enabled (${formatTime(alarm.hour, alarm.minute)})` : 'Alarm disabled';
+        const message = alarm.enabled
+            ? this.i18n.t('alarm.message.enabled', { time: formatTime(alarm.hour, alarm.minute) })
+            : this.i18n.t('alarm.message.disabled');
         void vscode.window.showInformationMessage(message);
     }
 
     async deleteAlarm(): Promise<void> {
         const alarm = this.getAlarm();
         if (!alarm) {
-            void vscode.window.showInformationMessage('No alarm set.');
+            void vscode.window.showInformationMessage(this.i18n.t('alarm.message.noAlarmSet'));
             return;
         }
 
         const confirmation = await vscode.window.showWarningMessage(
-            `Delete alarm (${formatTime(alarm.hour, alarm.minute)})?`,
+            this.i18n.t('alarm.confirm.delete', { time: formatTime(alarm.hour, alarm.minute) }),
             { modal: true },
-            'Delete'
+            this.i18n.t('alarm.action.delete')
         );
 
-        if (confirmation !== 'Delete') {
+        if (confirmation !== this.i18n.t('alarm.action.delete')) {
             return;
         }
 
         this.saveAlarm(undefined);
-        void vscode.window.showInformationMessage('Alarm deleted.');
+        void vscode.window.showInformationMessage(this.i18n.t('alarm.message.deleted'));
     }
 
     async showAlarmMenu(): Promise<void> {
@@ -164,24 +170,30 @@ export class AlarmManager implements vscode.Disposable {
 
         const alarm = this.getAlarm();
         const time = alarm ? formatTime(alarm.hour, alarm.minute) : undefined;
-        const status = alarm ? (alarm.enabled ? 'Enabled' : 'Disabled') : 'Not set';
-        const fired = alarm?.enabled && alarm.triggered ? ' (Triggered today)' : '';
+        const status = alarm
+            ? (alarm.enabled ? this.i18n.t('alarm.status.enabled') : this.i18n.t('alarm.status.disabled'))
+            : this.i18n.t('alarm.status.notSet');
+        const fired = alarm?.enabled && alarm.triggered ? this.i18n.t('alarm.status.firedTodaySuffix') : '';
 
         const items: AlarmMenuItem[] = [];
         if (!alarm) {
-            items.push({ label: 'Set Alarm Time', description: 'Create an alarm', action: 'set' });
+            items.push({
+                label: this.i18n.t('command.setAlarm'),
+                description: this.i18n.t('alarm.menu.createDescription'),
+                action: 'set'
+            });
         } else {
             items.push({
-                label: alarm.enabled ? 'Disable Alarm' : 'Enable Alarm',
+                label: alarm.enabled ? this.i18n.t('alarm.menu.disable') : this.i18n.t('alarm.menu.enable'),
                 description: time,
                 action: 'toggle'
             });
-            items.push({ label: 'Edit Alarm Time', description: time, action: 'edit' });
-            items.push({ label: 'Delete Alarm', description: time, action: 'delete' });
+            items.push({ label: this.i18n.t('command.editAlarm'), description: time, action: 'edit' });
+            items.push({ label: this.i18n.t('command.deleteAlarm'), description: time, action: 'delete' });
         }
 
         const picked = await vscode.window.showQuickPick(items, {
-            placeHolder: `Alarm: ${time ?? '—'} (${status})${fired}`
+            placeHolder: this.i18n.t('alarm.menu.placeholder', { time: time ?? '—', status, fired })
         });
 
         if (!picked) {
@@ -270,7 +282,7 @@ export class AlarmManager implements vscode.Disposable {
         // 5秒で自動的に消える通知を表示
         vscode.window.withProgress({
             location: vscode.ProgressLocation.Notification,
-            title: `Alarm: ${formatTime(alarm.hour, alarm.minute)}`,
+            title: this.i18n.t('alarm.notification.title', { time: formatTime(alarm.hour, alarm.minute) }),
             cancellable: false
         }, () => new Promise(resolve => {
             alarm.triggered = true;
@@ -291,21 +303,25 @@ export class AlarmManager implements vscode.Disposable {
 
         if (!alarm) {
             this.alarmStatusBar.text = '$(bell) $(add)';
-            this.alarmStatusBar.tooltip = 'No alarm set\nClick to manage';
+            this.alarmStatusBar.tooltip = [
+                this.i18n.t('alarm.statusBar.noAlarmSet'),
+                this.i18n.t('alarm.statusBar.clickToManage')
+            ].join('\n');
             return;
         }
 
         const time = formatTime(alarm.hour, alarm.minute);
         this.alarmStatusBar.text = alarm.enabled ? `$(bell) ${time}` : `$(bell-slash) ${time}`;
 
+        const status = alarm.enabled ? this.i18n.t('alarm.status.enabled') : this.i18n.t('alarm.status.disabled');
         const lines: string[] = [
-            `Alarm: ${time}`,
-            `Status: ${alarm.enabled ? 'Enabled' : 'Disabled'}`
+            this.i18n.t('alarm.statusBar.alarm', { time }),
+            this.i18n.t('alarm.statusBar.status', { status })
         ];
         if (alarm.enabled && alarm.triggered) {
-            lines.push('Triggered: Today');
+            lines.push(this.i18n.t('alarm.statusBar.triggeredToday'));
         }
-        lines.push('Click to manage');
+        lines.push(this.i18n.t('alarm.statusBar.clickToManage'));
         this.alarmStatusBar.tooltip = lines.join('\n');
     }
 

@@ -1,0 +1,12 @@
+{
+  "command.selectTimeZone1": "เลือกเขตเวลา 1",
+  "command.selectTimeZone2": "เลือกเขตเวลา 2",
+  "command.swapTimeZones": "สลับเขตเวลา",
+  "command.setAlarm": "ตั้งเวลาเตือน",
+  "command.toggleAlarm": "เปิด/ปิดการเตือน",
+  "command.editAlarm": "แก้ไขเวลาเตือน",
+  "command.deleteAlarm": "ลบการเตือน",
+  "command.manageAlarm": "จัดการการเตือน",
+  "config.showTimeZoneInStatusBar": "แสดงป้ายชื่อเขตเวลาสั้น ๆ (เช่น UTC, JST) ถัดจากนาฬิกาแต่ละอันบนแถบสถานะ"
+}
+

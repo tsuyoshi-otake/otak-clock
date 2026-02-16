@@ -1,0 +1,59 @@
+{
+  "command.selectTimeZone1": "Выбрать часовой пояс 1",
+  "command.selectTimeZone2": "Выбрать часовой пояс 2",
+  "command.swapTimeZones": "Поменять часовые пояса",
+  "command.setAlarm": "Установить время будильника",
+  "command.toggleAlarm": "Включить/выключить будильник",
+  "command.editAlarm": "Изменить время будильника",
+  "command.deleteAlarm": "Удалить будильник",
+  "command.manageAlarm": "Управление будильником",
+
+  "config.showTimeZoneInStatusBar": "Показывать короткую метку часового пояса (например, UTC, JST) рядом с каждым часами в строке состояния.",
+
+  "prompt.selectRegion": "Выберите регион",
+  "prompt.selectTimeZone": "Выберите часовой пояс",
+
+  "region.universal": "Всемирное время",
+  "region.americas": "Америка",
+  "region.europe": "Европа",
+  "region.africaMiddleEast": "Африка и Ближний Восток",
+  "region.asia": "Азия",
+  "region.oceania": "Океания",
+
+  "clock.tooltip.clickToChange": "Нажмите, чтобы изменить",
+  "clock.dstInfo": " (Летнее время; базовое {base})",
+  "clock.dstSuffix": " DST",
+
+  "alarm.input.prompt": "Установить время будильника (HH:mm)",
+  "alarm.input.placeholder": "например, 09:00",
+  "alarm.input.invalidFormat": "Введите корректный формат времени (HH:mm)",
+
+  "alarm.message.set": "Будильник установлен на {time}",
+  "alarm.message.updated": "Будильник обновлен на {time}",
+  "alarm.message.noAlarmSet": "Будильник не установлен.",
+  "alarm.action.setAlarm": "Установить будильник",
+  "alarm.message.enabled": "Будильник включен ({time})",
+  "alarm.message.disabled": "Будильник выключен",
+  "alarm.confirm.delete": "Удалить будильник ({time})?",
+  "alarm.action.delete": "Удалить",
+  "alarm.message.deleted": "Будильник удален.",
+
+  "alarm.status.enabled": "Включен",
+  "alarm.status.disabled": "Выключен",
+  "alarm.status.notSet": "Не установлен",
+  "alarm.status.firedTodaySuffix": " (Сработал сегодня)",
+
+  "alarm.menu.createDescription": "Создать будильник",
+  "alarm.menu.enable": "Включить будильник",
+  "alarm.menu.disable": "Выключить будильник",
+  "alarm.menu.placeholder": "Будильник: {time} ({status}){fired}",
+
+  "alarm.notification.title": "Будильник: {time}",
+
+  "alarm.statusBar.noAlarmSet": "Будильник не установлен",
+  "alarm.statusBar.clickToManage": "Нажмите для управления",
+  "alarm.statusBar.alarm": "Будильник: {time}",
+  "alarm.statusBar.status": "Статус: {status}",
+  "alarm.statusBar.triggeredToday": "Сработал: Сегодня"
+}
+

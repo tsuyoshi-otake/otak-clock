@@ -1,0 +1,59 @@
+{
+  "command.selectTimeZone1": "選擇時區 1",
+  "command.selectTimeZone2": "選擇時區 2",
+  "command.swapTimeZones": "交換時區",
+  "command.setAlarm": "設定鬧鐘時間",
+  "command.toggleAlarm": "切換鬧鐘",
+  "command.editAlarm": "編輯鬧鐘時間",
+  "command.deleteAlarm": "刪除鬧鐘",
+  "command.manageAlarm": "管理鬧鐘",
+
+  "config.showTimeZoneInStatusBar": "在狀態列中於每個時鐘旁顯示簡短的時區標籤（例如 UTC、JST）。",
+
+  "prompt.selectRegion": "選擇區域",
+  "prompt.selectTimeZone": "選擇時區",
+
+  "region.universal": "通用時間",
+  "region.americas": "美洲",
+  "region.europe": "歐洲",
+  "region.africaMiddleEast": "非洲與中東",
+  "region.asia": "亞洲",
+  "region.oceania": "大洋洲",
+
+  "clock.tooltip.clickToChange": "點擊變更",
+  "clock.dstInfo": " (夏令時間; 基準 {base})",
+  "clock.dstSuffix": " 夏令時間",
+
+  "alarm.input.prompt": "設定鬧鐘時間 (HH:mm)",
+  "alarm.input.placeholder": "例如：09:00",
+  "alarm.input.invalidFormat": "請輸入有效的時間格式 (HH:mm)",
+
+  "alarm.message.set": "鬧鐘已設定為 {time}",
+  "alarm.message.updated": "鬧鐘已更新為 {time}",
+  "alarm.message.noAlarmSet": "未設定鬧鐘。",
+  "alarm.action.setAlarm": "設定鬧鐘",
+  "alarm.message.enabled": "鬧鐘已啟用（{time}）",
+  "alarm.message.disabled": "鬧鐘已停用",
+  "alarm.confirm.delete": "刪除鬧鐘（{time}）？",
+  "alarm.action.delete": "刪除",
+  "alarm.message.deleted": "鬧鐘已刪除。",
+
+  "alarm.status.enabled": "已啟用",
+  "alarm.status.disabled": "已停用",
+  "alarm.status.notSet": "未設定",
+  "alarm.status.firedTodaySuffix": " (今日已觸發)",
+
+  "alarm.menu.createDescription": "建立鬧鐘",
+  "alarm.menu.enable": "啟用鬧鐘",
+  "alarm.menu.disable": "停用鬧鐘",
+  "alarm.menu.placeholder": "鬧鐘: {time} ({status}){fired}",
+
+  "alarm.notification.title": "鬧鐘: {time}",
+
+  "alarm.statusBar.noAlarmSet": "未設定鬧鐘",
+  "alarm.statusBar.clickToManage": "點擊管理",
+  "alarm.statusBar.alarm": "鬧鐘: {time}",
+  "alarm.statusBar.status": "狀態: {status}",
+  "alarm.statusBar.triggeredToday": "觸發: 今天"
+}
+

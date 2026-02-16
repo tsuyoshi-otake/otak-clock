@@ -1,0 +1,12 @@
+{
+  "command.selectTimeZone1": "Pilih zona waktu 1",
+  "command.selectTimeZone2": "Pilih zona waktu 2",
+  "command.swapTimeZones": "Tukar zona waktu",
+  "command.setAlarm": "Atur waktu alarm",
+  "command.toggleAlarm": "Aktifkan/nonaktifkan alarm",
+  "command.editAlarm": "Ubah waktu alarm",
+  "command.deleteAlarm": "Hapus alarm",
+  "command.manageAlarm": "Kelola alarm",
+  "config.showTimeZoneInStatusBar": "Tampilkan label zona waktu singkat (mis. UTC, JST) di samping setiap jam di bilah status."
+}
+

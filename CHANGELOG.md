@@ -2,6 +2,36 @@
 
 All notable changes to the "otak-clock" extension will be documented in this file.
 
+## [1.1.13] - 2026-02-16
+
+### Added
+- UI localization support for Spanish, French, German, Portuguese, Italian, Dutch, Russian, Arabic, Turkish, Indonesian, Thai, and Hindi.
+
+## [1.1.12] - 2026-02-16
+
+### Added
+- UI localization support for Vietnamese.
+
+## [1.1.11] - 2026-02-16
+
+### Added
+- UI localization support for Chinese (Simplified/Traditional) and Korean.
+
+## [1.1.10] - 2026-02-16
+
+### Changed
+- Enabled time zone labels in the status bar by default.
+
+## [1.1.9] - 2026-02-16
+
+### Added
+- UI localization support (English/Japanese) for prompts, tooltips, and alarm messages.
+
+## [1.1.8] - 2026-02-16
+
+### Added
+- Optional setting to show a short time zone label (e.g., UTC/JST) next to each clock in the status bar.
+
 ## [1.1.7] - 2026-02-16
 
 ### Added

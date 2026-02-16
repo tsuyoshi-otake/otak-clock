@@ -1,0 +1,59 @@
+{
+  "command.selectTimeZone1": "Seleccionar zona horaria 1",
+  "command.selectTimeZone2": "Seleccionar zona horaria 2",
+  "command.swapTimeZones": "Intercambiar zonas horarias",
+  "command.setAlarm": "Establecer hora de alarma",
+  "command.toggleAlarm": "Activar/desactivar alarma",
+  "command.editAlarm": "Editar hora de alarma",
+  "command.deleteAlarm": "Eliminar alarma",
+  "command.manageAlarm": "Gestionar alarma",
+
+  "config.showTimeZoneInStatusBar": "Mostrar una etiqueta corta de zona horaria (p. ej., UTC, JST) junto a cada reloj en la barra de estado.",
+
+  "prompt.selectRegion": "Seleccionar región",
+  "prompt.selectTimeZone": "Seleccionar zona horaria",
+
+  "region.universal": "Tiempo universal",
+  "region.americas": "Américas",
+  "region.europe": "Europa",
+  "region.africaMiddleEast": "África y Oriente Medio",
+  "region.asia": "Asia",
+  "region.oceania": "Oceanía",
+
+  "clock.tooltip.clickToChange": "Haga clic para cambiar",
+  "clock.dstInfo": " (Horario de verano; base {base})",
+  "clock.dstSuffix": " DST",
+
+  "alarm.input.prompt": "Establecer hora de alarma (HH:mm)",
+  "alarm.input.placeholder": "p. ej., 09:00",
+  "alarm.input.invalidFormat": "Introduzca un formato de hora válido (HH:mm)",
+
+  "alarm.message.set": "Alarma establecida para {time}",
+  "alarm.message.updated": "Alarma actualizada a {time}",
+  "alarm.message.noAlarmSet": "No hay alarma establecida.",
+  "alarm.action.setAlarm": "Establecer alarma",
+  "alarm.message.enabled": "Alarma activada ({time})",
+  "alarm.message.disabled": "Alarma desactivada",
+  "alarm.confirm.delete": "¿Eliminar alarma ({time})?",
+  "alarm.action.delete": "Eliminar",
+  "alarm.message.deleted": "Alarma eliminada.",
+
+  "alarm.status.enabled": "Activada",
+  "alarm.status.disabled": "Desactivada",
+  "alarm.status.notSet": "No establecida",
+  "alarm.status.firedTodaySuffix": " (Activada hoy)",
+
+  "alarm.menu.createDescription": "Crear una alarma",
+  "alarm.menu.enable": "Activar alarma",
+  "alarm.menu.disable": "Desactivar alarma",
+  "alarm.menu.placeholder": "Alarma: {time} ({status}){fired}",
+
+  "alarm.notification.title": "Alarma: {time}",
+
+  "alarm.statusBar.noAlarmSet": "No hay alarma establecida",
+  "alarm.statusBar.clickToManage": "Haga clic para gestionar",
+  "alarm.statusBar.alarm": "Alarma: {time}",
+  "alarm.statusBar.status": "Estado: {status}",
+  "alarm.statusBar.triggeredToday": "Activada: Hoy"
+}
+

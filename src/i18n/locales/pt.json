@@ -1,0 +1,59 @@
+{
+  "command.selectTimeZone1": "Selecionar fuso horário 1",
+  "command.selectTimeZone2": "Selecionar fuso horário 2",
+  "command.swapTimeZones": "Trocar fusos horários",
+  "command.setAlarm": "Definir hora do alarme",
+  "command.toggleAlarm": "Ativar/desativar alarme",
+  "command.editAlarm": "Editar hora do alarme",
+  "command.deleteAlarm": "Excluir alarme",
+  "command.manageAlarm": "Gerenciar alarme",
+
+  "config.showTimeZoneInStatusBar": "Mostrar um rótulo curto de fuso horário (por exemplo, UTC, JST) ao lado de cada relógio na barra de status.",
+
+  "prompt.selectRegion": "Selecionar região",
+  "prompt.selectTimeZone": "Selecionar fuso horário",
+
+  "region.universal": "Tempo universal",
+  "region.americas": "Américas",
+  "region.europe": "Europa",
+  "region.africaMiddleEast": "África e Oriente Médio",
+  "region.asia": "Ásia",
+  "region.oceania": "Oceania",
+
+  "clock.tooltip.clickToChange": "Clique para alterar",
+  "clock.dstInfo": " (Horário de verão; base {base})",
+  "clock.dstSuffix": " DST",
+
+  "alarm.input.prompt": "Definir hora do alarme (HH:mm)",
+  "alarm.input.placeholder": "ex.: 09:00",
+  "alarm.input.invalidFormat": "Insira um formato de hora válido (HH:mm)",
+
+  "alarm.message.set": "Alarme definido para {time}",
+  "alarm.message.updated": "Alarme atualizado para {time}",
+  "alarm.message.noAlarmSet": "Nenhum alarme definido.",
+  "alarm.action.setAlarm": "Definir alarme",
+  "alarm.message.enabled": "Alarme ativado ({time})",
+  "alarm.message.disabled": "Alarme desativado",
+  "alarm.confirm.delete": "Excluir alarme ({time})?",
+  "alarm.action.delete": "Excluir",
+  "alarm.message.deleted": "Alarme excluído.",
+
+  "alarm.status.enabled": "Ativado",
+  "alarm.status.disabled": "Desativado",
+  "alarm.status.notSet": "Não definido",
+  "alarm.status.firedTodaySuffix": " (Acionado hoje)",
+
+  "alarm.menu.createDescription": "Criar um alarme",
+  "alarm.menu.enable": "Ativar alarme",
+  "alarm.menu.disable": "Desativar alarme",
+  "alarm.menu.placeholder": "Alarme: {time} ({status}){fired}",
+
+  "alarm.notification.title": "Alarme: {time}",
+
+  "alarm.statusBar.noAlarmSet": "Nenhum alarme definido",
+  "alarm.statusBar.clickToManage": "Clique para gerenciar",
+  "alarm.statusBar.alarm": "Alarme: {time}",
+  "alarm.statusBar.status": "Status: {status}",
+  "alarm.statusBar.triggeredToday": "Acionado: Hoje"
+}
+

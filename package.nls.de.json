@@ -1,0 +1,12 @@
+{
+  "command.selectTimeZone1": "Zeitzone 1 auswählen",
+  "command.selectTimeZone2": "Zeitzone 2 auswählen",
+  "command.swapTimeZones": "Zeitzonen tauschen",
+  "command.setAlarm": "Weckzeit festlegen",
+  "command.toggleAlarm": "Wecker ein-/ausschalten",
+  "command.editAlarm": "Weckzeit bearbeiten",
+  "command.deleteAlarm": "Wecker löschen",
+  "command.manageAlarm": "Wecker verwalten",
+  "config.showTimeZoneInStatusBar": "Kurzes Zeitzonenlabel (z. B. UTC, JST) neben jeder Uhr in der Statusleiste anzeigen."
+}
+

@@ -1,0 +1,12 @@
+{
+  "command.selectTimeZone1": "Tijdzone 1 selecteren",
+  "command.selectTimeZone2": "Tijdzone 2 selecteren",
+  "command.swapTimeZones": "Tijdzones omwisselen",
+  "command.setAlarm": "Alarmtijd instellen",
+  "command.toggleAlarm": "Alarm in-/uitschakelen",
+  "command.editAlarm": "Alarmtijd bewerken",
+  "command.deleteAlarm": "Alarm verwijderen",
+  "command.manageAlarm": "Alarm beheren",
+  "config.showTimeZoneInStatusBar": "Toon een korte tijdzoneaanduiding (bijv. UTC, JST) naast elke klok in de statusbalk."
+}
+

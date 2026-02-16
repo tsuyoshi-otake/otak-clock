@@ -1,0 +1,59 @@
+{
+  "command.selectTimeZone1": "Zeitzone 1 auswählen",
+  "command.selectTimeZone2": "Zeitzone 2 auswählen",
+  "command.swapTimeZones": "Zeitzonen tauschen",
+  "command.setAlarm": "Weckzeit festlegen",
+  "command.toggleAlarm": "Wecker ein-/ausschalten",
+  "command.editAlarm": "Weckzeit bearbeiten",
+  "command.deleteAlarm": "Wecker löschen",
+  "command.manageAlarm": "Wecker verwalten",
+
+  "config.showTimeZoneInStatusBar": "Kurzes Zeitzonenlabel (z. B. UTC, JST) neben jeder Uhr in der Statusleiste anzeigen.",
+
+  "prompt.selectRegion": "Region auswählen",
+  "prompt.selectTimeZone": "Zeitzone auswählen",
+
+  "region.universal": "Weltzeit",
+  "region.americas": "Amerika",
+  "region.europe": "Europa",
+  "region.africaMiddleEast": "Afrika & Naher Osten",
+  "region.asia": "Asien",
+  "region.oceania": "Ozeanien",
+
+  "clock.tooltip.clickToChange": "Zum Ändern klicken",
+  "clock.dstInfo": " (Sommerzeit; Basis {base})",
+  "clock.dstSuffix": " DST",
+
+  "alarm.input.prompt": "Weckzeit festlegen (HH:mm)",
+  "alarm.input.placeholder": "z. B. 09:00",
+  "alarm.input.invalidFormat": "Bitte ein gültiges Zeitformat eingeben (HH:mm)",
+
+  "alarm.message.set": "Wecker für {time} gesetzt",
+  "alarm.message.updated": "Wecker auf {time} aktualisiert",
+  "alarm.message.noAlarmSet": "Kein Wecker gesetzt.",
+  "alarm.action.setAlarm": "Wecker setzen",
+  "alarm.message.enabled": "Wecker aktiviert ({time})",
+  "alarm.message.disabled": "Wecker deaktiviert",
+  "alarm.confirm.delete": "Wecker ({time}) löschen?",
+  "alarm.action.delete": "Löschen",
+  "alarm.message.deleted": "Wecker gelöscht.",
+
+  "alarm.status.enabled": "Aktiviert",
+  "alarm.status.disabled": "Deaktiviert",
+  "alarm.status.notSet": "Nicht gesetzt",
+  "alarm.status.firedTodaySuffix": " (Heute ausgelöst)",
+
+  "alarm.menu.createDescription": "Wecker erstellen",
+  "alarm.menu.enable": "Wecker aktivieren",
+  "alarm.menu.disable": "Wecker deaktivieren",
+  "alarm.menu.placeholder": "Wecker: {time} ({status}){fired}",
+
+  "alarm.notification.title": "Wecker: {time}",
+
+  "alarm.statusBar.noAlarmSet": "Kein Wecker gesetzt",
+  "alarm.statusBar.clickToManage": "Zum Verwalten klicken",
+  "alarm.statusBar.alarm": "Wecker: {time}",
+  "alarm.statusBar.status": "Status: {status}",
+  "alarm.statusBar.triggeredToday": "Ausgelöst: Heute"
+}
+

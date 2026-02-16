@@ -1,0 +1,59 @@
+{
+  "command.selectTimeZone1": "เลือกเขตเวลา 1",
+  "command.selectTimeZone2": "เลือกเขตเวลา 2",
+  "command.swapTimeZones": "สลับเขตเวลา",
+  "command.setAlarm": "ตั้งเวลาเตือน",
+  "command.toggleAlarm": "เปิด/ปิดการเตือน",
+  "command.editAlarm": "แก้ไขเวลาเตือน",
+  "command.deleteAlarm": "ลบการเตือน",
+  "command.manageAlarm": "จัดการการเตือน",
+
+  "config.showTimeZoneInStatusBar": "แสดงป้ายชื่อเขตเวลาสั้น ๆ (เช่น UTC, JST) ถัดจากนาฬิกาแต่ละอันบนแถบสถานะ",
+
+  "prompt.selectRegion": "เลือกภูมิภาค",
+  "prompt.selectTimeZone": "เลือกเขตเวลา",
+
+  "region.universal": "เวลาสากล",
+  "region.americas": "อเมริกา",
+  "region.europe": "ยุโรป",
+  "region.africaMiddleEast": "แอฟริกาและตะวันออกกลาง",
+  "region.asia": "เอเชีย",
+  "region.oceania": "โอเชียเนีย",
+
+  "clock.tooltip.clickToChange": "คลิกเพื่อเปลี่ยน",
+  "clock.dstInfo": " (เวลาออมแสง; ฐาน {base})",
+  "clock.dstSuffix": " DST",
+
+  "alarm.input.prompt": "ตั้งเวลาเตือน (HH:mm)",
+  "alarm.input.placeholder": "เช่น 09:00",
+  "alarm.input.invalidFormat": "กรุณาใส่รูปแบบเวลาให้ถูกต้อง (HH:mm)",
+
+  "alarm.message.set": "ตั้งเวลาเตือนสำหรับ {time} แล้ว",
+  "alarm.message.updated": "อัปเดตเวลาเตือนเป็น {time} แล้ว",
+  "alarm.message.noAlarmSet": "ยังไม่ได้ตั้งเวลาเตือน",
+  "alarm.action.setAlarm": "ตั้งเวลาเตือน",
+  "alarm.message.enabled": "เปิดการเตือนแล้ว ({time})",
+  "alarm.message.disabled": "ปิดการเตือนแล้ว",
+  "alarm.confirm.delete": "ลบการเตือน ({time})?",
+  "alarm.action.delete": "ลบ",
+  "alarm.message.deleted": "ลบการเตือนแล้ว",
+
+  "alarm.status.enabled": "เปิดใช้งาน",
+  "alarm.status.disabled": "ปิดใช้งาน",
+  "alarm.status.notSet": "ยังไม่ได้ตั้ง",
+  "alarm.status.firedTodaySuffix": " (แจ้งเตือนแล้ววันนี้)",
+
+  "alarm.menu.createDescription": "สร้างการเตือน",
+  "alarm.menu.enable": "เปิดการเตือน",
+  "alarm.menu.disable": "ปิดการเตือน",
+  "alarm.menu.placeholder": "การเตือน: {time} ({status}){fired}",
+
+  "alarm.notification.title": "การเตือน: {time}",
+
+  "alarm.statusBar.noAlarmSet": "ยังไม่ได้ตั้งเวลาเตือน",
+  "alarm.statusBar.clickToManage": "คลิกเพื่อจัดการ",
+  "alarm.statusBar.alarm": "การเตือน: {time}",
+  "alarm.statusBar.status": "สถานะ: {status}",
+  "alarm.statusBar.triggeredToday": "แจ้งเตือน: วันนี้"
+}
+

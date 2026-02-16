@@ -1,0 +1,12 @@
+{
+  "command.selectTimeZone1": "Chọn múi giờ 1",
+  "command.selectTimeZone2": "Chọn múi giờ 2",
+  "command.swapTimeZones": "Hoán đổi múi giờ",
+  "command.setAlarm": "Đặt giờ báo thức",
+  "command.toggleAlarm": "Bật/tắt báo thức",
+  "command.editAlarm": "Sửa giờ báo thức",
+  "command.deleteAlarm": "Xóa báo thức",
+  "command.manageAlarm": "Quản lý báo thức",
+  "config.showTimeZoneInStatusBar": "Hiển thị nhãn múi giờ ngắn (ví dụ: UTC, JST) bên cạnh mỗi đồng hồ trên thanh trạng thái."
+}
+

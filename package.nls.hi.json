@@ -1,0 +1,12 @@
+{
+  "command.selectTimeZone1": "समय क्षेत्र 1 चुनें",
+  "command.selectTimeZone2": "समय क्षेत्र 2 चुनें",
+  "command.swapTimeZones": "समय क्षेत्र अदला-बदली करें",
+  "command.setAlarm": "अलार्म समय सेट करें",
+  "command.toggleAlarm": "अलार्म चालू/बंद करें",
+  "command.editAlarm": "अलार्म समय संपादित करें",
+  "command.deleteAlarm": "अलार्म हटाएँ",
+  "command.manageAlarm": "अलार्म प्रबंधित करें",
+  "config.showTimeZoneInStatusBar": "स्टेटस बार में प्रत्येक घड़ी के पास एक छोटा समय-क्षेत्र लेबल (जैसे UTC, JST) दिखाएँ।"
+}
+
