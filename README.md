@@ -87,7 +87,8 @@ Access via the Command Palette (`Cmd/Ctrl+Shift+P`):
 
 - No telemetry or usage analytics.
 - No network requests: everything runs locally.
-- Time zones and alarm settings are stored in VS Code extension storage.
+- Time zones and the alarm config (time/enabled) are stored in VS Code extension storage and can be synced via Settings Sync.
+- The alarm "Triggered today" state is stored locally per device (not synced).
 
 ## Troubleshooting
 

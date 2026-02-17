@@ -1,5 +1,15 @@
 import * as assert from 'assert';
-import { ALARM_TIME_REGEX, createDefaultAlarm, formatTime, validateAlarmSettings } from '../alarm/AlarmSettings';
+import {
+    ALARM_TIME_REGEX,
+    AlarmSettings,
+    createDefaultAlarm,
+    formatTime,
+    toAlarmConfig,
+    toAlarmRuntime,
+    validateAlarmConfig,
+    validateAlarmRuntime,
+    validateAlarmSettings
+} from '../alarm/AlarmSettings';
 
 suite('AlarmSettings', () => {
     suite('createDefaultAlarm', () => {
@@ -30,7 +40,94 @@ suite('AlarmSettings', () => {
         });
     });
 
-    suite('validateAlarmSettings', () => {
+    suite('validateAlarmConfig', () => {
+        test('returns undefined for null', () => {
+            assert.strictEqual(validateAlarmConfig(null), undefined);
+        });
+
+        test('returns undefined for non-object', () => {
+            assert.strictEqual(validateAlarmConfig('string'), undefined);
+            assert.strictEqual(validateAlarmConfig(123), undefined);
+            assert.strictEqual(validateAlarmConfig(undefined), undefined);
+        });
+
+        test('returns undefined for out-of-range hour', () => {
+            assert.strictEqual(validateAlarmConfig({ enabled: true, hour: -1, minute: 0 }), undefined);
+            assert.strictEqual(validateAlarmConfig({ enabled: true, hour: 24, minute: 0 }), undefined);
+            assert.strictEqual(validateAlarmConfig({ enabled: true, hour: 9.5, minute: 0 }), undefined);
+        });
+
+        test('returns undefined for out-of-range minute', () => {
+            assert.strictEqual(validateAlarmConfig({ enabled: true, hour: 9, minute: -1 }), undefined);
+            assert.strictEqual(validateAlarmConfig({ enabled: true, hour: 9, minute: 60 }), undefined);
+            assert.strictEqual(validateAlarmConfig({ enabled: true, hour: 9, minute: 30.5 }), undefined);
+        });
+
+        test('returns valid config for correct data', () => {
+            const result = validateAlarmConfig({ enabled: true, hour: 9, minute: 30 });
+            assert.deepStrictEqual(result, { enabled: true, hour: 9, minute: 30 });
+        });
+
+        test('returns undefined when enabled field is missing', () => {
+            assert.strictEqual(validateAlarmConfig({ hour: 9, minute: 0 }), undefined);
+        });
+
+        test('returns undefined when hour field is missing', () => {
+            assert.strictEqual(validateAlarmConfig({ enabled: true, minute: 0 }), undefined);
+        });
+
+        test('returns undefined when minute field is missing', () => {
+            assert.strictEqual(validateAlarmConfig({ enabled: true, hour: 9 }), undefined);
+        });
+    });
+
+    suite('validateAlarmRuntime', () => {
+        test('returns undefined for non-object', () => {
+            assert.strictEqual(validateAlarmRuntime(null), undefined);
+            assert.strictEqual(validateAlarmRuntime('string'), undefined);
+            assert.strictEqual(validateAlarmRuntime(123), undefined);
+        });
+
+        test('defaults triggered to false if missing', () => {
+            const runtime = validateAlarmRuntime({});
+            assert.ok(runtime);
+            assert.strictEqual(runtime.triggered, false);
+        });
+
+        test('accepts lastTriggeredOn when present', () => {
+            const runtime = validateAlarmRuntime({ triggered: true, lastTriggeredOn: '2026-02-17' });
+            assert.ok(runtime);
+            assert.strictEqual(runtime.triggered, true);
+            assert.strictEqual(runtime.lastTriggeredOn, '2026-02-17');
+        });
+
+        test('accepts timeSignature when present', () => {
+            const runtime = validateAlarmRuntime({ triggered: false, timeSignature: '09:00' });
+            assert.ok(runtime);
+            assert.strictEqual(runtime.timeSignature, '09:00');
+        });
+    });
+
+    suite('toAlarmConfig / toAlarmRuntime', () => {
+        test('splits settings into config and runtime', () => {
+            const alarm: AlarmSettings = {
+                enabled: true,
+                hour: 9,
+                minute: 30,
+                triggered: true,
+                lastTriggeredOn: '2026-02-17'
+            };
+
+            assert.deepStrictEqual(toAlarmConfig(alarm), { enabled: true, hour: 9, minute: 30 });
+
+            const runtime = toAlarmRuntime(alarm);
+            assert.strictEqual(runtime.triggered, true);
+            assert.strictEqual(runtime.lastTriggeredOn, '2026-02-17');
+            assert.strictEqual(runtime.timeSignature, '09:30');
+        });
+    });
+
+    suite('validateAlarmSettings (legacy)', () => {
         test('returns undefined for null', () => {
             assert.strictEqual(validateAlarmSettings(null), undefined);
         });
@@ -97,17 +194,4 @@ suite('AlarmSettings', () => {
         });
     });
 
-    suite('validateAlarmSettings edge cases', () => {
-        test('returns undefined when enabled field is missing', () => {
-            assert.strictEqual(validateAlarmSettings({ hour: 9, minute: 0, triggered: false }), undefined);
-        });
-
-        test('returns undefined when hour field is missing', () => {
-            assert.strictEqual(validateAlarmSettings({ enabled: true, minute: 0, triggered: false }), undefined);
-        });
-
-        test('returns undefined when minute field is missing', () => {
-            assert.strictEqual(validateAlarmSettings({ enabled: true, hour: 9, triggered: false }), undefined);
-        });
-    });
 });

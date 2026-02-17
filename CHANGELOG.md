@@ -2,6 +2,15 @@
 
 All notable changes to the "otak-clock" extension will be documented in this file.
 
+## [1.1.22] - 2026-02-17
+
+### Added
+- Enabled Settings Sync for time zones and the alarm config (time/enabled) via `globalState.setKeysForSync`.
+
+### Changed
+- Split alarm persistence into `alarmConfig` (synced) and `alarmRuntime` (local-only), with migration from the legacy `alarm` key.
+- Updated documentation to clarify what is synced and what stays device-local.
+
 ## [1.1.21] - 2026-02-17
 
 ### Changed

@@ -1,15 +1,27 @@
 import * as vscode from 'vscode';
 import { flashStatusBars } from '../utils/statusBar';
-import { ALARM_TIME_REGEX, AlarmSettings, createDefaultAlarm, formatTime, validateAlarmSettings } from './AlarmSettings';
+import {
+    ALARM_TIME_REGEX,
+    AlarmConfig,
+    AlarmRuntime,
+    AlarmSettings,
+    createDefaultAlarm,
+    formatTime,
+    toAlarmConfig,
+    toAlarmRuntime,
+    validateAlarmConfig,
+    validateAlarmRuntime,
+    validateAlarmSettings
+} from './AlarmSettings';
 import { buildAlarmStatusBarState } from './AlarmStatus';
 import { evaluateAlarmTick } from './alarmTick';
 import { I18nManager } from '../i18n/I18nManager';
 import { sleep } from '../utils/timing';
+import { ALARM_CONFIG_KEY, ALARM_RUNTIME_KEY, LEGACY_ALARM_STATE_KEY } from './constants';
 import {
     STATUS_BAR_ALARM_PRIORITY,
     ALARM_NOTIFICATION_DISPLAY_MS,
-    PROGRESS_NOTIFICATION_DISPLAY_MS,
-    ALARM_STATE_KEY
+    PROGRESS_NOTIFICATION_DISPLAY_MS
 } from '../clock/constants';
 
 export class AlarmManager implements vscode.Disposable {
@@ -25,7 +37,7 @@ export class AlarmManager implements vscode.Disposable {
     constructor(context: vscode.ExtensionContext, statusBars: vscode.StatusBarItem[]) {
         this.context = context;
         this.statusBars = statusBars;
-        this.alarm = validateAlarmSettings(this.context.globalState.get<unknown>(ALARM_STATE_KEY));
+        this.alarm = this.loadAlarmFromGlobalState();
         this.i18n = I18nManager.getInstance();
 
         // アラーム設定用のステータスバーを作成
@@ -35,12 +47,94 @@ export class AlarmManager implements vscode.Disposable {
         this.alarmStatusBar.show();
     }
 
+    private sameAlarm(a: AlarmSettings | undefined, b: AlarmSettings | undefined): boolean {
+        if (!a && !b) {
+            return true;
+        }
+        if (!a || !b) {
+            return false;
+        }
+        return a.enabled === b.enabled
+            && a.hour === b.hour
+            && a.minute === b.minute
+            && a.triggered === b.triggered
+            && a.lastTriggeredOn === b.lastTriggeredOn;
+    }
+
+    private loadAlarmFromGlobalState(): AlarmSettings | undefined {
+        const rawConfig = this.context.globalState.get<unknown>(ALARM_CONFIG_KEY);
+        const config = validateAlarmConfig(rawConfig);
+        if (config) {
+            // Runtime state is stored locally (not synced). Use a time signature to detect
+            // time changes (including via Settings Sync) and reset runtime safely.
+            const signature = formatTime(config.hour, config.minute);
+
+            const rawRuntime = this.context.globalState.get<unknown>(ALARM_RUNTIME_KEY);
+            const validated = validateAlarmRuntime(rawRuntime);
+            let runtime: AlarmRuntime = validated ?? { triggered: false };
+
+            if (runtime.timeSignature === undefined) {
+                runtime = { ...runtime, timeSignature: signature };
+                void this.context.globalState.update(ALARM_RUNTIME_KEY, runtime);
+            } else if (runtime.timeSignature !== signature) {
+                runtime = { triggered: false, timeSignature: signature };
+                void this.context.globalState.update(ALARM_RUNTIME_KEY, runtime);
+            }
+
+            const merged: AlarmSettings = {
+                ...config,
+                triggered: runtime.triggered
+            };
+            if (typeof runtime.lastTriggeredOn === 'string') {
+                merged.lastTriggeredOn = runtime.lastTriggeredOn;
+            }
+
+            // Clean up legacy storage if it exists.
+            if (this.context.globalState.get<unknown>(LEGACY_ALARM_STATE_KEY) !== undefined) {
+                void this.context.globalState.update(LEGACY_ALARM_STATE_KEY, undefined);
+            }
+            return merged;
+        }
+
+        // If config is missing, attempt to migrate legacy storage (config + runtime in one object).
+        const legacyRaw = this.context.globalState.get<unknown>(LEGACY_ALARM_STATE_KEY);
+        const legacy = validateAlarmSettings(legacyRaw);
+        if (!legacy) {
+            return undefined;
+        }
+
+        void this.context.globalState.update(ALARM_CONFIG_KEY, toAlarmConfig(legacy));
+        void this.context.globalState.update(ALARM_RUNTIME_KEY, toAlarmRuntime(legacy));
+        void this.context.globalState.update(LEGACY_ALARM_STATE_KEY, undefined);
+        return legacy;
+    }
+
+    private refreshFromGlobalState(): void {
+        const next = this.loadAlarmFromGlobalState();
+        if (this.sameAlarm(this.alarm, next)) {
+            return;
+        }
+
+        this.alarm = next;
+        this.updateAlarmStatusBar();
+    }
+
     /**
      * アラーム設定を保存
      */
     private saveAlarm(alarm: AlarmSettings | undefined): void {
         this.alarm = alarm;
-        void this.context.globalState.update(ALARM_STATE_KEY, alarm);
+        if (!alarm) {
+            void this.context.globalState.update(ALARM_CONFIG_KEY, undefined);
+            void this.context.globalState.update(ALARM_RUNTIME_KEY, undefined);
+        } else {
+            const config: AlarmConfig = toAlarmConfig(alarm);
+            const runtime: AlarmRuntime = toAlarmRuntime(alarm);
+            void this.context.globalState.update(ALARM_CONFIG_KEY, config);
+            void this.context.globalState.update(ALARM_RUNTIME_KEY, runtime);
+        }
+        // Always clear legacy storage if present.
+        void this.context.globalState.update(LEGACY_ALARM_STATE_KEY, undefined);
         this.updateAlarmStatusBar();
     }
 
@@ -161,6 +255,8 @@ export class AlarmManager implements vscode.Disposable {
     }
 
     async showAlarmMenu(): Promise<void> {
+        this.refreshFromGlobalState();
+
         type AlarmAction = 'set' | 'toggle' | 'edit' | 'delete';
         type AlarmMenuItem = vscode.QuickPickItem & { action: AlarmAction };
 
@@ -218,6 +314,8 @@ export class AlarmManager implements vscode.Disposable {
      * 1分に1回呼び出される想定のティック処理
      */
     tick(now: Date): void {
+        this.refreshFromGlobalState();
+
         const alarm = this.alarm;
         if (!alarm) {
             return;
