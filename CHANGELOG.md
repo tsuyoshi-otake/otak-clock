@@ -2,6 +2,86 @@
 
 All notable changes to the "otak-clock" extension will be documented in this file.
 
+## [1.1.19] - 2026-02-17
+
+### Changed
+- Added explicit `: void` return types to `activate()` and `deactivate()` in `extension.ts`.
+- Added runtime validation to `loadLocaleFile` for `JSON.parse` result.
+- Extracted `UTC_FALLBACK_TIMEZONE` constant from `data.ts`, eliminating duplicate inline object in `ClockController.ts`.
+- Extracted `buildTimeZonePickerItem` pure function from `selectTimeZoneWithRegion` for testability.
+
+### Added
+- Unit tests for alarm settings edge cases, data constants, formatters, picker items, alarm tick, and alarm status (~15 new tests).
+
+## [1.1.18] - 2026-02-17
+
+### Changed
+- Promoted ESLint `only-throw-error`, `curly`, and `semi` from warn to error.
+- Converted `isSupportedLocale` to a type guard, removing `as SupportedLocale` casts.
+- Unified `coerceTimeZoneId` inline type assertion to `Record<string, unknown>` pattern.
+- Replaced `formatterCache.clear()` / `offsetPartsFormatterCache.clear()` with FIFO single-entry eviction.
+- Extracted `buildAlarmStatusBarState` pure function from AlarmManager for testability.
+
+### Fixed
+- `hexToRgb` now returns `null` for non-hex characters instead of `{ r: NaN, g: NaN, b: NaN }`.
+
+### Added
+- Unit tests for alarm status bar state, coerceTimeZoneId edge cases, Nepal 45-min offset, color conversions, tooltip content, and midnight alarm (~15 new tests).
+
+## [1.1.17] - 2026-02-17
+
+### Changed
+- Removed unnecessary `getAlarm()` indirection in AlarmManager (direct field access).
+- Renamed `_todayKey` to `todayKey` in AlarmManager (parameter is used, not unused).
+- Simplified `substituteParams` in I18nManager using `replaceAll` (fixes `$` in values bug).
+- Extracted `compareRegions` from picker for testability.
+- Exported `coerceTimeZoneId` and `ALARM_TIME_REGEX` for testability.
+- Promoted ESLint `no-floating-promises` and `no-explicit-any` from warn to error.
+- Replaced deprecated `no-throw-literal` with `@typescript-eslint/only-throw-error`.
+
+### Added
+- Unit tests for `coerceTimeZoneId`, `compareRegions`, `ALARM_TIME_REGEX`, EST/EDT labels, and i18n edge cases (~17 new tests).
+
+### Removed
+- Deleted `vsc-extension-quickstart.md` (generator boilerplate).
+
+## [1.1.16] - 2026-02-17
+
+### Changed
+- Enabled strict TypeScript checks: `noImplicitReturns`, `noFallthroughCasesInSwitch`, `noUnusedParameters`, `noUnusedLocals`.
+- Added ESLint type-aware rules: `no-floating-promises`, `no-explicit-any`, upgraded `eqeqeq` to error.
+- Fixed floating promises in AlarmManager (`void` prefix on `withProgress` calls).
+- Added `isDisposed` guard to AlarmManager to prevent post-dispose side effects.
+- Fixed `flashStatusBars` interval leak by returning a `Disposable`.
+- Extracted magic string `'alarm'` to `ALARM_STATE_KEY` constant.
+- Optimized `.vscodeignore` to exclude `.vsix`, `package-lock.json`, and `CHANGELOG.md`.
+
+### Added
+- Unit tests for color utilities, timezone data integrity, i18n locale resolution, and tooltip DST handling (~50 new tests).
+
+## [1.1.15] - 2026-02-17
+
+### Security
+- Added runtime validation for alarm settings loaded from globalState to prevent corrupted or tampered data.
+- Added whitelist validation to `coerceTimeZoneId` to reject unknown time zone IDs early.
+
+### Changed
+- Updated devDependencies: `@types/vscode` 1.109.0, `@types/node` 20.19.33, `@typescript-eslint/*` 8.56.0, `typescript` 5.9.3, `@vscode/test-cli` 0.0.12, `@vscode/test-electron` 2.5.2.
+
+### Added
+- Validation tests for `validateAlarmSettings` (7 new tests).
+
+## [1.1.14] - 2026-02-17
+
+### Changed
+- Refactored codebase for improved maintainability: extracted ClockController, formatters, tooltips, timezone picker, alarm tick logic, and constants into dedicated modules.
+- Eliminated code duplication in status bar text and tooltip generation.
+- Replaced magic numbers with named constants.
+- Improved variable naming for clarity (e.g., `primaryStatusBar`, `isFocused`, `isDisposed`).
+
+### Added
+- Unit tests for pure functions: timing, offsets, formatters, tooltips, alarm tick, and alarm settings (42 tests).
+
 ## [1.1.13] - 2026-02-16
 
 ### Added

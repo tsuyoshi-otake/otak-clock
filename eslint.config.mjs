@@ -12,6 +12,9 @@ export default [{
         parser: tsParser,
         ecmaVersion: 2022,
         sourceType: "module",
+        parserOptions: {
+            project: "./tsconfig.json",
+        },
     },
 
     rules: {
@@ -20,9 +23,11 @@ export default [{
             format: ["camelCase", "PascalCase"],
         }],
 
-        curly: "warn",
-        eqeqeq: "warn",
-        "no-throw-literal": "warn",
-        semi: "warn",
+        "@typescript-eslint/no-floating-promises": "error",
+        "@typescript-eslint/no-explicit-any": "error",
+        "@typescript-eslint/only-throw-error": "error",
+        curly: "error",
+        eqeqeq: "error",
+        semi: "error",
     },
 }];

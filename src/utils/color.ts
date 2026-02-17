@@ -1,4 +1,5 @@
 import * as vscode from 'vscode';
+import { FLASH_INTERVAL_MS } from '../clock/constants';
 
 /**
  * ヘルパー関数：16進数カラー文字列を RGB オブジェクトに変換
@@ -14,6 +15,9 @@ export function hexToRgb(hex: string): { r: number; g: number; b: number } | nul
     const r = parseInt(hex.substring(0, 2), 16);
     const g = parseInt(hex.substring(2, 4), 16);
     const b = parseInt(hex.substring(4, 6), 16);
+    if (Number.isNaN(r) || Number.isNaN(g) || Number.isNaN(b)) {
+        return null;
+    }
     return { r, g, b };
 }
 
@@ -98,13 +102,13 @@ export function hslToRgb(h: number, s: number, l: number): { r: number; g: numbe
 /**
  * ステータスバーの色を点滅させる
  */
-export function flashStatusBars(statusBars: vscode.StatusBarItem[], repeatCount: number = 3): void {
+export function flashStatusBars(statusBars: vscode.StatusBarItem[], repeatCount: number = 3): vscode.Disposable {
     let count = 0;
     const interval = setInterval(() => {
         const isWarning = count % 2 === 0;
         statusBars.forEach(bar => {
-            bar.backgroundColor = isWarning ? 
-                new vscode.ThemeColor('statusBarItem.warningBackground') : 
+            bar.backgroundColor = isWarning ?
+                new vscode.ThemeColor('statusBarItem.warningBackground') :
                 undefined;
         });
         count++;
@@ -114,5 +118,12 @@ export function flashStatusBars(statusBars: vscode.StatusBarItem[], repeatCount:
                 bar.backgroundColor = undefined;
             });
         }
-    }, 500);
+    }, FLASH_INTERVAL_MS);
+
+    return new vscode.Disposable(() => {
+        clearInterval(interval);
+        statusBars.forEach(bar => {
+            bar.backgroundColor = undefined;
+        });
+    });
 }

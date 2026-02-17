@@ -1,0 +1,14 @@
+export const TIME_ZONE_1_KEY = 'timeZone1';
+export const TIME_ZONE_2_KEY = 'timeZone2';
+export const DEFAULT_TIME_ZONE_1_ID = 'UTC';
+export const DEFAULT_TIME_ZONE_2_ID = 'Asia/Tokyo';
+export const SHOW_TIME_ZONE_IN_STATUS_BAR_SETTING = 'otak-clock.showTimeZoneInStatusBar';
+export const FORMATTER_CACHE_MAX_SIZE = 32;
+export const STATUS_BAR_PRIMARY_PRIORITY = 100;
+export const STATUS_BAR_SECONDARY_PRIORITY = 99;
+export const STATUS_BAR_ALARM_PRIORITY = 98;
+export const NOTIFICATION_COOLDOWN_MS = 60000;
+export const ALARM_NOTIFICATION_DISPLAY_MS = 5000;
+export const PROGRESS_NOTIFICATION_DISPLAY_MS = 3000;
+export const FLASH_INTERVAL_MS = 500;
+export const ALARM_STATE_KEY = 'alarm';

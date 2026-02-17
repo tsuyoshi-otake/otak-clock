@@ -104,12 +104,12 @@ export class I18nManager {
         }
 
         if (this.isSupportedLocale(lower)) {
-            return lower as SupportedLocale;
+            return lower;
         }
 
         const base = lower.split('-')[0];
         if (this.isSupportedLocale(base)) {
-            return base as SupportedLocale;
+            return base;
         }
 
         // If VS Code ever returns a bare "zh", default to Simplified.
@@ -120,8 +120,8 @@ export class I18nManager {
         return this.config.fallbackLocale;
     }
 
-    private isSupportedLocale(locale: string): boolean {
-        return this.config.supportedLocales.includes(locale as SupportedLocale);
+    private isSupportedLocale(locale: string): locale is SupportedLocale {
+        return (this.config.supportedLocales as readonly string[]).includes(locale);
     }
 
     private loadTranslations(): void {
@@ -148,15 +148,17 @@ export class I18nManager {
     private loadLocaleFile(locale: SupportedLocale): TranslationMessages {
         const localeFilePath = path.join(__dirname, 'locales', `${locale}.json`);
         const fileContent = fs.readFileSync(localeFilePath, 'utf-8');
-        return JSON.parse(fileContent) as TranslationMessages;
+        const parsed: unknown = JSON.parse(fileContent);
+        if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) {
+            return {};
+        }
+        return parsed as TranslationMessages;
     }
 
     private substituteParams(message: string, params: Record<string, string>): string {
         let result = message;
         for (const [key, value] of Object.entries(params)) {
-            const placeholder = `{${key}}`;
-            const escapedPlaceholder = placeholder.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-            result = result.replace(new RegExp(escapedPlaceholder, 'g'), value);
+            result = result.replaceAll(`{${key}}`, value);
         }
         return result;
     }
