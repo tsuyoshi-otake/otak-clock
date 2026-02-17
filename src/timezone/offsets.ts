@@ -1,4 +1,6 @@
 import { FORMATTER_CACHE_MAX_SIZE } from '../clock/constants';
+import { evictOldestIfOverCapacity } from '../utils/cache';
+import { TimeZoneInfo } from './types';
 
 export function formatUtcOffsetLabel(offsetMinutes: number): string {
     const sign = offsetMinutes >= 0 ? '+' : '-';
@@ -6,6 +8,23 @@ export function formatUtcOffsetLabel(offsetMinutes: number): string {
     const hh = Math.floor(totalMinutes / 60).toString().padStart(2, '0');
     const mm = (totalMinutes % 60).toString().padStart(2, '0');
     return `UTC${sign}${hh}:${mm}`;
+}
+
+export function getBaseUtcOffsetMinutes(timeZone: TimeZoneInfo): number {
+    return Math.round(timeZone.baseUtcOffset * 60);
+}
+
+export function getEffectiveUtcOffsetMinutes(date: Date, timeZone: TimeZoneInfo): number {
+    const baseOffsetMinutes = getBaseUtcOffsetMinutes(timeZone);
+    try {
+        const offsetMinutes = getUtcOffsetMinutes(date, timeZone.timeZoneId);
+        if (offsetMinutes === 0 && baseOffsetMinutes !== 0) {
+            return baseOffsetMinutes;
+        }
+        return offsetMinutes;
+    } catch {
+        return baseOffsetMinutes;
+    }
 }
 
 const offsetPartsFormatterCache = new Map<string, Intl.DateTimeFormat>();
@@ -28,12 +47,7 @@ function getOffsetPartsFormatter(timeZoneId: string): Intl.DateTimeFormat {
         hourCycle: 'h23'
     });
 
-    if (offsetPartsFormatterCache.size >= FORMATTER_CACHE_MAX_SIZE) {
-        const oldest = offsetPartsFormatterCache.keys().next().value;
-        if (oldest !== undefined) {
-            offsetPartsFormatterCache.delete(oldest);
-        }
-    }
+    evictOldestIfOverCapacity(offsetPartsFormatterCache, FORMATTER_CACHE_MAX_SIZE);
 
     offsetPartsFormatterCache.set(timeZoneId, formatter);
     return formatter;

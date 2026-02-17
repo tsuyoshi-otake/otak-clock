@@ -2,13 +2,14 @@ import * as vscode from 'vscode';
 import * as fs from 'fs';
 import * as path from 'path';
 import { I18nConfig, SupportedLocale, TranslationMessages } from './types';
+import { isRecord } from '../utils/guards';
 
 /**
  * Simple JSON-based i18n loader, modeled after otak-proxy.
  * Translation files are loaded from `out/i18n/locales/*.json` at runtime.
  */
 export class I18nManager {
-    private static instance: I18nManager;
+    private static instance: I18nManager | undefined;
     private currentLocale: SupportedLocale;
     private messages: TranslationMessages;
     private fallbackMessages: TranslationMessages;
@@ -149,7 +150,7 @@ export class I18nManager {
         const localeFilePath = path.join(__dirname, 'locales', `${locale}.json`);
         const fileContent = fs.readFileSync(localeFilePath, 'utf-8');
         const parsed: unknown = JSON.parse(fileContent);
-        if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) {
+        if (!isRecord(parsed)) {
             return {};
         }
         return parsed as TranslationMessages;

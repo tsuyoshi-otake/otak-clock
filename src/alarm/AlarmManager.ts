@@ -1,9 +1,10 @@
 import * as vscode from 'vscode';
-import { flashStatusBars } from '../utils/color';
+import { flashStatusBars } from '../utils/statusBar';
 import { ALARM_TIME_REGEX, AlarmSettings, createDefaultAlarm, formatTime, validateAlarmSettings } from './AlarmSettings';
 import { buildAlarmStatusBarState } from './AlarmStatus';
-import { toLocalDateKey, evaluateAlarmTick } from './alarmTick';
+import { evaluateAlarmTick } from './alarmTick';
 import { I18nManager } from '../i18n/I18nManager';
+import { sleep } from '../utils/timing';
 import {
     STATUS_BAR_ALARM_PRIORITY,
     ALARM_NOTIFICATION_DISPLAY_MS,
@@ -12,12 +13,12 @@ import {
 } from '../clock/constants';
 
 export class AlarmManager implements vscode.Disposable {
-    private context: vscode.ExtensionContext;
-    private statusBars: vscode.StatusBarItem[];
-    private alarmStatusBar: vscode.StatusBarItem;
+    private readonly context: vscode.ExtensionContext;
+    private readonly statusBars: vscode.StatusBarItem[];
+    private readonly alarmStatusBar: vscode.StatusBarItem;
     private alarm: AlarmSettings | undefined;
-    private lastNotificationTime: number = 0;
-    private i18n: I18nManager;
+    private lastNotificationTimeMs: number = 0;
+    private readonly i18n: I18nManager;
     private isDisposed: boolean = false;
     private flashDisposable: vscode.Disposable | undefined;
 
@@ -32,8 +33,6 @@ export class AlarmManager implements vscode.Disposable {
         this.alarmStatusBar.command = 'otak-clock.listAlarms';
         this.updateAlarmStatusBar();
         this.alarmStatusBar.show();
-
-        context.subscriptions.push(this.alarmStatusBar);
     }
 
     /**
@@ -76,11 +75,13 @@ export class AlarmManager implements vscode.Disposable {
             return;
         }
 
-        const alarm = createDefaultAlarm();
-        alarm.hour = picked.hour;
-        alarm.minute = picked.minute;
-        alarm.triggered = false;
-        alarm.lastTriggeredOn = undefined;
+        const alarm: AlarmSettings = {
+            ...createDefaultAlarm(),
+            hour: picked.hour,
+            minute: picked.minute,
+            triggered: false,
+            lastTriggeredOn: undefined
+        };
 
         this.saveAlarm(alarm);
 
@@ -88,7 +89,7 @@ export class AlarmManager implements vscode.Disposable {
             location: vscode.ProgressLocation.Notification,
             title: this.i18n.t('alarm.message.set', { time: formatTime(picked.hour, picked.minute) }),
             cancellable: false
-        }, () => new Promise(resolve => setTimeout(resolve, PROGRESS_NOTIFICATION_DISPLAY_MS)));
+        }, () => sleep(PROGRESS_NOTIFICATION_DISPLAY_MS));
     }
 
     async editAlarm(): Promise<void> {
@@ -115,7 +116,7 @@ export class AlarmManager implements vscode.Disposable {
             location: vscode.ProgressLocation.Notification,
             title: this.i18n.t('alarm.message.updated', { time: formatTime(picked.hour, picked.minute) }),
             cancellable: false
-        }, () => new Promise(resolve => setTimeout(resolve, PROGRESS_NOTIFICATION_DISPLAY_MS)));
+        }, () => sleep(PROGRESS_NOTIFICATION_DISPLAY_MS));
     }
 
     async toggleAlarm(): Promise<void> {
@@ -129,11 +130,11 @@ export class AlarmManager implements vscode.Disposable {
             return;
         }
 
-        alarm.enabled = !alarm.enabled;
-        this.saveAlarm(alarm);
+        const updated: AlarmSettings = { ...alarm, enabled: !alarm.enabled };
+        this.saveAlarm(updated);
 
-        const message = alarm.enabled
-            ? this.i18n.t('alarm.message.enabled', { time: formatTime(alarm.hour, alarm.minute) })
+        const message = updated.enabled
+            ? this.i18n.t('alarm.message.enabled', { time: formatTime(updated.hour, updated.minute) })
             : this.i18n.t('alarm.message.disabled');
         void vscode.window.showInformationMessage(message);
     }
@@ -222,15 +223,7 @@ export class AlarmManager implements vscode.Disposable {
             return;
         }
 
-        const todayKey = toLocalDateKey(now);
-        const result = evaluateAlarmTick(
-            alarm,
-            now.getHours(),
-            now.getMinutes(),
-            todayKey,
-            this.lastNotificationTime,
-            Date.now()
-        );
+        const result = evaluateAlarmTick(alarm, now, this.lastNotificationTimeMs);
 
         switch (result.action) {
             case 'none':
@@ -239,7 +232,7 @@ export class AlarmManager implements vscode.Disposable {
                 this.saveAlarm(result.alarm);
                 break;
             case 'trigger':
-                this.lastNotificationTime = Date.now();
+                this.lastNotificationTimeMs = now.getTime();
                 this.triggerAlarm(result.alarm, result.todayKey);
                 break;
         }
@@ -253,20 +246,19 @@ export class AlarmManager implements vscode.Disposable {
             return;
         }
 
+        const updated: AlarmSettings = {
+            ...alarm,
+            triggered: true,
+            lastTriggeredOn: todayKey
+        };
+        this.saveAlarm(updated);
+
         // 5秒で自動的に消える通知を表示
         void vscode.window.withProgress({
             location: vscode.ProgressLocation.Notification,
             title: this.i18n.t('alarm.notification.title', { time: formatTime(alarm.hour, alarm.minute) }),
             cancellable: false
-        }, () => new Promise(resolve => {
-            const updated: AlarmSettings = {
-                ...alarm,
-                triggered: true,
-                lastTriggeredOn: todayKey
-            };
-            this.saveAlarm(updated);
-            setTimeout(resolve, ALARM_NOTIFICATION_DISPLAY_MS);
-        }));
+        }, () => sleep(ALARM_NOTIFICATION_DISPLAY_MS));
 
         // ステータスバーを点滅
         this.flashDisposable?.dispose();

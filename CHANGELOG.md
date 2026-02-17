@@ -2,6 +2,22 @@
 
 All notable changes to the "otak-clock" extension will be documented in this file.
 
+## [1.1.20] - 2026-02-17
+
+### Changed
+- Refactored command registration and removed unnecessary global state in `extension.ts`.
+- Persisted selected time zones as `timeZoneId` strings in `globalState` (with migration from the previous object format).
+- Refactored alarm tick evaluation to accept `Date` and extracted helper functions for clarity.
+- Extracted status bar flashing into `utils/statusBar` and removed VS Code dependencies from `utils/color`.
+- Extracted shared helpers: FIFO cache eviction (`utils/cache`) and `unknown` record guard (`utils/guards`).
+- Introduced `MS_PER_SECOND` / `MS_PER_MINUTE` constants in `utils/timing` to avoid magic numbers.
+
+### Fixed
+- Added a safe fallback for UTC offset calculations when `Intl` formatting fails (uses base UTC offset).
+
+### Added
+- Replaced the sample extension test with a command registration test.
+
 ## [1.1.19] - 2026-02-17
 
 ### Changed

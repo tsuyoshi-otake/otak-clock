@@ -7,6 +7,14 @@ suite('ClockController', () => {
             assert.strictEqual(coerceTimeZoneId(null), undefined);
         });
 
+        test('returns undefined for unknown string timeZoneId', () => {
+            assert.strictEqual(coerceTimeZoneId('Invalid/Zone'), undefined);
+        });
+
+        test('returns valid timeZoneId for string Asia/Tokyo', () => {
+            assert.strictEqual(coerceTimeZoneId('Asia/Tokyo'), 'Asia/Tokyo');
+        });
+
         test('returns undefined for empty object', () => {
             assert.strictEqual(coerceTimeZoneId({}), undefined);
         });

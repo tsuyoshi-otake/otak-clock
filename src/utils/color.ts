@@ -1,20 +1,17 @@
-import * as vscode from 'vscode';
-import { FLASH_INTERVAL_MS } from '../clock/constants';
-
 /**
  * ヘルパー関数：16進数カラー文字列を RGB オブジェクトに変換
  */
 export function hexToRgb(hex: string): { r: number; g: number; b: number } | null {
-    hex = hex.replace(/^#/, '');
-    if (hex.length === 3) {
-        hex = hex.split('').map(c => c + c).join('');
+    let normalized = hex.replace(/^#/, '');
+    if (normalized.length === 3) {
+        normalized = normalized.split('').map(c => c + c).join('');
     }
-    if (hex.length !== 6) {
+    if (normalized.length !== 6) {
         return null;
     }
-    const r = parseInt(hex.substring(0, 2), 16);
-    const g = parseInt(hex.substring(2, 4), 16);
-    const b = parseInt(hex.substring(4, 6), 16);
+    const r = parseInt(normalized.substring(0, 2), 16);
+    const g = parseInt(normalized.substring(2, 4), 16);
+    const b = parseInt(normalized.substring(4, 6), 16);
     if (Number.isNaN(r) || Number.isNaN(g) || Number.isNaN(b)) {
         return null;
     }
@@ -37,12 +34,12 @@ export function rgbToHsl(r: number, g: number, b: number): { h: number; s: numbe
     r /= 255;
     g /= 255;
     b /= 255;
-    
+
     const max = Math.max(r, g, b);
     const min = Math.min(r, g, b);
     const l = (max + min) / 2;
     let h = 0, s = 0;
-    
+
     if (max !== min) {
         const d = max - min;
         s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
@@ -97,33 +94,4 @@ export function hslToRgb(h: number, s: number, l: number): { r: number; g: numbe
         b = hue2rgb(p, q, (h / 360) - 1/3) * 255;
     }
     return { r: Math.round(r), g: Math.round(g), b: Math.round(b) };
-}
-
-/**
- * ステータスバーの色を点滅させる
- */
-export function flashStatusBars(statusBars: vscode.StatusBarItem[], repeatCount: number = 3): vscode.Disposable {
-    let count = 0;
-    const interval = setInterval(() => {
-        const isWarning = count % 2 === 0;
-        statusBars.forEach(bar => {
-            bar.backgroundColor = isWarning ?
-                new vscode.ThemeColor('statusBarItem.warningBackground') :
-                undefined;
-        });
-        count++;
-        if (count >= repeatCount * 2) {
-            clearInterval(interval);
-            statusBars.forEach(bar => {
-                bar.backgroundColor = undefined;
-            });
-        }
-    }, FLASH_INTERVAL_MS);
-
-    return new vscode.Disposable(() => {
-        clearInterval(interval);
-        statusBars.forEach(bar => {
-            bar.backgroundColor = undefined;
-        });
-    });
 }

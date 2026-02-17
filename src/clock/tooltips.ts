@@ -1,5 +1,5 @@
 import { FormatterPair, TimeZoneInfo } from '../timezone/types';
-import { formatUtcOffsetLabel, getUtcOffsetMinutes } from '../timezone/offsets';
+import { formatUtcOffsetLabel, getBaseUtcOffsetMinutes, getEffectiveUtcOffsetMinutes } from '../timezone/offsets';
 import { I18nManager } from '../i18n/I18nManager';
 
 export function buildTooltipText(
@@ -9,8 +9,8 @@ export function buildTooltipText(
     i18n: I18nManager
 ): string {
     const dateStr = formatters.date.format(now);
-    const baseOffsetMinutes = Math.round(timeZone.baseUtcOffset * 60);
-    const offsetMinutes = getUtcOffsetMinutes(now, timeZone.timeZoneId);
+    const baseOffsetMinutes = getBaseUtcOffsetMinutes(timeZone);
+    const offsetMinutes = getEffectiveUtcOffsetMinutes(now, timeZone);
     const dstInfo = offsetMinutes !== baseOffsetMinutes
         ? i18n.t('clock.dstInfo', { base: formatUtcOffsetLabel(baseOffsetMinutes) })
         : '';

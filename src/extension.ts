@@ -4,17 +4,27 @@ import { ClockController } from './clock/ClockController';
 import { AlarmManager } from './alarm/AlarmManager';
 import { I18nManager } from './i18n/I18nManager';
 import { selectTimeZoneWithRegion } from './timezone/picker';
+import { TimeZoneInfo } from './timezone/types';
 import {
     STATUS_BAR_PRIMARY_PRIORITY,
     STATUS_BAR_SECONDARY_PRIORITY
 } from './clock/constants';
 
-let clockController: ClockController | undefined;
-
 // This method is called when your extension is activated
 export function activate(context: vscode.ExtensionContext): void {
     // Initialize i18n early so all UI strings use the detected locale.
     I18nManager.getInstance().initialize();
+
+    const registerCommand = (command: string, handler: (...args: unknown[]) => unknown): void => {
+        context.subscriptions.push(vscode.commands.registerCommand(command, handler));
+    };
+
+    const selectTimeZoneAndApply = async (apply: (timeZone: TimeZoneInfo) => void): Promise<void> => {
+        const selectedTimeZone = await selectTimeZoneWithRegion();
+        if (selectedTimeZone) {
+            apply(selectedTimeZone);
+        }
+    };
 
     // ステータスバーアイテムを作成
     const primaryStatusBar = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left, STATUS_BAR_PRIMARY_PRIORITY);
@@ -29,56 +39,20 @@ export function activate(context: vscode.ExtensionContext): void {
     const alarmManager = new AlarmManager(context, [primaryStatusBar, secondaryStatusBar]);
     context.subscriptions.push(alarmManager);
 
-    clockController = new ClockController(context, primaryStatusBar, secondaryStatusBar, alarmManager);
+    const clockController = new ClockController(context, primaryStatusBar, secondaryStatusBar, alarmManager);
     context.subscriptions.push(clockController);
 
     // コマンドを登録
-    const disposable1 = vscode.commands.registerCommand('otak-clock.selectTimeZone1', async () => {
-        const selectedTimeZone = await selectTimeZoneWithRegion();
-        if (selectedTimeZone) {
-            clockController?.setTimeZone1(selectedTimeZone);
-        }
-    });
-
-    const disposable2 = vscode.commands.registerCommand('otak-clock.selectTimeZone2', async () => {
-        const selectedTimeZone = await selectTimeZoneWithRegion();
-        if (selectedTimeZone) {
-            clockController?.setTimeZone2(selectedTimeZone);
-        }
-    });
-
-    const disposableSwapTimeZones = vscode.commands.registerCommand('otak-clock.swapTimeZones', () => {
-        clockController?.swapTimeZones();
-    });
+    registerCommand('otak-clock.selectTimeZone1', () => selectTimeZoneAndApply((tz) => clockController.setTimeZone1(tz)));
+    registerCommand('otak-clock.selectTimeZone2', () => selectTimeZoneAndApply((tz) => clockController.setTimeZone2(tz)));
+    registerCommand('otak-clock.swapTimeZones', () => clockController.swapTimeZones());
 
     // アラーム関連のコマンドを登録
-    const disposableSetAlarm = vscode.commands.registerCommand('otak-clock.setAlarm', () => {
-        return alarmManager.setAlarm();
-    });
-    const disposableToggleAlarm = vscode.commands.registerCommand('otak-clock.toggleAlarm', () => {
-        return alarmManager.toggleAlarm();
-    });
-
-    const disposableEditAlarm = vscode.commands.registerCommand('otak-clock.editAlarm', () => {
-        return alarmManager.editAlarm();
-    });
-    const disposableDeleteAlarm = vscode.commands.registerCommand('otak-clock.deleteAlarm', () => {
-        return alarmManager.deleteAlarm();
-    });
-    const disposableListAlarms = vscode.commands.registerCommand('otak-clock.listAlarms', () => {
-        return alarmManager.showAlarmMenu();
-    });
-
-    context.subscriptions.push(
-        disposable1,
-        disposable2,
-        disposableSwapTimeZones,
-        disposableSetAlarm,
-        disposableToggleAlarm,
-        disposableEditAlarm,
-        disposableDeleteAlarm,
-        disposableListAlarms
-    );
+    registerCommand('otak-clock.setAlarm', () => alarmManager.setAlarm());
+    registerCommand('otak-clock.toggleAlarm', () => alarmManager.toggleAlarm());
+    registerCommand('otak-clock.editAlarm', () => alarmManager.editAlarm());
+    registerCommand('otak-clock.deleteAlarm', () => alarmManager.deleteAlarm());
+    registerCommand('otak-clock.listAlarms', () => alarmManager.showAlarmMenu());
 
     // 表示
     primaryStatusBar.show();
@@ -87,8 +61,5 @@ export function activate(context: vscode.ExtensionContext): void {
 
 // This method is called when your extension is deactivated
 export function deactivate(): void {
-    if (clockController) {
-        clockController.dispose();
-        clockController = undefined;
-    }
+    // All resources are disposed via `context.subscriptions`.
 }

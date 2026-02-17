@@ -5,7 +5,8 @@ import { AlarmManager } from '../alarm/AlarmManager';
 import { I18nManager } from '../i18n/I18nManager';
 import { getFormatters, getStatusBarTimeZoneLabel } from './formatters';
 import { buildTooltipText, formatClockText } from './tooltips';
-import { msUntilNextSecond, msUntilNextMinute } from '../utils/timing';
+import { msUntilNextSecond, msUntilNextMinute, MS_PER_MINUTE } from '../utils/timing';
+import { isRecord } from '../utils/guards';
 import {
     TIME_ZONE_1_KEY,
     TIME_ZONE_2_KEY,
@@ -19,24 +20,28 @@ function readShowTimeZoneInStatusBar(): boolean {
 }
 
 export function coerceTimeZoneId(value: unknown): string | undefined {
-    if (!value || typeof value !== 'object') {
+    if (typeof value === 'string') {
+        // Whitelist validation: only allow known time zone IDs
+        return findTimeZoneById(value) ? value : undefined;
+    }
+
+    if (!isRecord(value)) {
         return undefined;
     }
 
-    const obj = value as Record<string, unknown>;
-    if (typeof obj.timeZoneId !== 'string') {
+    if (typeof value.timeZoneId !== 'string') {
         return undefined;
     }
     // Whitelist validation: only allow known time zone IDs
-    return findTimeZoneById(obj.timeZoneId) ? obj.timeZoneId : undefined;
+    return findTimeZoneById(value.timeZoneId) ? value.timeZoneId : undefined;
 }
 
 export class ClockController implements vscode.Disposable {
-    private context: vscode.ExtensionContext;
-    private primaryStatusBar: vscode.StatusBarItem;
-    private secondaryStatusBar: vscode.StatusBarItem;
-    private alarmManager: AlarmManager;
-    private i18n: I18nManager;
+    private readonly context: vscode.ExtensionContext;
+    private readonly primaryStatusBar: vscode.StatusBarItem;
+    private readonly secondaryStatusBar: vscode.StatusBarItem;
+    private readonly alarmManager: AlarmManager;
+    private readonly i18n: I18nManager;
 
     private timeZone1: TimeZoneInfo;
     private timeZone2: TimeZoneInfo;
@@ -49,10 +54,10 @@ export class ClockController implements vscode.Disposable {
     private isFocused: boolean;
     private lastMinuteBucket: number | undefined;
     private tickHandle: NodeJS.Timeout | undefined;
-    private windowStateDisposable: vscode.Disposable;
-    private configurationDisposable: vscode.Disposable;
+    private readonly windowStateDisposable: vscode.Disposable;
+    private readonly configurationDisposable: vscode.Disposable;
     private showTimeZoneInStatusBar: boolean;
-    private isDisposed: boolean = false;
+    private isDisposed = false;
 
     constructor(
         context: vscode.ExtensionContext,
@@ -71,13 +76,13 @@ export class ClockController implements vscode.Disposable {
         const loaded1 = this.loadTimeZone(TIME_ZONE_1_KEY, DEFAULT_TIME_ZONE_1_ID);
         this.timeZone1 = loaded1.timeZone;
         if (loaded1.needsPersist) {
-            void this.context.globalState.update(TIME_ZONE_1_KEY, this.timeZone1);
+            void this.context.globalState.update(TIME_ZONE_1_KEY, this.timeZone1.timeZoneId);
         }
 
         const loaded2 = this.loadTimeZone(TIME_ZONE_2_KEY, DEFAULT_TIME_ZONE_2_ID);
         this.timeZone2 = loaded2.timeZone;
         if (loaded2.needsPersist) {
-            void this.context.globalState.update(TIME_ZONE_2_KEY, this.timeZone2);
+            void this.context.globalState.update(TIME_ZONE_2_KEY, this.timeZone2.timeZoneId);
         }
 
         this.showTimeZoneInStatusBar = readShowTimeZoneInStatusBar();
@@ -121,7 +126,7 @@ export class ClockController implements vscode.Disposable {
         }
 
         this.timeZone1 = timeZone;
-        void this.context.globalState.update(TIME_ZONE_1_KEY, timeZone);
+        void this.context.globalState.update(TIME_ZONE_1_KEY, timeZone.timeZoneId);
         this.refresh(true);
     }
 
@@ -131,7 +136,7 @@ export class ClockController implements vscode.Disposable {
         }
 
         this.timeZone2 = timeZone;
-        void this.context.globalState.update(TIME_ZONE_2_KEY, timeZone);
+        void this.context.globalState.update(TIME_ZONE_2_KEY, timeZone.timeZoneId);
         this.refresh(true);
     }
 
@@ -140,8 +145,8 @@ export class ClockController implements vscode.Disposable {
         this.timeZone1 = this.timeZone2;
         this.timeZone2 = tmp;
 
-        void this.context.globalState.update(TIME_ZONE_1_KEY, this.timeZone1);
-        void this.context.globalState.update(TIME_ZONE_2_KEY, this.timeZone2);
+        void this.context.globalState.update(TIME_ZONE_1_KEY, this.timeZone1.timeZoneId);
+        void this.context.globalState.update(TIME_ZONE_2_KEY, this.timeZone2.timeZoneId);
         this.refresh(true);
     }
 
@@ -166,7 +171,9 @@ export class ClockController implements vscode.Disposable {
             return { timeZone: fallback, needsPersist: true };
         }
 
-        return { timeZone, needsPersist: false };
+        const storedAsString = typeof stored === 'string';
+        // Migrate old versions that stored the entire object to a string ID.
+        return { timeZone, needsPersist: !storedAsString };
     }
 
     private refresh(forceTooltips: boolean): void {
@@ -190,7 +197,7 @@ export class ClockController implements vscode.Disposable {
     }
 
     private runMinuteTick(now: Date, force: boolean): void {
-        const minuteBucket = Math.floor(now.getTime() / 60000);
+        const minuteBucket = Math.floor(now.getTime() / MS_PER_MINUTE);
         if (!force && this.lastMinuteBucket === minuteBucket) {
             return;
         }

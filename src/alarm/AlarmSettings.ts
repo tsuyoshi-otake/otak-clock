@@ -1,3 +1,5 @@
+import { isRecord } from '../utils/guards';
+
 export interface AlarmSettings {
     enabled: boolean;
     hour: number;
@@ -19,18 +21,27 @@ export function createDefaultAlarm(): AlarmSettings {
     };
 }
 
+function isIntInRange(value: unknown, min: number, max: number): value is number {
+    return typeof value === 'number' && Number.isInteger(value) && value >= min && value <= max;
+}
+
 export function validateAlarmSettings(data: unknown): AlarmSettings | undefined {
-    if (!data || typeof data !== 'object') { return undefined; }
-    const obj = data as Record<string, unknown>;
-    if (typeof obj.enabled !== 'boolean') { return undefined; }
-    if (typeof obj.hour !== 'number' || obj.hour < 0 || obj.hour > 23 || !Number.isInteger(obj.hour)) { return undefined; }
-    if (typeof obj.minute !== 'number' || obj.minute < 0 || obj.minute > 59 || !Number.isInteger(obj.minute)) { return undefined; }
+    if (!isRecord(data)) { return undefined; }
+
+    const enabled = data.enabled;
+    const hour = data.hour;
+    const minute = data.minute;
+
+    if (typeof enabled !== 'boolean') { return undefined; }
+    if (!isIntInRange(hour, 0, 23)) { return undefined; }
+    if (!isIntInRange(minute, 0, 59)) { return undefined; }
+
     return {
-        enabled: obj.enabled,
-        hour: obj.hour,
-        minute: obj.minute,
-        triggered: typeof obj.triggered === 'boolean' ? obj.triggered : false,
-        lastTriggeredOn: typeof obj.lastTriggeredOn === 'string' ? obj.lastTriggeredOn : undefined
+        enabled,
+        hour,
+        minute,
+        triggered: typeof data.triggered === 'boolean' ? data.triggered : false,
+        lastTriggeredOn: typeof data.lastTriggeredOn === 'string' ? data.lastTriggeredOn : undefined
     };
 }
 

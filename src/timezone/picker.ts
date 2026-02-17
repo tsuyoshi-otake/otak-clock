@@ -1,7 +1,7 @@
 import * as vscode from 'vscode';
 import { TimeZoneInfo } from './types';
 import { timeZones, localizeRegion } from './data';
-import { formatUtcOffsetLabel, getUtcOffsetMinutes } from './offsets';
+import { formatUtcOffsetLabel, getBaseUtcOffsetMinutes, getEffectiveUtcOffsetMinutes } from './offsets';
 import { I18nManager } from '../i18n/I18nManager';
 
 export interface TimeZonePickerItem {
@@ -13,11 +13,8 @@ export interface TimeZonePickerItem {
 export function buildTimeZonePickerItem(
     tz: TimeZoneInfo, now: Date, i18n: I18nManager
 ): TimeZonePickerItem {
-    const baseOffsetMinutes = Math.round(tz.baseUtcOffset * 60);
-    let offsetMinutes = getUtcOffsetMinutes(now, tz.timeZoneId);
-    if (offsetMinutes === 0 && baseOffsetMinutes !== 0) {
-        offsetMinutes = baseOffsetMinutes;
-    }
+    const baseOffsetMinutes = getBaseUtcOffsetMinutes(tz);
+    const offsetMinutes = getEffectiveUtcOffsetMinutes(now, tz);
     const dstSuffix = offsetMinutes !== baseOffsetMinutes ? i18n.t('clock.dstSuffix') : '';
     return {
         label: tz.label,
@@ -65,8 +62,15 @@ export async function selectTimeZoneWithRegion(): Promise<TimeZoneInfo | undefin
     // 選択された地域のタイムゾーンを表示
     const now = new Date();
     const timeZonesInRegion = timeZones.filter(tz => tz.region === selectedRegion.region);
-    const selectedLabel = await vscode.window.showQuickPick(
-        timeZonesInRegion.map(tz => buildTimeZonePickerItem(tz, now, i18n)),
+
+    type TimeZonePickItem = TimeZonePickerItem & { timeZone: TimeZoneInfo };
+    const timeZoneItems: TimeZonePickItem[] = timeZonesInRegion.map(tz => ({
+        ...buildTimeZonePickerItem(tz, now, i18n),
+        timeZone: tz
+    }));
+
+    const selectedTimeZone = await vscode.window.showQuickPick<TimeZonePickItem>(
+        timeZoneItems,
         {
             placeHolder: i18n.t('prompt.selectTimeZone'),
             matchOnDescription: true,
@@ -74,9 +78,9 @@ export async function selectTimeZoneWithRegion(): Promise<TimeZoneInfo | undefin
         }
     );
 
-    if (!selectedLabel) {
+    if (!selectedTimeZone) {
         return undefined;
     }
 
-    return timeZones.find(tz => tz.timeZoneId === selectedLabel.detail);
+    return selectedTimeZone.timeZone;
 }

@@ -1,15 +1,28 @@
 import * as assert from 'assert';
 
-// You can import and use all API from the 'vscode' module
-// as well as import your extension to test it
 import * as vscode from 'vscode';
-// import * as myExtension from '../../extension';
 
 suite('Extension Test Suite', () => {
-	vscode.window.showInformationMessage('Start all tests.');
+    test('registers commands on activation', async () => {
+        const extension = vscode.extensions.getExtension('odangoo.otak-clock');
+        assert.ok(extension, 'Extension not found (expected id: odangoo.otak-clock)');
 
-	test('Sample test', () => {
-		assert.strictEqual(-1, [1, 2, 3].indexOf(5));
-		assert.strictEqual(-1, [1, 2, 3].indexOf(0));
-	});
+        await extension.activate();
+
+        const commands = await vscode.commands.getCommands(true);
+        const expected = [
+            'otak-clock.selectTimeZone1',
+            'otak-clock.selectTimeZone2',
+            'otak-clock.swapTimeZones',
+            'otak-clock.setAlarm',
+            'otak-clock.toggleAlarm',
+            'otak-clock.editAlarm',
+            'otak-clock.deleteAlarm',
+            'otak-clock.listAlarms'
+        ];
+
+        for (const id of expected) {
+            assert.ok(commands.includes(id), `Command not registered: ${id}`);
+        }
+    });
 });

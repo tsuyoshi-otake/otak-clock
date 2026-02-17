@@ -1,5 +1,6 @@
 import { FormatterPair, TimeZoneInfo } from '../timezone/types';
 import { FORMATTER_CACHE_MAX_SIZE } from './constants';
+import { evictOldestIfOverCapacity } from '../utils/cache';
 
 const formatterCache = new Map<string, FormatterPair>();
 
@@ -35,12 +36,7 @@ export function getFormatters(timeZoneId: string): FormatterPair {
         })
     };
 
-    if (formatterCache.size >= FORMATTER_CACHE_MAX_SIZE) {
-        const oldest = formatterCache.keys().next().value;
-        if (oldest !== undefined) {
-            formatterCache.delete(oldest);
-        }
-    }
+    evictOldestIfOverCapacity(formatterCache, FORMATTER_CACHE_MAX_SIZE);
 
     formatterCache.set(timeZoneId, formatters);
     return formatters;
