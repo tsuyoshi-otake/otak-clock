@@ -1,6 +1,6 @@
 <p align="center">
   <h1 align="center">otak-clock</h1>
-  <p align="center">Dual time zone clock and a simple daily alarm for VS Code.</p>
+  <p align="center">Dual time zone clock and up to five daily alarms for VS Code.</p>
 </p>
 
 ---
@@ -27,14 +27,21 @@ To reduce CPU usage, otak-clock updates once per minute (and shows `HH:mm`) when
 2. Select an action (Set, Edit, Toggle, Delete).
 3. Enter a time in `HH:mm` (when setting or editing).
 
-When the alarm triggers, otak-clock shows a notification and flashes the clock status bar items. The alarm uses your local system time and triggers once per day (it resets at midnight).
+You can create up to 5 alarms. When an alarm triggers, otak-clock shows a toast notification, flashes the clock status bar items, and can play a short sound.
+
+Alarm notifications repeat every 30 seconds for up to 3 minutes. From the toast, you can:
+- Stop
+- Snooze for 3 minutes
+- Open the alarm management menu
+
+Alarms use your local system time and trigger once per day (they reset at midnight).
 
 ## Features
 
 - **Dual time zone clocks** — Two independent time zones in the status bar.
 - **Region-based selection** — Pick from common IANA time zones grouped by region.
 - **Helpful tooltips** — Hover to see date and time zone details.
-- **Simple alarm** — One alarm with a notification and a short status bar flash.
+- **Multiple alarms** — Up to 5 alarms with notifications and short status bar flashes.
 - **Persistent preferences** — Keeps your selected time zones and alarm time between sessions.
 - **Localized UI** — Supported UI languages: `ar` (Arabic), `de` (German), `en` (English), `es` (Spanish), `fr` (French), `hi` (Hindi), `id` (Indonesian), `it` (Italian), `ja` (Japanese), `ko` (Korean), `nl` (Dutch), `pt` (Portuguese), `ru` (Russian), `th` (Thai), `tr` (Turkish), `vi` (Vietnamese), `zh-cn` (Chinese, Simplified), `zh-tw` (Chinese, Traditional).
 
@@ -44,12 +51,13 @@ When the alarm triggers, otak-clock shows a notification and flashes the clock s
 
 - Two clock items: click to change each time zone.
 - Use `Swap Time Zones` to quickly flip Time Zone 1 and 2.
-- Alarm item: click to manage the alarm (set, edit, toggle, delete).
+- Alarm item: click to manage alarms (set, edit, toggle, delete).
 
 ### Status Indicators
 
-- `$(bell) HH:mm` — Alarm enabled
-- `$(bell-slash) HH:mm` — Alarm disabled
+- `$(bell) HH:mm JST` — Alarm(s) enabled (local time zone label)
+- `$(bell-slash) HH:mm JST` — All alarms disabled
+- `$(bell) HH:mm JST +N` — Additional alarms exist (`N`)
 - `$(bell) $(add)` — No alarm set (click to set)
 - `HH:mm:ss` — Clock time (when focused)
 - `HH:mm` — Clock time (when unfocused)
@@ -60,6 +68,7 @@ When the alarm triggers, otak-clock shows a notification and flashes the clock s
 No configuration is required, but you can optionally toggle:
 
 - `otak-clock.showTimeZoneInStatusBar` — Show a short time zone label (e.g., UTC, JST) next to each clock in the status bar (default: `true`).
+- `otak-clock.alarmSoundEnabled` — Play a short sound when alarm toasts appear (default: `true`).
 
 ## Commands
 
@@ -87,13 +96,13 @@ Access via the Command Palette (`Cmd/Ctrl+Shift+P`):
 
 - No telemetry or usage analytics.
 - No network requests: everything runs locally.
-- Time zones and the alarm config (time/enabled) are stored in VS Code extension storage and can be synced via Settings Sync.
+- Time zones and alarm config (time/enabled for each alarm) are stored in VS Code extension storage and can be synced via Settings Sync.
 - The alarm "Triggered today" state is stored locally per device (not synced).
 
 ## Troubleshooting
 
 - **Clocks not updating**: Reload the VS Code window and confirm the extension is enabled.
-- **Alarm did not fire**: Verify your system time and that the alarm is enabled (shows `$(bell) HH:mm`).
+- **Alarm did not fire**: Verify your system time and that the alarm is enabled (shows `$(bell) HH:mm JST`).
 
 ## Related Extensions
 

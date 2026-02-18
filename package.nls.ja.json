@@ -7,6 +7,7 @@
   "command.editAlarm": "アラーム時刻を編集",
   "command.deleteAlarm": "アラームを削除",
   "command.manageAlarm": "アラームを管理",
-  "config.showTimeZoneInStatusBar": "ステータスバーの各時計の横にタイムゾーンの短いラベル（例: UTC, JST）を表示します。"
+  "config.showTimeZoneInStatusBar": "ステータスバーの各時計の横にタイムゾーンの短いラベル（例: UTC, JST）を表示します。",
+  "config.alarmSoundEnabled": "アラーム通知の表示時に短い音を再生します。"
 }
 

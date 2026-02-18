@@ -49,6 +49,11 @@
   "alarm.menu.placeholder": "Alarm: {time} ({status}){fired}",
 
   "alarm.notification.title": "Alarm: {time}",
+  "alarm.notification.singleTitle": "Alarm: {time}",
+  "alarm.notification.multiTitle": "Alarms ({count}): {times}",
+  "alarm.notification.action.stop": "Stop",
+  "alarm.notification.action.snooze3m": "Snooze 3 min",
+  "alarm.notification.action.manage": "Open Alarm Menu",
 
   "alarm.statusBar.noAlarmSet": "No alarm set",
   "alarm.statusBar.clickToManage": "Click to manage",

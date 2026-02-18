@@ -7,6 +7,7 @@
   "command.editAlarm": "Edit Alarm Time",
   "command.deleteAlarm": "Delete Alarm",
   "command.manageAlarm": "Manage Alarm",
-  "config.showTimeZoneInStatusBar": "Show a short time zone label (e.g., UTC, JST) next to each clock in the status bar."
+  "config.showTimeZoneInStatusBar": "Show a short time zone label (e.g., UTC, JST) next to each clock in the status bar.",
+  "config.alarmSoundEnabled": "Play a short sound when alarm notifications appear."
 }
 

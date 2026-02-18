@@ -106,6 +106,12 @@ suite('AlarmSettings', () => {
             assert.ok(runtime);
             assert.strictEqual(runtime.timeSignature, '09:00');
         });
+
+        test('accepts snoozeUntilMs when present', () => {
+            const runtime = validateAlarmRuntime({ triggered: false, snoozeUntilMs: 1700000000000 });
+            assert.ok(runtime);
+            assert.strictEqual(runtime.snoozeUntilMs, 1700000000000);
+        });
     });
 
     suite('toAlarmConfig / toAlarmRuntime', () => {
@@ -115,7 +121,8 @@ suite('AlarmSettings', () => {
                 hour: 9,
                 minute: 30,
                 triggered: true,
-                lastTriggeredOn: '2026-02-17'
+                lastTriggeredOn: '2026-02-17',
+                snoozeUntilMs: 1700000000000
             };
 
             assert.deepStrictEqual(toAlarmConfig(alarm), { enabled: true, hour: 9, minute: 30 });
@@ -124,6 +131,7 @@ suite('AlarmSettings', () => {
             assert.strictEqual(runtime.triggered, true);
             assert.strictEqual(runtime.lastTriggeredOn, '2026-02-17');
             assert.strictEqual(runtime.timeSignature, '09:30');
+            assert.strictEqual(runtime.snoozeUntilMs, 1700000000000);
         });
     });
 
@@ -151,8 +159,22 @@ suite('AlarmSettings', () => {
         });
 
         test('returns valid settings for correct data', () => {
-            const result = validateAlarmSettings({ enabled: true, hour: 9, minute: 30, triggered: true, lastTriggeredOn: '2026-02-17' });
-            assert.deepStrictEqual(result, { enabled: true, hour: 9, minute: 30, triggered: true, lastTriggeredOn: '2026-02-17' });
+            const result = validateAlarmSettings({
+                enabled: true,
+                hour: 9,
+                minute: 30,
+                triggered: true,
+                lastTriggeredOn: '2026-02-17',
+                snoozeUntilMs: 1700000000000
+            });
+            assert.deepStrictEqual(result, {
+                enabled: true,
+                hour: 9,
+                minute: 30,
+                triggered: true,
+                lastTriggeredOn: '2026-02-17',
+                snoozeUntilMs: 1700000000000
+            });
         });
 
         test('defaults triggered to false if missing', () => {

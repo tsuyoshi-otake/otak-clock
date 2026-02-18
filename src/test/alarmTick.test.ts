@@ -105,5 +105,38 @@ suite('alarmTick', () => {
             const result = evaluateAlarmTick(alarm, now, 0);
             assert.strictEqual(result.action, 'none');
         });
+
+        test('does not trigger while snoozed', () => {
+            const now = new Date(2024, 5, 15, 9, 1, 0);
+            const alarm = makeAlarm({ snoozeUntilMs: now.getTime() + 60_000 });
+            const result = evaluateAlarmTick(alarm, now, 0);
+            assert.strictEqual(result.action, 'none');
+        });
+
+        test('triggers when snooze expires even if clock time does not match', () => {
+            const now = new Date(2024, 5, 15, 9, 3, 0);
+            const alarm = makeAlarm({
+                hour: 9,
+                minute: 0,
+                triggered: false,
+                snoozeUntilMs: now.getTime()
+            });
+            const result = evaluateAlarmTick(alarm, now, 0);
+            assert.strictEqual(result.action, 'trigger');
+            if (result.action === 'trigger') {
+                assert.strictEqual(result.alarm.snoozeUntilMs, undefined);
+            }
+        });
+
+        test('clears stale snooze from another day', () => {
+            const now = new Date(2024, 5, 16, 8, 0, 0);
+            const snoozeYesterday = new Date(2024, 5, 15, 23, 59, 0).getTime();
+            const alarm = makeAlarm({ snoozeUntilMs: snoozeYesterday });
+            const result = evaluateAlarmTick(alarm, now, 0);
+            assert.strictEqual(result.action, 'save');
+            if (result.action === 'save') {
+                assert.strictEqual(result.alarm.snoozeUntilMs, undefined);
+            }
+        });
     });
 });

@@ -49,6 +49,11 @@
   "alarm.menu.placeholder": "アラーム: {time} ({status}){fired}",
 
   "alarm.notification.title": "アラーム: {time}",
+  "alarm.notification.singleTitle": "アラーム: {time}",
+  "alarm.notification.multiTitle": "アラーム ({count}件): {times}",
+  "alarm.notification.action.stop": "停止",
+  "alarm.notification.action.snooze3m": "3分スヌーズ",
+  "alarm.notification.action.manage": "アラーム管理を開く",
 
   "alarm.statusBar.noAlarmSet": "アラーム未設定",
   "alarm.statusBar.clickToManage": "クリックして管理",

@@ -1,6 +1,7 @@
 import { isRecord } from '../utils/guards';
 
 export interface AlarmConfig {
+    id?: string;
     enabled: boolean;
     hour: number;
     minute: number;
@@ -18,6 +19,10 @@ export interface AlarmRuntime {
      * Used to reset runtime state when the alarm time changes (including via Settings Sync).
      */
     timeSignature?: string;
+    /**
+     * Epoch milliseconds until which the alarm is snoozed.
+     */
+    snoozeUntilMs?: number;
 }
 
 export type AlarmSettings = AlarmConfig & AlarmRuntime;
@@ -38,19 +43,25 @@ function isIntInRange(value: unknown, min: number, max: number): value is number
 export function validateAlarmConfig(data: unknown): AlarmConfig | undefined {
     if (!isRecord(data)) { return undefined; }
 
+    const id = data.id;
     const enabled = data.enabled;
     const hour = data.hour;
     const minute = data.minute;
 
+    if (id !== undefined && typeof id !== 'string') { return undefined; }
     if (typeof enabled !== 'boolean') { return undefined; }
     if (!isIntInRange(hour, 0, 23)) { return undefined; }
     if (!isIntInRange(minute, 0, 59)) { return undefined; }
 
-    return {
+    const config: AlarmConfig = {
         enabled,
         hour,
         minute
     };
+    if (typeof id === 'string' && id.length > 0) {
+        config.id = id;
+    }
+    return config;
 }
 
 export function validateAlarmRuntime(data: unknown): AlarmRuntime | undefined {
@@ -70,15 +81,23 @@ export function validateAlarmRuntime(data: unknown): AlarmRuntime | undefined {
         runtime.timeSignature = data.timeSignature;
     }
 
+    if (typeof data.snoozeUntilMs === 'number' && Number.isFinite(data.snoozeUntilMs) && data.snoozeUntilMs > 0) {
+        runtime.snoozeUntilMs = data.snoozeUntilMs;
+    }
+
     return runtime;
 }
 
 export function toAlarmConfig(alarm: AlarmSettings): AlarmConfig {
-    return {
+    const config: AlarmConfig = {
         enabled: alarm.enabled,
         hour: alarm.hour,
         minute: alarm.minute
     };
+    if (typeof alarm.id === 'string' && alarm.id.length > 0) {
+        config.id = alarm.id;
+    }
+    return config;
 }
 
 export function toAlarmRuntime(alarm: AlarmSettings): AlarmRuntime {
@@ -89,6 +108,9 @@ export function toAlarmRuntime(alarm: AlarmSettings): AlarmRuntime {
 
     if (typeof alarm.lastTriggeredOn === 'string') {
         runtime.lastTriggeredOn = alarm.lastTriggeredOn;
+    }
+    if (typeof alarm.snoozeUntilMs === 'number' && Number.isFinite(alarm.snoozeUntilMs) && alarm.snoozeUntilMs > 0) {
+        runtime.snoozeUntilMs = alarm.snoozeUntilMs;
     }
 
     return runtime;
@@ -115,6 +137,9 @@ export function validateAlarmSettings(data: unknown): AlarmSettings | undefined 
     }
     if (typeof runtime.timeSignature === 'string') {
         merged.timeSignature = runtime.timeSignature;
+    }
+    if (typeof runtime.snoozeUntilMs === 'number' && Number.isFinite(runtime.snoozeUntilMs) && runtime.snoozeUntilMs > 0) {
+        merged.snoozeUntilMs = runtime.snoozeUntilMs;
     }
 
     return merged;
