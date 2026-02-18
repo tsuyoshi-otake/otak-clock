@@ -13,7 +13,7 @@
     "url": "https://github.com/tsuyoshi-otake/otak-clock/issues"
   },
   "homepage": "https://github.com/tsuyoshi-otake/otak-clock#readme",
-  "version": "1.1.24",
+  "version": "1.1.29",
   "engines": {
     "vscode": "^1.90.0"
   },
@@ -72,6 +72,20 @@
           "type": "boolean",
           "default": true,
           "description": "%config.alarmSoundEnabled%",
+          "scope": "application"
+        },
+        "otak-clock.alarmSoundType": {
+          "type": "string",
+          "default": "classic-alarm",
+          "enum": [
+            "classic-alarm",
+            "snake-ish"
+          ],
+          "enumDescriptions": [
+            "%config.alarmSoundType.classic%",
+            "%config.alarmSoundType.snake%"
+          ],
+          "description": "%config.alarmSoundType%",
           "scope": "application"
         }
       }

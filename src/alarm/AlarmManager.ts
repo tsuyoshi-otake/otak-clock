@@ -18,7 +18,11 @@ import {
     saveAlarmsToGlobalState
 } from './storage';
 import { AlarmNotificationController } from './AlarmNotificationController';
-import { pickAlarmId, promptForAlarmTime, showAlarmMenuQuickPick } from './ui';
+import {
+    pickAlarmId,
+    promptForAlarmTime,
+    showAlarmMenuQuickPick
+} from './ui';
 import { pruneNotificationMap, sameAlarms, updateAlarmById } from './stateUtils';
 import { formatLocalAlarmTime } from './localTime';
 export class AlarmManager implements vscode.Disposable {
@@ -34,7 +38,6 @@ export class AlarmManager implements vscode.Disposable {
         this.context = context;
         this.i18n = I18nManager.getInstance();
         this.alarms = loadAlarmsFromGlobalState(this.context);
-
         this.notifier = new AlarmNotificationController({
             i18n: this.i18n,
             statusBars,
@@ -42,7 +45,6 @@ export class AlarmManager implements vscode.Disposable {
             saveAlarms: (alarms) => this.saveAlarms(alarms),
             showAlarmMenu: () => this.showAlarmMenu()
         });
-
         this.alarmStatusBar = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left, STATUS_BAR_ALARM_PRIORITY);
         this.alarmStatusBar.command = 'otak-clock.listAlarms';
         this.updateAlarmStatusBar();

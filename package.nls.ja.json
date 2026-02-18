@@ -8,6 +8,9 @@
   "command.deleteAlarm": "アラームを削除",
   "command.manageAlarm": "アラームを管理",
   "config.showTimeZoneInStatusBar": "ステータスバーの各時計の横にタイムゾーンの短いラベル（例: UTC, JST）を表示します。",
-  "config.alarmSoundEnabled": "アラーム通知の表示時に短い音を再生します。"
+  "config.alarmSoundEnabled": "アラーム通知の表示時に短い音を再生します。",
+  "config.alarmSoundType": "アラーム音のパターンを選択します。",
+  "config.alarmSoundType.classic": "Classic Alarm（A6/C7系）",
+  "config.alarmSoundType.snake": "Snake-ish（レトロゲーム風）"
 }
 

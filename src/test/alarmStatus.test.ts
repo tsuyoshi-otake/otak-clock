@@ -59,13 +59,13 @@ suite('AlarmStatus', () => {
             assert.ok(!state.tooltip.includes('Triggered'), `Unexpected triggered info when disabled: ${state.tooltip}`);
         });
 
-        test('multiple alarms show +count suffix in status bar', () => {
+        test('multiple alarms do not show count suffix in status bar', () => {
             const alarms: AlarmSettings[] = [
                 makeAlarm({ id: 'a1', hour: 9, minute: 0 }),
                 makeAlarm({ id: 'a2', hour: 10, minute: 30 })
             ];
             const state = buildAlarmStatusBarState(alarms, i18n);
-            assert.strictEqual(state.text, `$(bell) ${formatLocalAlarmTime(9, 0)} +1`);
+            assert.strictEqual(state.text, `$(bell) ${formatLocalAlarmTime(9, 0)}`);
         });
 
         test('multiple disabled alarms show bell-slash icon', () => {
@@ -74,7 +74,7 @@ suite('AlarmStatus', () => {
                 makeAlarm({ id: 'a2', enabled: false, hour: 10, minute: 30 })
             ];
             const state = buildAlarmStatusBarState(alarms, i18n);
-            assert.strictEqual(state.text, `$(bell-slash) ${formatLocalAlarmTime(9, 0)} +1`);
+            assert.strictEqual(state.text, `$(bell-slash) ${formatLocalAlarmTime(9, 0)}`);
         });
 
         test('multiple alarm tooltip lists all alarms', () => {

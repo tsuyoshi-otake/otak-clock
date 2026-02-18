@@ -72,26 +72,35 @@ export async function showAlarmMenuQuickPick(
 ): Promise<AlarmMenuSelection | undefined> {
     const now = new Date();
     const items: AlarmMenuItem[] = [];
+
     if (alarms.length < maxAlarms) {
         items.push({
-            label: i18n.t('command.setAlarm'),
+            label: i18n.t('alarm.menu.setSlot', { slot: String(alarms.length + 1) }),
             description: `${alarms.length}/${maxAlarms}`,
             action: 'set'
         });
     }
 
-    for (const alarm of alarms) {
+    for (let i = 0; i < alarms.length; i += 1) {
+        const alarm = alarms[i];
         if (!alarm.id) {
             continue;
         }
+
+        const slot = String(i + 1);
         const time = formatLocalAlarmTime(alarm.hour, alarm.minute, now);
         const status = alarm.enabled ? i18n.t('alarm.status.enabled') : i18n.t('alarm.status.disabled');
         const fired = alarm.enabled && alarm.triggered ? i18n.t('alarm.status.firedTodaySuffix') : '';
         const description = `${time} (${status})${fired}`;
 
-        items.push({ label: alarm.enabled ? i18n.t('alarm.menu.disable') : i18n.t('alarm.menu.enable'), description, action: 'toggle', alarmId: alarm.id });
-        items.push({ label: i18n.t('command.editAlarm'), description, action: 'edit', alarmId: alarm.id });
-        items.push({ label: i18n.t('command.deleteAlarm'), description, action: 'delete', alarmId: alarm.id });
+        items.push({
+            label: alarm.enabled ? i18n.t('alarm.menu.disableSlot', { slot }) : i18n.t('alarm.menu.enableSlot', { slot }),
+            description,
+            action: 'toggle',
+            alarmId: alarm.id
+        });
+        items.push({ label: i18n.t('alarm.menu.editSlot', { slot }), description, action: 'edit', alarmId: alarm.id });
+        items.push({ label: i18n.t('alarm.menu.deleteSlot', { slot }), description, action: 'delete', alarmId: alarm.id });
     }
 
     const picked = await vscode.window.showQuickPick(items, { placeHolder: `${alarms.length}/${maxAlarms}` });

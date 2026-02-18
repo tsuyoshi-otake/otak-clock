@@ -43,9 +43,7 @@ export function buildAlarmStatusBarState(
 
     const displayAlarm = alarms.find((alarm) => alarm.enabled) ?? alarms[0];
     const icon = alarms.some((alarm) => alarm.enabled) ? '$(bell)' : '$(bell-slash)';
-    const extraCount = alarms.length - 1;
-    const extraSuffix = extraCount > 0 ? ` +${extraCount}` : '';
-    const text = `${icon} ${formatLocalAlarmTime(displayAlarm.hour, displayAlarm.minute, now)}${extraSuffix}`;
+    const text = `${icon} ${formatLocalAlarmTime(displayAlarm.hour, displayAlarm.minute, now)}`;
 
     const lines: string[] = alarms.map((alarm, index) => {
         const status = alarm.enabled ? i18n.t('alarm.status.enabled') : i18n.t('alarm.status.disabled');

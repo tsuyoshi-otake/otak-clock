@@ -27,9 +27,9 @@ To reduce CPU usage, otak-clock updates once per minute (and shows `HH:mm`) when
 2. Select an action (Set, Edit, Toggle, Delete).
 3. Enter a time in `HH:mm` (when setting or editing).
 
-You can create up to 5 alarms. When an alarm triggers, otak-clock shows a toast notification, flashes the clock status bar items, and can play a short sound.
+You can create up to 5 alarms. When an alarm triggers, otak-clock shows a toast notification and flashes the clock status bar items.
 
-Alarm notifications repeat every 30 seconds for up to 3 minutes. From the toast, you can:
+Alarm notifications repeat every 30 seconds until you press Stop. From the toast, you can:
 - Stop
 - Snooze for 3 minutes
 - Open the alarm management menu
@@ -57,7 +57,6 @@ Alarms use your local system time and trigger once per day (they reset at midnig
 
 - `$(bell) HH:mm JST` — Alarm(s) enabled (local time zone label)
 - `$(bell-slash) HH:mm JST` — All alarms disabled
-- `$(bell) HH:mm JST +N` — Additional alarms exist (`N`)
 - `$(bell) $(add)` — No alarm set (click to set)
 - `HH:mm:ss` — Clock time (when focused)
 - `HH:mm` — Clock time (when unfocused)
@@ -68,7 +67,6 @@ Alarms use your local system time and trigger once per day (they reset at midnig
 No configuration is required, but you can optionally toggle:
 
 - `otak-clock.showTimeZoneInStatusBar` — Show a short time zone label (e.g., UTC, JST) next to each clock in the status bar (default: `true`).
-- `otak-clock.alarmSoundEnabled` — Play a short sound when alarm toasts appear (default: `true`).
 
 ## Commands
 
