@@ -34,9 +34,11 @@
   "alarm.action.setAlarm": "Imposta sveglia",
   "alarm.message.enabled": "Sveglia attivata ({time})",
   "alarm.message.disabled": "Sveglia disattivata",
+  "alarm.message.soundUpdated": "Suono sveglia aggiornato: {sound}",
   "alarm.confirm.delete": "Eliminare la sveglia ({time})?",
   "alarm.action.delete": "Elimina",
   "alarm.message.deleted": "Sveglia eliminata.",
+  "alarm.error.maxAlarmsReached": "È possibile impostare fino a {max} sveglie.",
 
   "alarm.status.enabled": "Attivata",
   "alarm.status.disabled": "Disattivata",
@@ -46,9 +48,26 @@
   "alarm.menu.createDescription": "Crea una sveglia",
   "alarm.menu.enable": "Attiva sveglia",
   "alarm.menu.disable": "Disattiva sveglia",
+  "alarm.menu.setSlot": "Imposta ora sveglia {slot}",
+  "alarm.menu.enableSlot": "Attiva sveglia {slot}",
+  "alarm.menu.disableSlot": "Disattiva sveglia {slot}",
+  "alarm.menu.editSlot": "Modifica ora sveglia {slot}",
+  "alarm.menu.deleteSlot": "Elimina sveglia {slot}",
+  "alarm.menu.sound": "Imposta suono sveglia",
+  "alarm.menu.selectSound": "Seleziona suono sveglia",
+  "alarm.sound.classic": "Classic Alarm",
+  "alarm.sound.snake": "Snake-ish",
   "alarm.menu.placeholder": "Sveglia: {time} ({status}){fired}",
+  "alarm.menu.selectToEdit": "Seleziona una sveglia da modificare",
+  "alarm.menu.selectToToggle": "Seleziona una sveglia da attivare/disattivare",
+  "alarm.menu.selectToDelete": "Seleziona una sveglia da eliminare",
 
   "alarm.notification.title": "Sveglia: {time}",
+  "alarm.notification.singleTitle": "Sveglia: {time}",
+  "alarm.notification.multiTitle": "Sveglie ({count}): {times}",
+  "alarm.notification.action.stop": "Ferma",
+  "alarm.notification.action.snooze3m": "Snooze 3 min",
+  "alarm.notification.action.manage": "Apri menu sveglie",
 
   "alarm.statusBar.noAlarmSet": "Nessuna sveglia impostata",
   "alarm.statusBar.clickToManage": "Clicca per gestire",
@@ -56,4 +75,3 @@
   "alarm.statusBar.status": "Stato: {status}",
   "alarm.statusBar.triggeredToday": "Attivata: Oggi"
 }
-

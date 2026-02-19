@@ -190,6 +190,9 @@ export function loadAlarmsFromGlobalState(context: vscode.ExtensionContext): Ala
         if (typeof runtime.snoozeUntilMs === 'number') {
             merged.snoozeUntilMs = runtime.snoozeUntilMs;
         }
+        if (typeof runtime.dismissedOn === 'string') {
+            merged.dismissedOn = runtime.dismissedOn;
+        }
         alarms.push(merged);
     }
 

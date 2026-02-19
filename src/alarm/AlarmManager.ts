@@ -4,7 +4,7 @@ import {
     createDefaultAlarm,
     formatTime
 } from './AlarmSettings';
-import { evaluateAlarmTick } from './alarmTick';
+import { evaluateAlarmTick, toLocalDateKey } from './alarmTick';
 import { I18nManager } from '../i18n/I18nManager';
 import { sleep } from '../utils/timing';
 import { MAX_ALARMS } from './constants';
@@ -43,7 +43,9 @@ export class AlarmManager implements vscode.Disposable {
             statusBars,
             getAlarms: () => this.alarms,
             saveAlarms: (alarms) => this.saveAlarms(alarms),
-            showAlarmMenu: () => this.showAlarmMenu()
+            showAlarmMenu: () => this.showAlarmMenu(),
+            refreshAlarms: () => this.refreshFromGlobalState(),
+            dismissAlarms: (alarmIds) => this.dismissAlarms(alarmIds)
         });
         this.alarmStatusBar = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left, STATUS_BAR_ALARM_PRIORITY);
         this.alarmStatusBar.command = 'otak-clock.listAlarms';
@@ -75,6 +77,18 @@ export class AlarmManager implements vscode.Disposable {
         return this.alarms.find((alarm) => alarm.id === alarmId);
     }
 
+    private dismissAlarms(alarmIds: string[]): void {
+        const idSet = new Set(alarmIds);
+        const todayKey = toLocalDateKey(new Date());
+        const updated = this.alarms.map((alarm) => {
+            if (!alarm.id || !idSet.has(alarm.id)) {
+                return alarm;
+            }
+            return { ...alarm, dismissedOn: todayKey };
+        });
+        this.saveAlarms(updated);
+    }
+
     private applyUpdateById(alarmId: string, updater: (alarm: AlarmSettings) => AlarmSettings): boolean {
         const updated = updateAlarmById(this.alarms, alarmId, updater);
         if (!updated.found) {
@@ -88,7 +102,7 @@ export class AlarmManager implements vscode.Disposable {
     async setAlarm(): Promise<void> {
         this.refreshFromGlobalState();
         if (this.alarms.length >= MAX_ALARMS) {
-            void vscode.window.showWarningMessage(`You can set up to ${MAX_ALARMS} alarms.`);
+            void vscode.window.showWarningMessage(this.i18n.t('alarm.error.maxAlarmsReached', { max: String(MAX_ALARMS) }));
             return;
         }
 
@@ -117,7 +131,7 @@ export class AlarmManager implements vscode.Disposable {
 
     async editAlarm(alarmId?: string): Promise<void> {
         this.refreshFromGlobalState();
-        const targetId = alarmId ?? await pickAlarmId(this.alarms, this.i18n, 'Select an alarm to edit');
+        const targetId = alarmId ?? await pickAlarmId(this.alarms, this.i18n, this.i18n.t('alarm.menu.selectToEdit'));
         if (!targetId) {
             if (this.alarms.length === 0) {
                 await this.setAlarm();
@@ -157,7 +171,7 @@ export class AlarmManager implements vscode.Disposable {
 
     async toggleAlarm(alarmId?: string): Promise<void> {
         this.refreshFromGlobalState();
-        const targetId = alarmId ?? await pickAlarmId(this.alarms, this.i18n, 'Select an alarm to toggle');
+        const targetId = alarmId ?? await pickAlarmId(this.alarms, this.i18n, this.i18n.t('alarm.menu.selectToToggle'));
         if (!targetId) {
             return;
         }
@@ -180,7 +194,7 @@ export class AlarmManager implements vscode.Disposable {
 
     async deleteAlarm(alarmId?: string): Promise<void> {
         this.refreshFromGlobalState();
-        const targetId = alarmId ?? await pickAlarmId(this.alarms, this.i18n, 'Select an alarm to delete');
+        const targetId = alarmId ?? await pickAlarmId(this.alarms, this.i18n, this.i18n.t('alarm.menu.selectToDelete'));
         if (!targetId) {
             return;
         }
@@ -236,6 +250,7 @@ export class AlarmManager implements vscode.Disposable {
 
     tick(now: Date): void {
         this.refreshFromGlobalState();
+        this.notifier.checkForExternalDismissal();
         if (this.alarms.length === 0) {
             return;
         }

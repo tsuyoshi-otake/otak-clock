@@ -34,9 +34,11 @@
   "alarm.action.setAlarm": "Définir une alarme",
   "alarm.message.enabled": "Alarme activée ({time})",
   "alarm.message.disabled": "Alarme désactivée",
+  "alarm.message.soundUpdated": "Son d'alarme mis à jour : {sound}",
   "alarm.confirm.delete": "Supprimer l'alarme ({time}) ?",
   "alarm.action.delete": "Supprimer",
   "alarm.message.deleted": "Alarme supprimée.",
+  "alarm.error.maxAlarmsReached": "Vous pouvez définir jusqu'à {max} alarmes.",
 
   "alarm.status.enabled": "Activée",
   "alarm.status.disabled": "Désactivée",
@@ -46,9 +48,26 @@
   "alarm.menu.createDescription": "Créer une alarme",
   "alarm.menu.enable": "Activer l'alarme",
   "alarm.menu.disable": "Désactiver l'alarme",
+  "alarm.menu.setSlot": "Définir l'heure de l'alarme {slot}",
+  "alarm.menu.enableSlot": "Activer l'alarme {slot}",
+  "alarm.menu.disableSlot": "Désactiver l'alarme {slot}",
+  "alarm.menu.editSlot": "Modifier l'heure de l'alarme {slot}",
+  "alarm.menu.deleteSlot": "Supprimer l'alarme {slot}",
+  "alarm.menu.sound": "Définir le son de l'alarme",
+  "alarm.menu.selectSound": "Sélectionner un son d'alarme",
+  "alarm.sound.classic": "Classic Alarm",
+  "alarm.sound.snake": "Snake-ish",
   "alarm.menu.placeholder": "Alarme : {time} ({status}){fired}",
+  "alarm.menu.selectToEdit": "Sélectionner une alarme à modifier",
+  "alarm.menu.selectToToggle": "Sélectionner une alarme à activer/désactiver",
+  "alarm.menu.selectToDelete": "Sélectionner une alarme à supprimer",
 
   "alarm.notification.title": "Alarme : {time}",
+  "alarm.notification.singleTitle": "Alarme : {time}",
+  "alarm.notification.multiTitle": "Alarmes ({count}) : {times}",
+  "alarm.notification.action.stop": "Arrêter",
+  "alarm.notification.action.snooze3m": "Répéter dans 3 min",
+  "alarm.notification.action.manage": "Ouvrir le menu des alarmes",
 
   "alarm.statusBar.noAlarmSet": "Aucune alarme",
   "alarm.statusBar.clickToManage": "Cliquez pour gérer",
@@ -56,4 +75,3 @@
   "alarm.statusBar.status": "Statut : {status}",
   "alarm.statusBar.triggeredToday": "Déclenchée : Aujourd'hui"
 }
-

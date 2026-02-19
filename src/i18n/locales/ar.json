@@ -34,9 +34,11 @@
   "alarm.action.setAlarm": "تعيين منبه",
   "alarm.message.enabled": "تم تشغيل المنبه ({time})",
   "alarm.message.disabled": "تم إيقاف المنبه",
+  "alarm.message.soundUpdated": "تم تحديث صوت المنبه: {sound}",
   "alarm.confirm.delete": "حذف المنبه ({time})؟",
   "alarm.action.delete": "حذف",
   "alarm.message.deleted": "تم حذف المنبه.",
+  "alarm.error.maxAlarmsReached": "يمكنك تعيين ما يصل إلى {max} منبهات.",
 
   "alarm.status.enabled": "مفعّل",
   "alarm.status.disabled": "معطّل",
@@ -46,9 +48,26 @@
   "alarm.menu.createDescription": "إنشاء منبه",
   "alarm.menu.enable": "تشغيل المنبه",
   "alarm.menu.disable": "إيقاف المنبه",
+  "alarm.menu.setSlot": "تعيين وقت المنبه {slot}",
+  "alarm.menu.enableSlot": "تشغيل المنبه {slot}",
+  "alarm.menu.disableSlot": "إيقاف المنبه {slot}",
+  "alarm.menu.editSlot": "تعديل وقت المنبه {slot}",
+  "alarm.menu.deleteSlot": "حذف المنبه {slot}",
+  "alarm.menu.sound": "تعيين صوت المنبه",
+  "alarm.menu.selectSound": "اختر صوت المنبه",
+  "alarm.sound.classic": "Classic Alarm",
+  "alarm.sound.snake": "Snake-ish",
   "alarm.menu.placeholder": "المنبه: {time} ({status}){fired}",
+  "alarm.menu.selectToEdit": "اختر منبهاً للتعديل",
+  "alarm.menu.selectToToggle": "اختر منبهاً للتشغيل/الإيقاف",
+  "alarm.menu.selectToDelete": "اختر منبهاً للحذف",
 
   "alarm.notification.title": "المنبه: {time}",
+  "alarm.notification.singleTitle": "المنبه: {time}",
+  "alarm.notification.multiTitle": "المنبهات ({count}): {times}",
+  "alarm.notification.action.stop": "إيقاف",
+  "alarm.notification.action.snooze3m": "غفوة 3 دقائق",
+  "alarm.notification.action.manage": "فتح قائمة المنبهات",
 
   "alarm.statusBar.noAlarmSet": "لا يوجد منبه",
   "alarm.statusBar.clickToManage": "انقر للإدارة",
@@ -56,4 +75,3 @@
   "alarm.statusBar.status": "الحالة: {status}",
   "alarm.statusBar.triggeredToday": "تم تشغيله: اليوم"
 }
-

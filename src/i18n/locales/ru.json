@@ -34,9 +34,11 @@
   "alarm.action.setAlarm": "Установить будильник",
   "alarm.message.enabled": "Будильник включен ({time})",
   "alarm.message.disabled": "Будильник выключен",
+  "alarm.message.soundUpdated": "Звук будильника обновлён: {sound}",
   "alarm.confirm.delete": "Удалить будильник ({time})?",
   "alarm.action.delete": "Удалить",
   "alarm.message.deleted": "Будильник удален.",
+  "alarm.error.maxAlarmsReached": "Вы можете установить до {max} будильников.",
 
   "alarm.status.enabled": "Включен",
   "alarm.status.disabled": "Выключен",
@@ -46,9 +48,26 @@
   "alarm.menu.createDescription": "Создать будильник",
   "alarm.menu.enable": "Включить будильник",
   "alarm.menu.disable": "Выключить будильник",
+  "alarm.menu.setSlot": "Задать время будильника {slot}",
+  "alarm.menu.enableSlot": "Включить будильник {slot}",
+  "alarm.menu.disableSlot": "Выключить будильник {slot}",
+  "alarm.menu.editSlot": "Изменить время будильника {slot}",
+  "alarm.menu.deleteSlot": "Удалить будильник {slot}",
+  "alarm.menu.sound": "Задать звук будильника",
+  "alarm.menu.selectSound": "Выбрать звук будильника",
+  "alarm.sound.classic": "Classic Alarm",
+  "alarm.sound.snake": "Snake-ish",
   "alarm.menu.placeholder": "Будильник: {time} ({status}){fired}",
+  "alarm.menu.selectToEdit": "Выберите будильник для изменения",
+  "alarm.menu.selectToToggle": "Выберите будильник для включения/выключения",
+  "alarm.menu.selectToDelete": "Выберите будильник для удаления",
 
   "alarm.notification.title": "Будильник: {time}",
+  "alarm.notification.singleTitle": "Будильник: {time}",
+  "alarm.notification.multiTitle": "Будильники ({count}): {times}",
+  "alarm.notification.action.stop": "Стоп",
+  "alarm.notification.action.snooze3m": "Отложить на 3 мин",
+  "alarm.notification.action.manage": "Открыть меню будильника",
 
   "alarm.statusBar.noAlarmSet": "Будильник не установлен",
   "alarm.statusBar.clickToManage": "Нажмите для управления",
@@ -56,4 +75,3 @@
   "alarm.statusBar.status": "Статус: {status}",
   "alarm.statusBar.triggeredToday": "Сработал: Сегодня"
 }
-

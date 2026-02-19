@@ -23,6 +23,12 @@ export interface AlarmRuntime {
      * Epoch milliseconds until which the alarm is snoozed.
      */
     snoozeUntilMs?: number;
+    /**
+     * Local date key (YYYY-MM-DD) when the user manually dismissed this alarm.
+     * Written to globalState when Stop is pressed so other VS Code windows can
+     * detect the dismissal and stop their own notification sessions.
+     */
+    dismissedOn?: string;
 }
 
 export type AlarmSettings = AlarmConfig & AlarmRuntime;
@@ -85,6 +91,10 @@ export function validateAlarmRuntime(data: unknown): AlarmRuntime | undefined {
         runtime.snoozeUntilMs = data.snoozeUntilMs;
     }
 
+    if (typeof data.dismissedOn === 'string') {
+        runtime.dismissedOn = data.dismissedOn;
+    }
+
     return runtime;
 }
 
@@ -111,6 +121,10 @@ export function toAlarmRuntime(alarm: AlarmSettings): AlarmRuntime {
     }
     if (typeof alarm.snoozeUntilMs === 'number' && Number.isFinite(alarm.snoozeUntilMs) && alarm.snoozeUntilMs > 0) {
         runtime.snoozeUntilMs = alarm.snoozeUntilMs;
+    }
+
+    if (typeof alarm.dismissedOn === 'string') {
+        runtime.dismissedOn = alarm.dismissedOn;
     }
 
     return runtime;
@@ -140,6 +154,10 @@ export function validateAlarmSettings(data: unknown): AlarmSettings | undefined 
     }
     if (typeof runtime.snoozeUntilMs === 'number' && Number.isFinite(runtime.snoozeUntilMs) && runtime.snoozeUntilMs > 0) {
         merged.snoozeUntilMs = runtime.snoozeUntilMs;
+    }
+
+    if (typeof runtime.dismissedOn === 'string') {
+        merged.dismissedOn = runtime.dismissedOn;
     }
 
     return merged;

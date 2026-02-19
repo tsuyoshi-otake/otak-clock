@@ -34,9 +34,11 @@
   "alarm.action.setAlarm": "Definir alarme",
   "alarm.message.enabled": "Alarme ativado ({time})",
   "alarm.message.disabled": "Alarme desativado",
+  "alarm.message.soundUpdated": "Som do alarme atualizado: {sound}",
   "alarm.confirm.delete": "Excluir alarme ({time})?",
   "alarm.action.delete": "Excluir",
   "alarm.message.deleted": "Alarme excluído.",
+  "alarm.error.maxAlarmsReached": "Você pode definir até {max} alarmes.",
 
   "alarm.status.enabled": "Ativado",
   "alarm.status.disabled": "Desativado",
@@ -46,9 +48,26 @@
   "alarm.menu.createDescription": "Criar um alarme",
   "alarm.menu.enable": "Ativar alarme",
   "alarm.menu.disable": "Desativar alarme",
+  "alarm.menu.setSlot": "Definir hora do alarme {slot}",
+  "alarm.menu.enableSlot": "Ativar alarme {slot}",
+  "alarm.menu.disableSlot": "Desativar alarme {slot}",
+  "alarm.menu.editSlot": "Editar hora do alarme {slot}",
+  "alarm.menu.deleteSlot": "Excluir alarme {slot}",
+  "alarm.menu.sound": "Definir som do alarme",
+  "alarm.menu.selectSound": "Selecionar som do alarme",
+  "alarm.sound.classic": "Classic Alarm",
+  "alarm.sound.snake": "Snake-ish",
   "alarm.menu.placeholder": "Alarme: {time} ({status}){fired}",
+  "alarm.menu.selectToEdit": "Selecionar um alarme para editar",
+  "alarm.menu.selectToToggle": "Selecionar um alarme para ativar/desativar",
+  "alarm.menu.selectToDelete": "Selecionar um alarme para excluir",
 
   "alarm.notification.title": "Alarme: {time}",
+  "alarm.notification.singleTitle": "Alarme: {time}",
+  "alarm.notification.multiTitle": "Alarmes ({count}): {times}",
+  "alarm.notification.action.stop": "Parar",
+  "alarm.notification.action.snooze3m": "Soneca 3 min",
+  "alarm.notification.action.manage": "Abrir menu de alarmes",
 
   "alarm.statusBar.noAlarmSet": "Nenhum alarme definido",
   "alarm.statusBar.clickToManage": "Clique para gerenciar",
@@ -56,4 +75,3 @@
   "alarm.statusBar.status": "Status: {status}",
   "alarm.statusBar.triggeredToday": "Acionado: Hoje"
 }
-

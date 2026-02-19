@@ -34,9 +34,11 @@
   "alarm.action.setAlarm": "अलार्म सेट करें",
   "alarm.message.enabled": "अलार्म चालू ({time})",
   "alarm.message.disabled": "अलार्म बंद",
+  "alarm.message.soundUpdated": "अलार्म ध्वनि अपडेट की गई: {sound}",
   "alarm.confirm.delete": "अलार्म ({time}) हटाएँ?",
   "alarm.action.delete": "हटाएँ",
   "alarm.message.deleted": "अलार्म हटाया गया।",
+  "alarm.error.maxAlarmsReached": "आप अधिकतम {max} अलार्म सेट कर सकते हैं।",
 
   "alarm.status.enabled": "चालू",
   "alarm.status.disabled": "बंद",
@@ -46,9 +48,26 @@
   "alarm.menu.createDescription": "अलार्म बनाएँ",
   "alarm.menu.enable": "अलार्म चालू करें",
   "alarm.menu.disable": "अलार्म बंद करें",
+  "alarm.menu.setSlot": "अलार्म {slot} समय सेट करें",
+  "alarm.menu.enableSlot": "अलार्म {slot} चालू करें",
+  "alarm.menu.disableSlot": "अलार्म {slot} बंद करें",
+  "alarm.menu.editSlot": "अलार्म {slot} समय संपादित करें",
+  "alarm.menu.deleteSlot": "अलार्म {slot} हटाएँ",
+  "alarm.menu.sound": "अलार्म ध्वनि सेट करें",
+  "alarm.menu.selectSound": "अलार्म ध्वनि चुनें",
+  "alarm.sound.classic": "Classic Alarm",
+  "alarm.sound.snake": "Snake-ish",
   "alarm.menu.placeholder": "अलार्म: {time} ({status}){fired}",
+  "alarm.menu.selectToEdit": "संपादित करने के लिए अलार्म चुनें",
+  "alarm.menu.selectToToggle": "चालू/बंद करने के लिए अलार्म चुनें",
+  "alarm.menu.selectToDelete": "हटाने के लिए अलार्म चुनें",
 
   "alarm.notification.title": "अलार्म: {time}",
+  "alarm.notification.singleTitle": "अलार्म: {time}",
+  "alarm.notification.multiTitle": "अलार्म ({count}): {times}",
+  "alarm.notification.action.stop": "रोकें",
+  "alarm.notification.action.snooze3m": "3 मिनट स्नूज़",
+  "alarm.notification.action.manage": "अलार्म मेनू खोलें",
 
   "alarm.statusBar.noAlarmSet": "कोई अलार्म सेट नहीं है",
   "alarm.statusBar.clickToManage": "प्रबंधित करने के लिए क्लिक करें",
@@ -56,4 +75,3 @@
   "alarm.statusBar.status": "स्थिति: {status}",
   "alarm.statusBar.triggeredToday": "ट्रिगर: आज"
 }
-

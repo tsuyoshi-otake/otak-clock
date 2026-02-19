@@ -34,9 +34,11 @@
   "alarm.action.setAlarm": "Establecer alarma",
   "alarm.message.enabled": "Alarma activada ({time})",
   "alarm.message.disabled": "Alarma desactivada",
+  "alarm.message.soundUpdated": "Sonido de alarma actualizado: {sound}",
   "alarm.confirm.delete": "¿Eliminar alarma ({time})?",
   "alarm.action.delete": "Eliminar",
   "alarm.message.deleted": "Alarma eliminada.",
+  "alarm.error.maxAlarmsReached": "Puede establecer hasta {max} alarmas.",
 
   "alarm.status.enabled": "Activada",
   "alarm.status.disabled": "Desactivada",
@@ -46,9 +48,26 @@
   "alarm.menu.createDescription": "Crear una alarma",
   "alarm.menu.enable": "Activar alarma",
   "alarm.menu.disable": "Desactivar alarma",
+  "alarm.menu.setSlot": "Establecer hora de alarma {slot}",
+  "alarm.menu.enableSlot": "Activar alarma {slot}",
+  "alarm.menu.disableSlot": "Desactivar alarma {slot}",
+  "alarm.menu.editSlot": "Editar hora de alarma {slot}",
+  "alarm.menu.deleteSlot": "Eliminar alarma {slot}",
+  "alarm.menu.sound": "Establecer sonido de alarma",
+  "alarm.menu.selectSound": "Seleccionar sonido de alarma",
+  "alarm.sound.classic": "Classic Alarm",
+  "alarm.sound.snake": "Snake-ish",
   "alarm.menu.placeholder": "Alarma: {time} ({status}){fired}",
+  "alarm.menu.selectToEdit": "Seleccionar una alarma para editar",
+  "alarm.menu.selectToToggle": "Seleccionar una alarma para activar/desactivar",
+  "alarm.menu.selectToDelete": "Seleccionar una alarma para eliminar",
 
   "alarm.notification.title": "Alarma: {time}",
+  "alarm.notification.singleTitle": "Alarma: {time}",
+  "alarm.notification.multiTitle": "Alarmas ({count}): {times}",
+  "alarm.notification.action.stop": "Detener",
+  "alarm.notification.action.snooze3m": "Posponer 3 min",
+  "alarm.notification.action.manage": "Abrir menú de alarmas",
 
   "alarm.statusBar.noAlarmSet": "No hay alarma establecida",
   "alarm.statusBar.clickToManage": "Haga clic para gestionar",
@@ -56,4 +75,3 @@
   "alarm.statusBar.status": "Estado: {status}",
   "alarm.statusBar.triggeredToday": "Activada: Hoy"
 }
-

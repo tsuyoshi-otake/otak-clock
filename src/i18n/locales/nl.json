@@ -34,9 +34,11 @@
   "alarm.action.setAlarm": "Alarm instellen",
   "alarm.message.enabled": "Alarm ingeschakeld ({time})",
   "alarm.message.disabled": "Alarm uitgeschakeld",
+  "alarm.message.soundUpdated": "Alarmgeluid bijgewerkt: {sound}",
   "alarm.confirm.delete": "Alarm ({time}) verwijderen?",
   "alarm.action.delete": "Verwijderen",
   "alarm.message.deleted": "Alarm verwijderd.",
+  "alarm.error.maxAlarmsReached": "U kunt maximaal {max} alarmen instellen.",
 
   "alarm.status.enabled": "Ingeschakeld",
   "alarm.status.disabled": "Uitgeschakeld",
@@ -46,9 +48,26 @@
   "alarm.menu.createDescription": "Alarm maken",
   "alarm.menu.enable": "Alarm inschakelen",
   "alarm.menu.disable": "Alarm uitschakelen",
+  "alarm.menu.setSlot": "Alarmtijd {slot} instellen",
+  "alarm.menu.enableSlot": "Alarm {slot} inschakelen",
+  "alarm.menu.disableSlot": "Alarm {slot} uitschakelen",
+  "alarm.menu.editSlot": "Alarmtijd {slot} bewerken",
+  "alarm.menu.deleteSlot": "Alarm {slot} verwijderen",
+  "alarm.menu.sound": "Alarmgeluid instellen",
+  "alarm.menu.selectSound": "Alarmgeluid selecteren",
+  "alarm.sound.classic": "Classic Alarm",
+  "alarm.sound.snake": "Snake-ish",
   "alarm.menu.placeholder": "Alarm: {time} ({status}){fired}",
+  "alarm.menu.selectToEdit": "Selecteer een alarm om te bewerken",
+  "alarm.menu.selectToToggle": "Selecteer een alarm om in/uit te schakelen",
+  "alarm.menu.selectToDelete": "Selecteer een alarm om te verwijderen",
 
   "alarm.notification.title": "Alarm: {time}",
+  "alarm.notification.singleTitle": "Alarm: {time}",
+  "alarm.notification.multiTitle": "Alarmen ({count}): {times}",
+  "alarm.notification.action.stop": "Stoppen",
+  "alarm.notification.action.snooze3m": "Snooze 3 min",
+  "alarm.notification.action.manage": "Alarmmenu openen",
 
   "alarm.statusBar.noAlarmSet": "Geen alarm ingesteld",
   "alarm.statusBar.clickToManage": "Klik om te beheren",
@@ -56,4 +75,3 @@
   "alarm.statusBar.status": "Status: {status}",
   "alarm.statusBar.triggeredToday": "Afgegaan: Vandaag"
 }
-

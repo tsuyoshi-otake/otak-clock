@@ -7,6 +7,7 @@ import {
 } from './constants';
 import { I18nManager } from '../i18n/I18nManager';
 import { formatLocalAlarmTime } from './localTime';
+import { toLocalDateKey } from './alarmTick';
 
 interface AlarmNotificationSession {
     id: string;
@@ -21,6 +22,10 @@ export interface AlarmNotificationControllerOptions {
     getAlarms: () => AlarmSettings[];
     saveAlarms: (alarms: AlarmSettings[]) => void;
     showAlarmMenu: () => Promise<void>;
+    /** Re-reads alarm state from globalState. Called before each repeat toast to detect external changes. */
+    refreshAlarms: () => void;
+    /** Persists dismissedOn for the given alarm IDs so other windows can stop their sessions. */
+    dismissAlarms: (alarmIds: string[]) => void;
 }
 
 export class AlarmNotificationController implements vscode.Disposable {
@@ -128,9 +133,37 @@ export class AlarmNotificationController implements vscode.Disposable {
             return;
         }
 
+        // Refresh from globalState to detect Stop pressed in another window.
+        this.options.refreshAlarms();
+        if (this.isSessionDismissed(session.alarmIds)) {
+            this.stopSession(session.id);
+            return;
+        }
+
         this.showToast(session.id, session.alarmIds);
         session.nextNotifyAtMs = nowMs + ALARM_REPEAT_INTERVAL_MS;
         this.scheduleTimer();
+    }
+
+    private isSessionDismissed(alarmIds: string[]): boolean {
+        const todayKey = toLocalDateKey(new Date());
+        const alarms = this.collectSessionAlarms(alarmIds);
+        return alarms.length > 0 && alarms.every((alarm) => alarm.dismissedOn === todayKey);
+    }
+
+    /**
+     * Called by AlarmManager on every tick (every second when focused, every minute when unfocused).
+     * Detects Stop pressed in another window via dismissedOn in globalState and stops this session.
+     * Note: refreshAlarms() must be called before this to ensure fresh state.
+     */
+    checkForExternalDismissal(): void {
+        const session = this.session;
+        if (!session || session.stopped) {
+            return;
+        }
+        if (this.isSessionDismissed(session.alarmIds)) {
+            this.stopSession(session.id);
+        }
     }
 
     private collectSessionAlarms(alarmIds: string[]): AlarmSettings[] {
@@ -197,6 +230,7 @@ export class AlarmNotificationController implements vscode.Disposable {
             }
 
             if (picked === stopLabel) {
+                this.options.dismissAlarms(current.alarmIds);
                 this.stopSession(sessionId);
                 return;
             }

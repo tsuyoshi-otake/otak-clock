@@ -34,9 +34,11 @@
   "alarm.action.setAlarm": "Alarm ayarla",
   "alarm.message.enabled": "Alarm etkin ({time})",
   "alarm.message.disabled": "Alarm devre dışı",
+  "alarm.message.soundUpdated": "Alarm sesi güncellendi: {sound}",
   "alarm.confirm.delete": "Alarm ({time}) silinsin mi?",
   "alarm.action.delete": "Sil",
   "alarm.message.deleted": "Alarm silindi.",
+  "alarm.error.maxAlarmsReached": "En fazla {max} alarm ayarlayabilirsiniz.",
 
   "alarm.status.enabled": "Etkin",
   "alarm.status.disabled": "Devre dışı",
@@ -46,9 +48,26 @@
   "alarm.menu.createDescription": "Alarm oluştur",
   "alarm.menu.enable": "Alarmı etkinleştir",
   "alarm.menu.disable": "Alarmı devre dışı bırak",
+  "alarm.menu.setSlot": "Alarm {slot} saatini ayarla",
+  "alarm.menu.enableSlot": "Alarm {slot} etkinleştir",
+  "alarm.menu.disableSlot": "Alarm {slot} devre dışı bırak",
+  "alarm.menu.editSlot": "Alarm {slot} saatini düzenle",
+  "alarm.menu.deleteSlot": "Alarm {slot} sil",
+  "alarm.menu.sound": "Alarm sesini ayarla",
+  "alarm.menu.selectSound": "Alarm sesi seç",
+  "alarm.sound.classic": "Classic Alarm",
+  "alarm.sound.snake": "Snake-ish",
   "alarm.menu.placeholder": "Alarm: {time} ({status}){fired}",
+  "alarm.menu.selectToEdit": "Düzenlenecek alarmı seçin",
+  "alarm.menu.selectToToggle": "Açılıp kapatılacak alarmı seçin",
+  "alarm.menu.selectToDelete": "Silinecek alarmı seçin",
 
   "alarm.notification.title": "Alarm: {time}",
+  "alarm.notification.singleTitle": "Alarm: {time}",
+  "alarm.notification.multiTitle": "Alarmlar ({count}): {times}",
+  "alarm.notification.action.stop": "Durdur",
+  "alarm.notification.action.snooze3m": "3 dk ertele",
+  "alarm.notification.action.manage": "Alarm menüsünü aç",
 
   "alarm.statusBar.noAlarmSet": "Alarm ayarlanmadı",
   "alarm.statusBar.clickToManage": "Yönetmek için tıklayın",
@@ -56,4 +75,3 @@
   "alarm.statusBar.status": "Durum: {status}",
   "alarm.statusBar.triggeredToday": "Tetiklendi: Bugün"
 }
-

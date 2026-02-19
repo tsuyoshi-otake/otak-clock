@@ -34,9 +34,11 @@
   "alarm.action.setAlarm": "Wecker setzen",
   "alarm.message.enabled": "Wecker aktiviert ({time})",
   "alarm.message.disabled": "Wecker deaktiviert",
+  "alarm.message.soundUpdated": "Wecker-Sound aktualisiert: {sound}",
   "alarm.confirm.delete": "Wecker ({time}) löschen?",
   "alarm.action.delete": "Löschen",
   "alarm.message.deleted": "Wecker gelöscht.",
+  "alarm.error.maxAlarmsReached": "Sie können bis zu {max} Wecker einstellen.",
 
   "alarm.status.enabled": "Aktiviert",
   "alarm.status.disabled": "Deaktiviert",
@@ -46,9 +48,26 @@
   "alarm.menu.createDescription": "Wecker erstellen",
   "alarm.menu.enable": "Wecker aktivieren",
   "alarm.menu.disable": "Wecker deaktivieren",
+  "alarm.menu.setSlot": "Wecker {slot} Zeit festlegen",
+  "alarm.menu.enableSlot": "Wecker {slot} aktivieren",
+  "alarm.menu.disableSlot": "Wecker {slot} deaktivieren",
+  "alarm.menu.editSlot": "Wecker {slot} Zeit bearbeiten",
+  "alarm.menu.deleteSlot": "Wecker {slot} löschen",
+  "alarm.menu.sound": "Wecker-Sound festlegen",
+  "alarm.menu.selectSound": "Wecker-Sound auswählen",
+  "alarm.sound.classic": "Classic Alarm",
+  "alarm.sound.snake": "Snake-ish",
   "alarm.menu.placeholder": "Wecker: {time} ({status}){fired}",
+  "alarm.menu.selectToEdit": "Wecker zum Bearbeiten auswählen",
+  "alarm.menu.selectToToggle": "Wecker zum Umschalten auswählen",
+  "alarm.menu.selectToDelete": "Wecker zum Löschen auswählen",
 
   "alarm.notification.title": "Wecker: {time}",
+  "alarm.notification.singleTitle": "Wecker: {time}",
+  "alarm.notification.multiTitle": "Wecker ({count}): {times}",
+  "alarm.notification.action.stop": "Stopp",
+  "alarm.notification.action.snooze3m": "Schlummern 3 Min.",
+  "alarm.notification.action.manage": "Wecker-Menü öffnen",
 
   "alarm.statusBar.noAlarmSet": "Kein Wecker gesetzt",
   "alarm.statusBar.clickToManage": "Zum Verwalten klicken",
@@ -56,4 +75,3 @@
   "alarm.statusBar.status": "Status: {status}",
   "alarm.statusBar.triggeredToday": "Ausgelöst: Heute"
 }
-

@@ -26,6 +26,15 @@ function withoutSnooze(alarm: AlarmSettings): AlarmSettings {
     return next;
 }
 
+function withoutDismissed(alarm: AlarmSettings): AlarmSettings {
+    if (alarm.dismissedOn === undefined) {
+        return alarm;
+    }
+    const next = { ...alarm };
+    delete next.dismissedOn;
+    return next;
+}
+
 function evaluateTriggeredAlarm(alarm: AlarmSettings, todayKey: string, nowHour: number, nowMinute: number): AlarmTickResult {
     if (!alarm.lastTriggeredOn) {
         // Migration: older versions didn't track the trigger date.
@@ -36,7 +45,7 @@ function evaluateTriggeredAlarm(alarm: AlarmSettings, todayKey: string, nowHour:
         if (nowMinuteOfDay <= alarmMinuteOfDay) {
             // It's not past today's alarm time yet, so treat this as a carry-over
             // from a previous day and allow the alarm to trigger again today.
-            return { action: 'save', alarm: withoutSnooze({ ...alarm, triggered: false }) };
+            return { action: 'save', alarm: withoutDismissed(withoutSnooze({ ...alarm, triggered: false })) };
         }
 
         // Today's alarm time already passed. Treat this as already triggered today
@@ -45,7 +54,7 @@ function evaluateTriggeredAlarm(alarm: AlarmSettings, todayKey: string, nowHour:
     }
 
     if (alarm.lastTriggeredOn !== todayKey) {
-        return { action: 'save', alarm: withoutSnooze({ ...alarm, triggered: false }) };
+        return { action: 'save', alarm: withoutDismissed(withoutSnooze({ ...alarm, triggered: false })) };
     }
 
     return { action: 'none' };
@@ -61,6 +70,13 @@ export function evaluateAlarmTick(
     }
 
     const todayKey = toLocalDateKey(now);
+
+    // If the user manually dismissed this alarm today (e.g., Stop pressed in another window),
+    // treat it as already handled for today.
+    if (alarm.dismissedOn === todayKey) {
+        return { action: 'none' };
+    }
+
     const nowHour = now.getHours();
     const nowMinute = now.getMinutes();
     const nowMs = now.getTime();
@@ -75,7 +91,7 @@ export function evaluateAlarmTick(
     if (typeof snoozeUntilMs === 'number') {
         const snoozeDayKey = toLocalDateKey(new Date(snoozeUntilMs));
         if (snoozeDayKey !== todayKey) {
-            return { action: 'save', alarm: withoutSnooze(alarm) };
+            return { action: 'save', alarm: withoutDismissed(withoutSnooze(alarm)) };
         }
 
         if (nowMs < snoozeUntilMs) {

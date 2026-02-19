@@ -138,5 +138,42 @@ suite('alarmTick', () => {
                 assert.strictEqual(result.alarm.snoozeUntilMs, undefined);
             }
         });
+
+        test('returns none when dismissedOn matches today', () => {
+            const alarm = makeAlarm({ dismissedOn: '2024-06-15' });
+            const now = new Date(2024, 5, 15, 9, 0, 0);
+            const result = evaluateAlarmTick(alarm, now, 0);
+            assert.strictEqual(result.action, 'none');
+        });
+
+        test('triggers normally when dismissedOn is from a previous day', () => {
+            const alarm = makeAlarm({ dismissedOn: '2024-06-14' });
+            const now = new Date(2024, 5, 15, 9, 0, 0);
+            const result = evaluateAlarmTick(alarm, now, 0);
+            assert.strictEqual(result.action, 'trigger');
+        });
+
+        test('clears dismissedOn when day changes (triggered alarm)', () => {
+            const alarm = makeAlarm({ triggered: true, lastTriggeredOn: '2024-06-14', dismissedOn: '2024-06-14' });
+            const now = new Date(2024, 5, 15, 8, 0, 0);
+            const result = evaluateAlarmTick(alarm, now, 0);
+            assert.strictEqual(result.action, 'save');
+            if (result.action === 'save') {
+                assert.strictEqual(result.alarm.triggered, false);
+                assert.strictEqual(result.alarm.dismissedOn, undefined);
+            }
+        });
+
+        test('clears dismissedOn with stale snooze from another day', () => {
+            const now = new Date(2024, 5, 16, 8, 0, 0);
+            const snoozeYesterday = new Date(2024, 5, 15, 23, 59, 0).getTime();
+            const alarm = makeAlarm({ snoozeUntilMs: snoozeYesterday, dismissedOn: '2024-06-15' });
+            const result = evaluateAlarmTick(alarm, now, 0);
+            assert.strictEqual(result.action, 'save');
+            if (result.action === 'save') {
+                assert.strictEqual(result.alarm.snoozeUntilMs, undefined);
+                assert.strictEqual(result.alarm.dismissedOn, undefined);
+            }
+        });
     });
 });

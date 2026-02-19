@@ -38,6 +38,7 @@
   "alarm.confirm.delete": "Delete alarm ({time})?",
   "alarm.action.delete": "Delete",
   "alarm.message.deleted": "Alarm deleted.",
+  "alarm.error.maxAlarmsReached": "You can set up to {max} alarms.",
 
   "alarm.status.enabled": "Enabled",
   "alarm.status.disabled": "Disabled",
@@ -57,6 +58,9 @@
   "alarm.sound.classic": "Classic Alarm",
   "alarm.sound.snake": "Snake-ish",
   "alarm.menu.placeholder": "Alarm: {time} ({status}){fired}",
+  "alarm.menu.selectToEdit": "Select an alarm to edit",
+  "alarm.menu.selectToToggle": "Select an alarm to toggle",
+  "alarm.menu.selectToDelete": "Select an alarm to delete",
 
   "alarm.notification.title": "Alarm: {time}",
   "alarm.notification.singleTitle": "Alarm: {time}",
@@ -71,4 +75,3 @@
   "alarm.statusBar.status": "Status: {status}",
   "alarm.statusBar.triggeredToday": "Triggered: Today"
 }
-

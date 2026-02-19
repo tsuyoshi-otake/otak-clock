@@ -34,9 +34,11 @@
   "alarm.action.setAlarm": "알람 설정",
   "alarm.message.enabled": "알람이 활성화되었습니다 ({time})",
   "alarm.message.disabled": "알람이 비활성화되었습니다",
+  "alarm.message.soundUpdated": "알람 소리가 업데이트되었습니다: {sound}",
   "alarm.confirm.delete": "알람({time})을 삭제할까요?",
   "alarm.action.delete": "삭제",
   "alarm.message.deleted": "알람이 삭제되었습니다.",
+  "alarm.error.maxAlarmsReached": "최대 {max}개의 알람을 설정할 수 있습니다.",
 
   "alarm.status.enabled": "활성화됨",
   "alarm.status.disabled": "비활성화됨",
@@ -46,9 +48,26 @@
   "alarm.menu.createDescription": "알람 만들기",
   "alarm.menu.enable": "알람 활성화",
   "alarm.menu.disable": "알람 비활성화",
+  "alarm.menu.setSlot": "알람 {slot} 시간 설정",
+  "alarm.menu.enableSlot": "알람 {slot} 활성화",
+  "alarm.menu.disableSlot": "알람 {slot} 비활성화",
+  "alarm.menu.editSlot": "알람 {slot} 시간 편집",
+  "alarm.menu.deleteSlot": "알람 {slot} 삭제",
+  "alarm.menu.sound": "알람 소리 설정",
+  "alarm.menu.selectSound": "알람 소리 선택",
+  "alarm.sound.classic": "Classic Alarm",
+  "alarm.sound.snake": "Snake-ish",
   "alarm.menu.placeholder": "알람: {time} ({status}){fired}",
+  "alarm.menu.selectToEdit": "편집할 알람 선택",
+  "alarm.menu.selectToToggle": "켜기/끄기할 알람 선택",
+  "alarm.menu.selectToDelete": "삭제할 알람 선택",
 
   "alarm.notification.title": "알람: {time}",
+  "alarm.notification.singleTitle": "알람: {time}",
+  "alarm.notification.multiTitle": "알람 ({count}): {times}",
+  "alarm.notification.action.stop": "중지",
+  "alarm.notification.action.snooze3m": "3분 스누즈",
+  "alarm.notification.action.manage": "알람 메뉴 열기",
 
   "alarm.statusBar.noAlarmSet": "알람 미설정",
   "alarm.statusBar.clickToManage": "클릭하여 관리",
@@ -56,4 +75,3 @@
   "alarm.statusBar.status": "상태: {status}",
   "alarm.statusBar.triggeredToday": "트리거: 오늘"
 }
-

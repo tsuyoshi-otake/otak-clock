@@ -34,9 +34,11 @@
   "alarm.action.setAlarm": "設定鬧鐘",
   "alarm.message.enabled": "鬧鐘已啟用（{time}）",
   "alarm.message.disabled": "鬧鐘已停用",
+  "alarm.message.soundUpdated": "鬧鐘音效已更新：{sound}",
   "alarm.confirm.delete": "刪除鬧鐘（{time}）？",
   "alarm.action.delete": "刪除",
   "alarm.message.deleted": "鬧鐘已刪除。",
+  "alarm.error.maxAlarmsReached": "最多可設定 {max} 個鬧鐘。",
 
   "alarm.status.enabled": "已啟用",
   "alarm.status.disabled": "已停用",
@@ -46,9 +48,26 @@
   "alarm.menu.createDescription": "建立鬧鐘",
   "alarm.menu.enable": "啟用鬧鐘",
   "alarm.menu.disable": "停用鬧鐘",
+  "alarm.menu.setSlot": "設定鬧鐘 {slot} 時間",
+  "alarm.menu.enableSlot": "啟用鬧鐘 {slot}",
+  "alarm.menu.disableSlot": "停用鬧鐘 {slot}",
+  "alarm.menu.editSlot": "編輯鬧鐘 {slot} 時間",
+  "alarm.menu.deleteSlot": "刪除鬧鐘 {slot}",
+  "alarm.menu.sound": "設定鬧鐘音效",
+  "alarm.menu.selectSound": "選擇鬧鐘音效",
+  "alarm.sound.classic": "Classic Alarm",
+  "alarm.sound.snake": "Snake-ish",
   "alarm.menu.placeholder": "鬧鐘: {time} ({status}){fired}",
+  "alarm.menu.selectToEdit": "選擇要編輯的鬧鐘",
+  "alarm.menu.selectToToggle": "選擇要切換的鬧鐘",
+  "alarm.menu.selectToDelete": "選擇要刪除的鬧鐘",
 
   "alarm.notification.title": "鬧鐘: {time}",
+  "alarm.notification.singleTitle": "鬧鐘: {time}",
+  "alarm.notification.multiTitle": "鬧鐘 ({count}): {times}",
+  "alarm.notification.action.stop": "停止",
+  "alarm.notification.action.snooze3m": "延後 3 分鐘",
+  "alarm.notification.action.manage": "開啟鬧鐘選單",
 
   "alarm.statusBar.noAlarmSet": "未設定鬧鐘",
   "alarm.statusBar.clickToManage": "點擊管理",
@@ -56,4 +75,3 @@
   "alarm.statusBar.status": "狀態: {status}",
   "alarm.statusBar.triggeredToday": "觸發: 今天"
 }
-

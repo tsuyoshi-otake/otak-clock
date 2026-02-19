@@ -34,9 +34,11 @@
   "alarm.action.setAlarm": "Atur alarm",
   "alarm.message.enabled": "Alarm diaktifkan ({time})",
   "alarm.message.disabled": "Alarm dinonaktifkan",
+  "alarm.message.soundUpdated": "Suara alarm diperbarui: {sound}",
   "alarm.confirm.delete": "Hapus alarm ({time})?",
   "alarm.action.delete": "Hapus",
   "alarm.message.deleted": "Alarm dihapus.",
+  "alarm.error.maxAlarmsReached": "Anda dapat mengatur hingga {max} alarm.",
 
   "alarm.status.enabled": "Aktif",
   "alarm.status.disabled": "Nonaktif",
@@ -46,9 +48,26 @@
   "alarm.menu.createDescription": "Buat alarm",
   "alarm.menu.enable": "Aktifkan alarm",
   "alarm.menu.disable": "Nonaktifkan alarm",
+  "alarm.menu.setSlot": "Atur waktu alarm {slot}",
+  "alarm.menu.enableSlot": "Aktifkan alarm {slot}",
+  "alarm.menu.disableSlot": "Nonaktifkan alarm {slot}",
+  "alarm.menu.editSlot": "Ubah waktu alarm {slot}",
+  "alarm.menu.deleteSlot": "Hapus alarm {slot}",
+  "alarm.menu.sound": "Atur suara alarm",
+  "alarm.menu.selectSound": "Pilih suara alarm",
+  "alarm.sound.classic": "Classic Alarm",
+  "alarm.sound.snake": "Snake-ish",
   "alarm.menu.placeholder": "Alarm: {time} ({status}){fired}",
+  "alarm.menu.selectToEdit": "Pilih alarm untuk diedit",
+  "alarm.menu.selectToToggle": "Pilih alarm untuk diaktifkan/dinonaktifkan",
+  "alarm.menu.selectToDelete": "Pilih alarm untuk dihapus",
 
   "alarm.notification.title": "Alarm: {time}",
+  "alarm.notification.singleTitle": "Alarm: {time}",
+  "alarm.notification.multiTitle": "Alarm ({count}): {times}",
+  "alarm.notification.action.stop": "Hentikan",
+  "alarm.notification.action.snooze3m": "Tunda 3 menit",
+  "alarm.notification.action.manage": "Buka menu alarm",
 
   "alarm.statusBar.noAlarmSet": "Belum ada alarm",
   "alarm.statusBar.clickToManage": "Klik untuk mengelola",
@@ -56,4 +75,3 @@
   "alarm.statusBar.status": "Status: {status}",
   "alarm.statusBar.triggeredToday": "Terpicu: Hari ini"
 }
-

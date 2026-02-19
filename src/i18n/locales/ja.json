@@ -38,6 +38,7 @@
   "alarm.confirm.delete": "アラーム({time})を削除しますか？",
   "alarm.action.delete": "削除",
   "alarm.message.deleted": "アラームを削除しました。",
+  "alarm.error.maxAlarmsReached": "{max}件までアラームを設定できます。",
 
   "alarm.status.enabled": "有効",
   "alarm.status.disabled": "無効",
@@ -57,6 +58,9 @@
   "alarm.sound.classic": "Classic Alarm",
   "alarm.sound.snake": "Snake-ish",
   "alarm.menu.placeholder": "アラーム: {time} ({status}){fired}",
+  "alarm.menu.selectToEdit": "編集するアラームを選択",
+  "alarm.menu.selectToToggle": "有効/無効を切り替えるアラームを選択",
+  "alarm.menu.selectToDelete": "削除するアラームを選択",
 
   "alarm.notification.title": "アラーム: {time}",
   "alarm.notification.singleTitle": "アラーム: {time}",
@@ -71,4 +75,3 @@
   "alarm.statusBar.status": "状態: {status}",
   "alarm.statusBar.triggeredToday": "発動: 本日"
 }
-

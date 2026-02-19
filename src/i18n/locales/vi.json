@@ -34,9 +34,11 @@
   "alarm.action.setAlarm": "Đặt báo thức",
   "alarm.message.enabled": "Đã bật báo thức ({time})",
   "alarm.message.disabled": "Đã tắt báo thức",
+  "alarm.message.soundUpdated": "Đã cập nhật âm báo thức: {sound}",
   "alarm.confirm.delete": "Xóa báo thức ({time})?",
   "alarm.action.delete": "Xóa",
   "alarm.message.deleted": "Đã xóa báo thức.",
+  "alarm.error.maxAlarmsReached": "Bạn có thể đặt tối đa {max} báo thức.",
 
   "alarm.status.enabled": "Bật",
   "alarm.status.disabled": "Tắt",
@@ -46,9 +48,26 @@
   "alarm.menu.createDescription": "Tạo báo thức",
   "alarm.menu.enable": "Bật báo thức",
   "alarm.menu.disable": "Tắt báo thức",
+  "alarm.menu.setSlot": "Đặt giờ báo thức {slot}",
+  "alarm.menu.enableSlot": "Bật báo thức {slot}",
+  "alarm.menu.disableSlot": "Tắt báo thức {slot}",
+  "alarm.menu.editSlot": "Sửa giờ báo thức {slot}",
+  "alarm.menu.deleteSlot": "Xóa báo thức {slot}",
+  "alarm.menu.sound": "Đặt âm báo thức",
+  "alarm.menu.selectSound": "Chọn âm báo thức",
+  "alarm.sound.classic": "Classic Alarm",
+  "alarm.sound.snake": "Snake-ish",
   "alarm.menu.placeholder": "Báo thức: {time} ({status}){fired}",
+  "alarm.menu.selectToEdit": "Chọn báo thức để sửa",
+  "alarm.menu.selectToToggle": "Chọn báo thức để bật/tắt",
+  "alarm.menu.selectToDelete": "Chọn báo thức để xóa",
 
   "alarm.notification.title": "Báo thức: {time}",
+  "alarm.notification.singleTitle": "Báo thức: {time}",
+  "alarm.notification.multiTitle": "Báo thức ({count}): {times}",
+  "alarm.notification.action.stop": "Dừng",
+  "alarm.notification.action.snooze3m": "Báo lại 3 phút",
+  "alarm.notification.action.manage": "Mở menu báo thức",
 
   "alarm.statusBar.noAlarmSet": "Chưa đặt báo thức",
   "alarm.statusBar.clickToManage": "Nhấp để quản lý",
@@ -56,4 +75,3 @@
   "alarm.statusBar.status": "Trạng thái: {status}",
   "alarm.statusBar.triggeredToday": "Đã kích hoạt: Hôm nay"
 }
-

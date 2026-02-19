@@ -34,9 +34,11 @@
   "alarm.action.setAlarm": "ตั้งเวลาเตือน",
   "alarm.message.enabled": "เปิดการเตือนแล้ว ({time})",
   "alarm.message.disabled": "ปิดการเตือนแล้ว",
+  "alarm.message.soundUpdated": "อัปเดตเสียงเตือนแล้ว: {sound}",
   "alarm.confirm.delete": "ลบการเตือน ({time})?",
   "alarm.action.delete": "ลบ",
   "alarm.message.deleted": "ลบการเตือนแล้ว",
+  "alarm.error.maxAlarmsReached": "คุณสามารถตั้งเวลาเตือนได้สูงสุด {max} รายการ",
 
   "alarm.status.enabled": "เปิดใช้งาน",
   "alarm.status.disabled": "ปิดใช้งาน",
@@ -46,9 +48,26 @@
   "alarm.menu.createDescription": "สร้างการเตือน",
   "alarm.menu.enable": "เปิดการเตือน",
   "alarm.menu.disable": "ปิดการเตือน",
+  "alarm.menu.setSlot": "ตั้งเวลาเตือน {slot}",
+  "alarm.menu.enableSlot": "เปิดการเตือน {slot}",
+  "alarm.menu.disableSlot": "ปิดการเตือน {slot}",
+  "alarm.menu.editSlot": "แก้ไขเวลาเตือน {slot}",
+  "alarm.menu.deleteSlot": "ลบการเตือน {slot}",
+  "alarm.menu.sound": "ตั้งเสียงเตือน",
+  "alarm.menu.selectSound": "เลือกเสียงเตือน",
+  "alarm.sound.classic": "Classic Alarm",
+  "alarm.sound.snake": "Snake-ish",
   "alarm.menu.placeholder": "การเตือน: {time} ({status}){fired}",
+  "alarm.menu.selectToEdit": "เลือกการเตือนที่ต้องการแก้ไข",
+  "alarm.menu.selectToToggle": "เลือกการเตือนที่ต้องการเปิด/ปิด",
+  "alarm.menu.selectToDelete": "เลือกการเตือนที่ต้องการลบ",
 
   "alarm.notification.title": "การเตือน: {time}",
+  "alarm.notification.singleTitle": "การเตือน: {time}",
+  "alarm.notification.multiTitle": "การเตือน ({count}): {times}",
+  "alarm.notification.action.stop": "หยุด",
+  "alarm.notification.action.snooze3m": "เลื่อน 3 นาที",
+  "alarm.notification.action.manage": "เปิดเมนูการเตือน",
 
   "alarm.statusBar.noAlarmSet": "ยังไม่ได้ตั้งเวลาเตือน",
   "alarm.statusBar.clickToManage": "คลิกเพื่อจัดการ",
@@ -56,4 +75,3 @@
   "alarm.statusBar.status": "สถานะ: {status}",
   "alarm.statusBar.triggeredToday": "แจ้งเตือน: วันนี้"
 }
-
