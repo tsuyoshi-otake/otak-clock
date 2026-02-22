@@ -5,6 +5,8 @@ export interface AlarmConfig {
     enabled: boolean;
     hour: number;
     minute: number;
+    /** IANA timezone ID auto-detected when the alarm was created/edited (e.g. "Asia/Tokyo"). */
+    timeZoneId?: string;
 }
 
 export interface AlarmRuntime {
@@ -67,6 +69,12 @@ export function validateAlarmConfig(data: unknown): AlarmConfig | undefined {
     if (typeof id === 'string' && id.length > 0) {
         config.id = id;
     }
+
+    const timeZoneId = data.timeZoneId;
+    if (typeof timeZoneId === 'string' && timeZoneId.length > 0) {
+        config.timeZoneId = timeZoneId;
+    }
+
     return config;
 }
 
@@ -106,6 +114,9 @@ export function toAlarmConfig(alarm: AlarmSettings): AlarmConfig {
     };
     if (typeof alarm.id === 'string' && alarm.id.length > 0) {
         config.id = alarm.id;
+    }
+    if (typeof alarm.timeZoneId === 'string' && alarm.timeZoneId.length > 0) {
+        config.timeZoneId = alarm.timeZoneId;
     }
     return config;
 }

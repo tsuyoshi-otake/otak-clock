@@ -26,6 +26,8 @@ export interface AlarmNotificationControllerOptions {
     refreshAlarms: () => void;
     /** Persists dismissedOn for the given alarm IDs so other windows can stop their sessions. */
     dismissAlarms: (alarmIds: string[]) => void;
+    /** Returns the resolved alarm timezone ID, or undefined for system local. */
+    getAlarmTimeZone: () => string | undefined;
 }
 
 export class AlarmNotificationController implements vscode.Disposable {
@@ -146,7 +148,7 @@ export class AlarmNotificationController implements vscode.Disposable {
     }
 
     private isSessionDismissed(alarmIds: string[]): boolean {
-        const todayKey = toLocalDateKey(new Date());
+        const todayKey = toLocalDateKey(new Date(), this.options.getAlarmTimeZone());
         const alarms = this.collectSessionAlarms(alarmIds);
         return alarms.length > 0 && alarms.every((alarm) => alarm.dismissedOn === todayKey);
     }
@@ -193,7 +195,8 @@ export class AlarmNotificationController implements vscode.Disposable {
         }
 
         const now = new Date();
-        const times = alarms.map((alarm) => formatLocalAlarmTime(alarm.hour, alarm.minute, now));
+        const alarmTimeZone = this.options.getAlarmTimeZone();
+        const times = alarms.map((alarm) => formatLocalAlarmTime(alarm.hour, alarm.minute, now, alarmTimeZone));
         const title = times.length === 1
             ? this.options.i18n.t('alarm.notification.singleTitle', { time: times[0] })
             : this.options.i18n.t('alarm.notification.multiTitle', { count: String(times.length), times: times.join(', ') });

@@ -10,4 +10,5 @@ export const ALARM_SOUND_TYPE_SETTING = 'otak-clock.alarmSoundType';
 export const ALARM_SOUND_TYPE_FALLBACK_KEY = 'alarmSoundType';
 export const ALARM_SOUND_TYPE_CLASSIC = 'classic-alarm';
 export const ALARM_SOUND_TYPE_SNAKE = 'snake-ish';
+export const ALARM_TIME_ZONE_SETTING = 'otak-clock.alarmTimeZone';
 

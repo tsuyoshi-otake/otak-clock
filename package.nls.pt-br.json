@@ -7,6 +7,8 @@
   "command.editAlarm": "Editar hora do alarme",
   "command.deleteAlarm": "Excluir alarme",
   "command.manageAlarm": "Gerenciar alarme",
-  "config.showTimeZoneInStatusBar": "Mostrar um rótulo curto de fuso horário (por exemplo, UTC, JST) ao lado de cada relógio na barra de status."
+  "config.showTimeZoneInStatusBar": "Mostrar um rótulo curto de fuso horário (por exemplo, UTC, JST) ao lado de cada relógio na barra de status.",
+  "config.alarmTimeZone": "Fuso horário usado para avaliação de alarmes. Com \"auto\", cada alarme usa o fuso horário salvo na criação. Escolha um fuso horário específico para aplicar a todos os alarmes.",
+  "config.alarmTimeZone.auto": "Detecção automática a partir do fuso horário salvo de cada alarme (padrão)"
 }
 

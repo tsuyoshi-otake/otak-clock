@@ -40,7 +40,9 @@ From the toast you can:
 - **Snooze 3 min** — delays the next notification by 3 minutes
 - **Open alarm menu** — jump directly to alarm management
 
-Notifications repeat every 30 seconds until you press Stop. Alarms use your local system time and trigger once per day, resetting at midnight.
+Notifications repeat every 30 seconds until you press Stop. Alarms trigger once per day, resetting at midnight.
+
+By default, each alarm uses the system time zone saved when it was created. To evaluate all alarms in a specific time zone instead, set `otak-clock.alarmTimeZone` in Settings.
 
 You can set up to **5 alarms** at a time. Each alarm can be enabled or disabled independently.
 
@@ -50,6 +52,7 @@ You can set up to **5 alarms** at a time. Each alarm can be enabled or disabled 
 - **Region-based time zone selection** — Time zones grouped by region for easy browsing.
 - **Helpful tooltips** — Hover to see date, UTC offset, and DST information.
 - **Multiple alarms** — Up to 5 alarms with per-alarm enable/disable.
+- **Alarm time zone override** — Each alarm records the system time zone when created. Optionally set a global alarm time zone to evaluate all alarms in a specific time zone.
 - **Cross-window alarm sync** — Pressing Stop in any VS Code window immediately dismisses the alarm in all other open windows on the same machine.
 - **Snooze** — Delay alarm notifications by 3 minutes per snooze.
 - **Persistent preferences** — Selected time zones and alarm settings survive restarts and are synced via Settings Sync.
@@ -72,6 +75,7 @@ You can set up to **5 alarms** at a time. Each alarm can be enabled or disabled 
 | `otak-clock.showTimeZoneInStatusBar` | `true` | Show a short time zone label (e.g., UTC, JST) next to each clock in the status bar |
 | `otak-clock.alarmSoundEnabled` | `true` | Enable alarm sound when a notification appears |
 | `otak-clock.alarmSoundType` | `classic-alarm` | Alarm sound pattern: `classic-alarm` (A6/C7 style) or `snake-ish` (retro game-like) |
+| `otak-clock.alarmTimeZone` | `auto` | Time zone for alarm evaluation. `auto` uses each alarm's saved time zone; choose a specific IANA time zone to override all alarms |
 
 ## Commands
 
@@ -121,7 +125,7 @@ Alarm configuration (time and enabled/disabled state) is stored under VS Code's 
 ## Troubleshooting
 
 - **Clocks not updating**: Reload the VS Code window and confirm the extension is enabled.
-- **Alarm did not fire**: Check that the alarm is enabled (`$(bell) HH:mm JST` in the status bar) and verify your system time.
+- **Alarm did not fire**: Check that the alarm is enabled (`$(bell) HH:mm JST` in the status bar) and verify your system time. If you set `alarmTimeZone`, make sure the selected time zone matches your intent.
 - **Alarm fired in one window but not another**: Ensure the extension is active in all windows. Unfocused windows may detect alarms up to ~1 minute later.
 
 ## Related Extensions

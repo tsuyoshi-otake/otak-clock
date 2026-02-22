@@ -1,10 +1,58 @@
 import { AlarmSettings } from './AlarmSettings';
 import { NOTIFICATION_COOLDOWN_MS } from '../clock/constants';
 
-export function toLocalDateKey(now: Date): string {
-    const yyyy = now.getFullYear();
-    const mm = (now.getMonth() + 1).toString().padStart(2, '0');
-    const dd = now.getDate().toString().padStart(2, '0');
+interface WallClockTime {
+    year: number;
+    month: number;
+    day: number;
+    hour: number;
+    minute: number;
+}
+
+/**
+ * Extracts wall-clock components for the given instant in the specified timezone.
+ * When alarmTimeZone is undefined (auto mode), falls back to system-local Date methods.
+ */
+function getWallClock(now: Date, alarmTimeZone: string | undefined): WallClockTime {
+    if (!alarmTimeZone) {
+        return {
+            year: now.getFullYear(),
+            month: now.getMonth() + 1,
+            day: now.getDate(),
+            hour: now.getHours(),
+            minute: now.getMinutes()
+        };
+    }
+
+    const formatter = new Intl.DateTimeFormat('en-US', {
+        timeZone: alarmTimeZone,
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: false,
+        hourCycle: 'h23'
+    });
+    const parts: Record<string, string> = {};
+    for (const p of formatter.formatToParts(now)) {
+        parts[p.type] = p.value;
+    }
+
+    return {
+        year: Number(parts['year']),
+        month: Number(parts['month']),
+        day: Number(parts['day']),
+        hour: Number(parts['hour']),
+        minute: Number(parts['minute'])
+    };
+}
+
+export function toLocalDateKey(now: Date, alarmTimeZone?: string): string {
+    const wc = getWallClock(now, alarmTimeZone);
+    const yyyy = wc.year;
+    const mm = wc.month.toString().padStart(2, '0');
+    const dd = wc.day.toString().padStart(2, '0');
     return `${yyyy}-${mm}-${dd}`;
 }
 
@@ -63,13 +111,15 @@ function evaluateTriggeredAlarm(alarm: AlarmSettings, todayKey: string, nowHour:
 export function evaluateAlarmTick(
     alarm: AlarmSettings,
     now: Date,
-    lastNotificationTimeMs: number
+    lastNotificationTimeMs: number,
+    alarmTimeZone?: string
 ): AlarmTickResult {
     if (!alarm.enabled) {
         return { action: 'none' };
     }
 
-    const todayKey = toLocalDateKey(now);
+    const wc = getWallClock(now, alarmTimeZone);
+    const todayKey = `${wc.year}-${wc.month.toString().padStart(2, '0')}-${wc.day.toString().padStart(2, '0')}`;
 
     // If the user manually dismissed this alarm today (e.g., Stop pressed in another window),
     // treat it as already handled for today.
@@ -77,8 +127,8 @@ export function evaluateAlarmTick(
         return { action: 'none' };
     }
 
-    const nowHour = now.getHours();
-    const nowMinute = now.getMinutes();
+    const nowHour = wc.hour;
+    const nowMinute = wc.minute;
     const nowMs = now.getTime();
     const snoozeUntilMs = alarm.snoozeUntilMs;
 
@@ -89,7 +139,7 @@ export function evaluateAlarmTick(
     }
 
     if (typeof snoozeUntilMs === 'number') {
-        const snoozeDayKey = toLocalDateKey(new Date(snoozeUntilMs));
+        const snoozeDayKey = toLocalDateKey(new Date(snoozeUntilMs), alarmTimeZone);
         if (snoozeDayKey !== todayKey) {
             return { action: 'save', alarm: withoutDismissed(withoutSnooze(alarm)) };
         }

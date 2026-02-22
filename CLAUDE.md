@@ -40,9 +40,9 @@ This is a VS Code extension providing dual time zone clocks and alarm management
 
 **`src/alarm/AlarmNotificationController.ts`** — Shows toast notifications with Stop/Snooze/Open-menu actions. Flashes status bar items during alarm. Repeats notification every 30 seconds until dismissed. Snooze delays by 3 minutes. When **Stop** is pressed, calls `dismissAlarms()` callback to write `dismissedOn` to globalState before stopping the local session — this lets other windows detect the dismissal. `checkForExternalDismissal()` is called from `AlarmManager.tick()` every minute to stop the local session if another window already dismissed.
 
-**`src/alarm/alarmTick.ts`** — Pure function `evaluateAlarmTick(alarm, now, lastNotificationTimeMs)` returns `{ action: 'none' | 'save' | 'trigger', alarm, todayKey }`. Handles: `dismissedOn` guard (cross-window stop), day-change resets, snooze expiry, duplicate-notification cooldown.
+**`src/alarm/alarmTick.ts`** — Pure function `evaluateAlarmTick(alarm, now, lastNotificationTimeMs, alarmTimeZone?)` returns `{ action: 'none' | 'save' | 'trigger', alarm, todayKey }`. Uses `getWallClock()` to resolve wall-clock time in the specified timezone (falls back to system-local `Date` methods when `alarmTimeZone` is undefined). Handles: `dismissedOn` guard (cross-window stop), day-change resets, snooze expiry, duplicate-notification cooldown.
 
-**`src/alarm/AlarmSettings.ts`** — Defines `AlarmConfig` (id, enabled, hour, minute — Settings Sync'd) and `AlarmRuntime` (triggered, lastTriggeredOn, timeSignature, snoozeUntilMs, dismissedOn — local only). `AlarmSettings = AlarmConfig & AlarmRuntime`.
+**`src/alarm/AlarmSettings.ts`** — Defines `AlarmConfig` (id, enabled, hour, minute, timeZoneId — Settings Sync'd) and `AlarmRuntime` (triggered, lastTriggeredOn, timeSignature, snoozeUntilMs, dismissedOn — local only). `AlarmSettings = AlarmConfig & AlarmRuntime`. `timeZoneId` records the IANA timezone auto-detected when the alarm was created or edited.
 
 **`src/timezone/`** — `data.ts` holds the IANA timezone database with region grouping. `picker.ts` implements two-stage region → timezone quick-pick UI. `offsets.ts` computes UTC offsets with DST awareness.
 
@@ -69,3 +69,4 @@ Strict mode with `noImplicitReturns`, `noUnusedParameters`, `noUnusedLocals`, `n
 | `otak-clock.showTimeZoneInStatusBar` | `true` | Show timezone label next to clock |
 | `otak-clock.alarmSoundEnabled` | `true` | Enable alarm sound on trigger |
 | `otak-clock.alarmSoundType` | `"classic-alarm"` | Sound variant: `"classic-alarm"` or `"snake-ish"` |
+| `otak-clock.alarmTimeZone` | `"auto"` | Alarm evaluation timezone. `"auto"` uses each alarm's saved timezone; specific IANA ID overrides all alarms |

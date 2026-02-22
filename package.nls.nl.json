@@ -7,6 +7,8 @@
   "command.editAlarm": "Alarmtijd bewerken",
   "command.deleteAlarm": "Alarm verwijderen",
   "command.manageAlarm": "Alarm beheren",
-  "config.showTimeZoneInStatusBar": "Toon een korte tijdzoneaanduiding (bijv. UTC, JST) naast elke klok in de statusbalk."
+  "config.showTimeZoneInStatusBar": "Toon een korte tijdzoneaanduiding (bijv. UTC, JST) naast elke klok in de statusbalk.",
+  "config.alarmTimeZone": "Tijdzone gebruikt voor alarmbeoordeling. Bij \"auto\" gebruikt elk alarm de tijdzone die is opgeslagen bij het aanmaken. Kies een specifieke tijdzone om alle alarmen te overschrijven.",
+  "config.alarmTimeZone.auto": "Automatisch detecteren vanuit de opgeslagen tijdzone van elk alarm (standaard)"
 }
 

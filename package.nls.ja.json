@@ -11,6 +11,8 @@
   "config.alarmSoundEnabled": "アラーム通知の表示時に短い音を再生します。",
   "config.alarmSoundType": "アラーム音のパターンを選択します。",
   "config.alarmSoundType.classic": "Classic Alarm（A6/C7系）",
-  "config.alarmSoundType.snake": "Snake-ish（レトロゲーム風）"
+  "config.alarmSoundType.snake": "Snake-ish（レトロゲーム風）",
+  "config.alarmTimeZone": "アラーム判定に使用するタイムゾーン。「auto」の場合、各アラームの作成時に保存されたタイムゾーンを使用します。特定のタイムゾーンを選択すると、全アラームでそのタイムゾーンを使用します。",
+  "config.alarmTimeZone.auto": "各アラームの保存済みタイムゾーンを自動使用（デフォルト）"
 }
 

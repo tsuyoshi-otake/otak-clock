@@ -11,6 +11,8 @@
   "config.alarmSoundEnabled": "Play a short sound when alarm notifications appear.",
   "config.alarmSoundType": "Select the alarm sound pattern.",
   "config.alarmSoundType.classic": "Classic Alarm (A6/C7 style)",
-  "config.alarmSoundType.snake": "Snake-ish (retro game-like)"
+  "config.alarmSoundType.snake": "Snake-ish (retro game-like)",
+  "config.alarmTimeZone": "Time zone used for alarm evaluation. When set to \"auto\", each alarm uses the time zone saved when it was created. Choose a specific time zone to override all alarms.",
+  "config.alarmTimeZone.auto": "Auto-detect from each alarm's saved time zone (default)"
 }
 

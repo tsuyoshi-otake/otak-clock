@@ -7,6 +7,8 @@
   "command.editAlarm": "Editar hora de alarma",
   "command.deleteAlarm": "Eliminar alarma",
   "command.manageAlarm": "Gestionar alarma",
-  "config.showTimeZoneInStatusBar": "Mostrar una etiqueta corta de zona horaria (p. ej., UTC, JST) junto a cada reloj en la barra de estado."
+  "config.showTimeZoneInStatusBar": "Mostrar una etiqueta corta de zona horaria (p. ej., UTC, JST) junto a cada reloj en la barra de estado.",
+  "config.alarmTimeZone": "Zona horaria utilizada para la evaluación de alarmas. Con \"auto\", cada alarma usa la zona horaria guardada al crearla. Elija una zona horaria específica para aplicar a todas las alarmas.",
+  "config.alarmTimeZone.auto": "Detección automática desde la zona horaria guardada de cada alarma (predeterminado)"
 }
 

@@ -7,6 +7,8 @@
   "command.editAlarm": "Alarm saatini düzenle",
   "command.deleteAlarm": "Alarmı sil",
   "command.manageAlarm": "Alarmı yönet",
-  "config.showTimeZoneInStatusBar": "Durum çubuğunda her saatin yanında kısa bir saat dilimi etiketi (ör. UTC, JST) göster."
+  "config.showTimeZoneInStatusBar": "Durum çubuğunda her saatin yanında kısa bir saat dilimi etiketi (ör. UTC, JST) göster.",
+  "config.alarmTimeZone": "Alarm değerlendirmesi için kullanılan saat dilimi. \"auto\" olarak ayarlandığında, her alarm oluşturulurken kaydedilen saat dilimini kullanır. Tüm alarmlara uygulamak için belirli bir saat dilimi seçin.",
+  "config.alarmTimeZone.auto": "Her alarmın kaydedilmiş saat diliminden otomatik algıla (varsayılan)"
 }
 

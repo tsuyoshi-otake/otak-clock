@@ -7,6 +7,8 @@
   "command.editAlarm": "Weckzeit bearbeiten",
   "command.deleteAlarm": "Wecker löschen",
   "command.manageAlarm": "Wecker verwalten",
-  "config.showTimeZoneInStatusBar": "Kurzes Zeitzonenlabel (z. B. UTC, JST) neben jeder Uhr in der Statusleiste anzeigen."
+  "config.showTimeZoneInStatusBar": "Kurzes Zeitzonenlabel (z. B. UTC, JST) neben jeder Uhr in der Statusleiste anzeigen.",
+  "config.alarmTimeZone": "Zeitzone für die Alarmbewertung. Bei \"auto\" wird die bei der Erstellung gespeicherte Zeitzone jedes Alarms verwendet. Wählen Sie eine bestimmte Zeitzone, um alle Alarme zu überschreiben.",
+  "config.alarmTimeZone.auto": "Automatisch aus der gespeicherten Zeitzone jedes Alarms erkennen (Standard)"
 }
 

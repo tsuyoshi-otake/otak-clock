@@ -176,4 +176,75 @@ suite('alarmTick', () => {
             }
         });
     });
+
+    suite('timezone-aware evaluation', () => {
+        function makeAlarm(overrides?: Partial<AlarmSettings>): AlarmSettings {
+            return {
+                enabled: true,
+                hour: 9,
+                minute: 0,
+                triggered: false,
+                ...overrides
+            };
+        }
+
+        test('triggers at alarm hour in specified timezone', () => {
+            const alarm = makeAlarm({ hour: 9, minute: 0 });
+            // 00:00 UTC = 09:00 Asia/Tokyo (UTC+9)
+            const now = new Date('2024-06-15T00:00:00Z');
+            const result = evaluateAlarmTick(alarm, now, 0, 'Asia/Tokyo');
+            assert.strictEqual(result.action, 'trigger');
+        });
+
+        test('does not trigger when system time matches but alarm timezone time does not', () => {
+            const alarm = makeAlarm({ hour: 9, minute: 0 });
+            // 09:00 UTC = 18:00 Asia/Tokyo
+            const now = new Date('2024-06-15T09:00:00Z');
+            const result = evaluateAlarmTick(alarm, now, 0, 'Asia/Tokyo');
+            assert.strictEqual(result.action, 'none');
+        });
+
+        test('toLocalDateKey uses specified timezone for date boundary', () => {
+            // 23:30 UTC = 08:30+1day Asia/Tokyo
+            const now = new Date('2024-06-15T23:30:00Z');
+            assert.strictEqual(toLocalDateKey(now, 'Asia/Tokyo'), '2024-06-16');
+            assert.strictEqual(toLocalDateKey(now, 'UTC'), '2024-06-15');
+        });
+
+        test('auto mode (undefined) matches legacy behavior', () => {
+            const alarm = makeAlarm();
+            const now = new Date(2024, 5, 15, 9, 0, 0);
+            const autoResult = evaluateAlarmTick(alarm, now, 0, undefined);
+            const legacyResult = evaluateAlarmTick(alarm, now, 0);
+            assert.strictEqual(autoResult.action, legacyResult.action);
+        });
+
+        test('dismissedOn check uses alarm timezone date key', () => {
+            // 23:30 UTC = 2024-06-16 in Asia/Tokyo
+            const now = new Date('2024-06-15T23:30:00Z');
+            const alarm = makeAlarm({ dismissedOn: '2024-06-16', hour: 8, minute: 30 });
+            const result = evaluateAlarmTick(alarm, now, 0, 'Asia/Tokyo');
+            assert.strictEqual(result.action, 'none');
+        });
+
+        test('snooze day boundary respects alarm timezone', () => {
+            // now = 2024-06-16 00:00 JST (2024-06-15T15:00:00Z)
+            const now = new Date('2024-06-15T15:00:00Z');
+            // snooze set to 2024-06-14 23:59 JST (2024-06-14T14:59:00Z) — different day in JST
+            const snoozeMs = new Date('2024-06-14T14:59:00Z').getTime();
+            const alarm = makeAlarm({ snoozeUntilMs: snoozeMs });
+            const result = evaluateAlarmTick(alarm, now, 0, 'Asia/Tokyo');
+            assert.strictEqual(result.action, 'save');
+            if (result.action === 'save') {
+                assert.strictEqual(result.alarm.snoozeUntilMs, undefined);
+            }
+        });
+
+        test('triggers with UTC timezone', () => {
+            const alarm = makeAlarm({ hour: 15, minute: 30 });
+            const now = new Date('2024-06-15T15:30:00Z');
+            const result = evaluateAlarmTick(alarm, now, 0, 'UTC');
+            assert.strictEqual(result.action, 'trigger');
+        });
+    });
 });

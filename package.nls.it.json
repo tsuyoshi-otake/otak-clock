@@ -7,6 +7,8 @@
   "command.editAlarm": "Modifica ora sveglia",
   "command.deleteAlarm": "Elimina sveglia",
   "command.manageAlarm": "Gestisci sveglia",
-  "config.showTimeZoneInStatusBar": "Mostra un'etichetta breve del fuso orario (ad es. UTC, JST) accanto a ogni orologio nella barra di stato."
+  "config.showTimeZoneInStatusBar": "Mostra un'etichetta breve del fuso orario (ad es. UTC, JST) accanto a ogni orologio nella barra di stato.",
+  "config.alarmTimeZone": "Fuso orario utilizzato per la valutazione degli allarmi. Con \"auto\", ogni allarme usa il fuso orario salvato alla creazione. Scegli un fuso orario specifico per applicarlo a tutti gli allarmi.",
+  "config.alarmTimeZone.auto": "Rilevamento automatico dal fuso orario salvato di ogni allarme (predefinito)"
 }
 

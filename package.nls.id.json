@@ -7,6 +7,8 @@
   "command.editAlarm": "Ubah waktu alarm",
   "command.deleteAlarm": "Hapus alarm",
   "command.manageAlarm": "Kelola alarm",
-  "config.showTimeZoneInStatusBar": "Tampilkan label zona waktu singkat (mis. UTC, JST) di samping setiap jam di bilah status."
+  "config.showTimeZoneInStatusBar": "Tampilkan label zona waktu singkat (mis. UTC, JST) di samping setiap jam di bilah status.",
+  "config.alarmTimeZone": "Zona waktu yang digunakan untuk evaluasi alarm. Jika diatur ke \"auto\", setiap alarm menggunakan zona waktu yang disimpan saat dibuat. Pilih zona waktu tertentu untuk menerapkannya ke semua alarm.",
+  "config.alarmTimeZone.auto": "Deteksi otomatis dari zona waktu tersimpan setiap alarm (default)"
 }
 

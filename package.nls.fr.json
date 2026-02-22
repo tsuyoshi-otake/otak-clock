@@ -7,6 +7,8 @@
   "command.editAlarm": "Modifier l'heure de l'alarme",
   "command.deleteAlarm": "Supprimer l'alarme",
   "command.manageAlarm": "Gérer l'alarme",
-  "config.showTimeZoneInStatusBar": "Afficher une étiquette courte de fuseau horaire (ex. UTC, JST) à côté de chaque horloge dans la barre d'état."
+  "config.showTimeZoneInStatusBar": "Afficher une étiquette courte de fuseau horaire (ex. UTC, JST) à côté de chaque horloge dans la barre d'état.",
+  "config.alarmTimeZone": "Fuseau horaire utilisé pour l'évaluation des alarmes. Avec \"auto\", chaque alarme utilise le fuseau horaire enregistré lors de sa création. Choisissez un fuseau spécifique pour remplacer toutes les alarmes.",
+  "config.alarmTimeZone.auto": "Détection automatique depuis le fuseau horaire enregistré de chaque alarme (par défaut)"
 }
 

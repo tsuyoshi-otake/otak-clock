@@ -7,6 +7,8 @@
   "command.editAlarm": "Sửa giờ báo thức",
   "command.deleteAlarm": "Xóa báo thức",
   "command.manageAlarm": "Quản lý báo thức",
-  "config.showTimeZoneInStatusBar": "Hiển thị nhãn múi giờ ngắn (ví dụ: UTC, JST) bên cạnh mỗi đồng hồ trên thanh trạng thái."
+  "config.showTimeZoneInStatusBar": "Hiển thị nhãn múi giờ ngắn (ví dụ: UTC, JST) bên cạnh mỗi đồng hồ trên thanh trạng thái.",
+  "config.alarmTimeZone": "Múi giờ được sử dụng để đánh giá chuông báo. Khi đặt thành \"auto\", mỗi chuông báo sử dụng múi giờ đã lưu khi tạo. Chọn múi giờ cụ thể để áp dụng cho tất cả chuông báo.",
+  "config.alarmTimeZone.auto": "Tự động phát hiện từ múi giờ đã lưu của mỗi chuông báo (mặc định)"
 }
 

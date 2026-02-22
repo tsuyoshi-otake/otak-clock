@@ -7,6 +7,8 @@
   "command.editAlarm": "編輯鬧鐘時間",
   "command.deleteAlarm": "刪除鬧鐘",
   "command.manageAlarm": "管理鬧鐘",
-  "config.showTimeZoneInStatusBar": "在狀態列中於每個時鐘旁顯示簡短的時區標籤（例如 UTC、JST）。"
+  "config.showTimeZoneInStatusBar": "在狀態列中於每個時鐘旁顯示簡短的時區標籤（例如 UTC、JST）。",
+  "config.alarmTimeZone": "用於鬧鐘判定的時區。設定為「auto」時，使用每個鬧鐘建立時儲存的時區。選擇特定時區可覆蓋所有鬧鐘。",
+  "config.alarmTimeZone.auto": "自動使用每個鬧鐘儲存的時區（預設）"
 }
 

@@ -2,6 +2,18 @@
 
 All notable changes to the "otak-clock" extension will be documented in this file.
 
+## [1.1.31] - 2026-02-23
+
+### Added
+- New `otak-clock.alarmTimeZone` setting to override the time zone used for alarm evaluation. Supports `auto` (default, uses each alarm's saved time zone) or any specific IANA time zone ID.
+- Each alarm now records the system time zone (`timeZoneId`) when created or edited.
+- Timezone-aware wall-clock evaluation in `alarmTick.ts` via `getWallClock()`, ensuring alarms fire at the correct local time even when the global alarm timezone differs from the system timezone.
+- Unit tests for timezone-aware alarm evaluation (7 new tests).
+- Localized `alarmTimeZone` setting description for all 18 supported languages.
+
+### Changed
+- Updated README.md, CLAUDE.md, and CHANGELOG.md to document the alarm timezone feature.
+
 ## [1.1.22] - 2026-02-17
 
 ### Added
