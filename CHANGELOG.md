@@ -2,6 +2,18 @@
 
 All notable changes to the "otak-clock" extension will be documented in this file.
 
+## [1.1.32] - 2026-02-23
+
+### Fixed
+- In `otak-clock.alarmTimeZone = auto`, alarm evaluation now uses each device's current system time zone instead of a previously saved per-alarm time zone.
+- Unified alarm time display (status bar and alarm menus) with the same `auto` behavior to avoid cross-device confusion.
+
+### Added
+- Added `AlarmManager` unit tests for `auto` timezone resolution and global override behavior.
+
+### Changed
+- Updated README and localized setting descriptions (`package.nls.json`, `package.nls.ja.json`) to match the corrected `auto` behavior.
+
 ## [1.1.31] - 2026-02-23
 
 ### Added

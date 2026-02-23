@@ -56,7 +56,7 @@ export async function pickAlarmId(
             const status = alarm.enabled ? i18n.t('alarm.status.enabled') : i18n.t('alarm.status.disabled');
             const fired = alarm.enabled && alarm.triggered ? i18n.t('alarm.status.firedTodaySuffix') : '';
             return {
-                label: `${index + 1}. ${formatLocalAlarmTime(alarm.hour, alarm.minute, now, alarmTimeZone ?? alarm.timeZoneId)}`,
+                label: `${index + 1}. ${formatLocalAlarmTime(alarm.hour, alarm.minute, now, alarmTimeZone)}`,
                 description: `${status}${fired}`,
                 alarmId: alarm.id
             };
@@ -90,7 +90,7 @@ export async function showAlarmMenuQuickPick(
         }
 
         const slot = String(i + 1);
-        const time = formatLocalAlarmTime(alarm.hour, alarm.minute, now, alarmTimeZone ?? alarm.timeZoneId);
+        const time = formatLocalAlarmTime(alarm.hour, alarm.minute, now, alarmTimeZone);
         const status = alarm.enabled ? i18n.t('alarm.status.enabled') : i18n.t('alarm.status.disabled');
         const fired = alarm.enabled && alarm.triggered ? i18n.t('alarm.status.firedTodaySuffix') : '';
         const description = `${time} (${status})${fired}`;

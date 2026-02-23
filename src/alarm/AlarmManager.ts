@@ -64,15 +64,8 @@ export class AlarmManager implements vscode.Disposable {
         return findTimeZoneById(raw) ? raw : undefined;
     }
 
-    private resolveAlarmTimeZone(alarm: AlarmSettings): string | undefined {
-        const global = this.getGlobalAlarmTimeZone();
-        if (global) {
-            return global;
-        }
-        if (typeof alarm.timeZoneId === 'string' && alarm.timeZoneId.length > 0) {
-            return alarm.timeZoneId;
-        }
-        return undefined;
+    private resolveAlarmTimeZone(): string | undefined {
+        return this.getGlobalAlarmTimeZone();
     }
 
     private static detectSystemTimeZone(): string {
@@ -105,11 +98,11 @@ export class AlarmManager implements vscode.Disposable {
 
     private dismissAlarms(alarmIds: string[]): void {
         const idSet = new Set(alarmIds);
+        const alarmTimeZone = this.resolveAlarmTimeZone();
         const updated = this.alarms.map((alarm) => {
             if (!alarm.id || !idSet.has(alarm.id)) {
                 return alarm;
             }
-            const alarmTimeZone = this.resolveAlarmTimeZone(alarm);
             const todayKey = toLocalDateKey(new Date(), alarmTimeZone);
             return { ...alarm, dismissedOn: todayKey };
         });
@@ -149,7 +142,7 @@ export class AlarmManager implements vscode.Disposable {
         };
         this.saveAlarms([...this.alarms, alarm]);
 
-        const alarmTimeZone = this.resolveAlarmTimeZone(alarm);
+        const alarmTimeZone = this.resolveAlarmTimeZone();
         const displayTime = formatLocalAlarmTime(picked.hour, picked.minute, new Date(), alarmTimeZone);
         void vscode.window.withProgress({
             location: vscode.ProgressLocation.Notification,
@@ -192,8 +185,7 @@ export class AlarmManager implements vscode.Disposable {
             return;
         }
 
-        const editedAlarm = this.getAlarmById(targetId);
-        const resolvedTz = editedAlarm ? this.resolveAlarmTimeZone(editedAlarm) : alarmTz;
+        const resolvedTz = alarmTz;
         const displayTime = formatLocalAlarmTime(picked.hour, picked.minute, new Date(), resolvedTz);
         void vscode.window.withProgress({
             location: vscode.ProgressLocation.Notification,
@@ -220,7 +212,7 @@ export class AlarmManager implements vscode.Disposable {
             return;
         }
 
-        const resolvedTz = this.resolveAlarmTimeZone(next);
+        const resolvedTz = this.resolveAlarmTimeZone();
         const message = next.enabled
             ? this.i18n.t('alarm.message.enabled', { time: formatLocalAlarmTime(next.hour, next.minute, new Date(), resolvedTz) })
             : this.i18n.t('alarm.message.disabled');
@@ -240,7 +232,7 @@ export class AlarmManager implements vscode.Disposable {
             return;
         }
 
-        const resolvedTz = this.resolveAlarmTimeZone(alarm);
+        const resolvedTz = this.resolveAlarmTimeZone();
         const confirmation = await vscode.window.showWarningMessage(
             this.i18n.t('alarm.confirm.delete', { time: formatLocalAlarmTime(alarm.hour, alarm.minute, new Date(), resolvedTz) }),
             { modal: true },
@@ -297,6 +289,7 @@ export class AlarmManager implements vscode.Disposable {
         const triggered: AlarmSettings[] = [];
         let changed = false;
 
+        const alarmTimeZone = this.resolveAlarmTimeZone();
         for (let i = 0; i < next.length; i += 1) {
             const alarm = next[i];
             const alarmId = alarm.id;
@@ -305,7 +298,6 @@ export class AlarmManager implements vscode.Disposable {
             }
 
             const lastNotificationTimeMs = this.lastNotificationTimeMsById.get(alarmId) ?? 0;
-            const alarmTimeZone = this.resolveAlarmTimeZone(alarm);
             const result = evaluateAlarmTick(alarm, now, lastNotificationTimeMs, alarmTimeZone);
 
             switch (result.action) {
