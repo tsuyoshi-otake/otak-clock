@@ -1,11 +1,11 @@
 <p align="center">
   <h1 align="center">otak-clock</h1>
-  <p align="center">Dual time zone clock and up to five daily alarms for VS Code.</p>
+  <p align="center">Dual time zone clocks and up to five daily alarms for VS Code.</p>
 </p>
 
 ---
 
-Show two clocks in the status bar and keep an eye on another time zone while you code.
+Display two time zones in the status bar while you work in VS Code.
 
 ![otak-clock](images/otak-clock.png)
 
@@ -17,7 +17,7 @@ Show two clocks in the status bar and keep an eye on another time zone while you
 2. Select a region (Americas, Europe, Asia, …).
 3. Choose a time zone.
 
-Repeat for the second clock to show two independent time zones simultaneously. Use **Swap Time Zones** from the Command Palette to flip them instantly.
+Repeat this for the second clock to show two independent time zones at once. Use **Swap Time Zones** from the Command Palette to switch their positions.
 
 The clocks display time in 24-hour format:
 - Focused window: `HH:mm:ss` (updated every second)
@@ -33,30 +33,30 @@ Hover over a clock to see the full date, IANA time zone ID, UTC offset, and DST 
    - **Edit** — change the time of an existing alarm
    - **Toggle** — enable or disable an alarm without deleting it
    - **Delete** — remove an alarm permanently
-3. When an alarm fires, a toast notification appears and the status bar flashes.
+3. When an alarm fires, a notification appears and the status bar flashes.
 
-From the toast you can:
-- **Stop** — dismiss the alarm (propagates to all VS Code windows immediately)
-- **Snooze 3 min** — delays the next notification by 3 minutes
-- **Open alarm menu** — jump directly to alarm management
+From the notification, you can:
+- **Stop** — dismiss the alarm in all VS Code windows immediately
+- **Snooze 3 min** — delay the next notification by 3 minutes
+- **Open alarm menu** — open the alarm management menu
 
-Notifications repeat every 30 seconds until you press Stop. Alarms trigger once per day, resetting at midnight.
+Notifications repeat every 30 seconds until you press Stop. Each alarm triggers once per day and resets at midnight.
 
 By default, alarms use the current system time zone on each device. To evaluate all alarms in a specific time zone instead, set `otak-clock.alarmTimeZone` in Settings.
 
-You can set up to **5 alarms** at a time. Each alarm can be enabled or disabled independently.
+You can create up to **5 alarms** at a time. Each alarm can be enabled or disabled independently.
 
 ## Features
 
-- **Dual time zone clocks** — Two independent clocks in the status bar with full IANA time zone support.
-- **Region-based time zone selection** — Time zones grouped by region for easy browsing.
-- **Helpful tooltips** — Hover to see date, UTC offset, and DST information.
-- **Multiple alarms** — Up to 5 alarms with per-alarm enable/disable.
-- **Alarm time zone override** — Alarms use the current system time zone by default. Optionally set a global alarm time zone to evaluate all alarms in a specific time zone.
+- **Dual time zone clocks** — Two independent clocks in the status bar using IANA time zone IDs.
+- **Region-based time zone selection** — Time zones are grouped by region.
+- **Clock tooltips** — Hover to see the date, UTC offset, and DST information.
+- **Multiple alarms** — Up to 5 alarms, each with its own enable/disable state.
+- **Alarm time zone override** — Alarms use the current system time zone by default. Set a global alarm time zone to evaluate all alarms in a specific time zone.
 - **Cross-window alarm sync** — Pressing Stop in any VS Code window immediately dismisses the alarm in all other open windows on the same machine.
-- **Snooze** — Delay alarm notifications by 3 minutes per snooze.
-- **Persistent preferences** — Selected time zones and alarm settings survive restarts and are synced via Settings Sync.
-- **Localized UI** — Full support for 18 languages: `ar` `de` `en` `es` `fr` `hi` `id` `it` `ja` `ko` `nl` `pt` `ru` `th` `tr` `vi` `zh-cn` `zh-tw`
+- **Snooze** — Delay alarm notifications by 3 minutes each time you snooze.
+- **Persistent preferences** — Selected time zones and alarm settings are saved and synced via Settings Sync.
+- **Localized UI** — Available in 18 languages: `ar` `de` `en` `es` `fr` `hi` `id` `it` `ja` `ko` `nl` `pt` `ru` `th` `tr` `vi` `zh-cn` `zh-tw`
 
 ## Status Bar Reference
 
@@ -79,13 +79,13 @@ You can set up to **5 alarms** at a time. Each alarm can be enabled or disabled 
 
 ## Commands
 
-Access via the Command Palette (`Cmd/Ctrl+Shift+P`):
+Open these commands from the Command Palette (`Cmd/Ctrl+Shift+P`):
 
 | Command | Description |
 |---|---|
 | `Select Time Zone 1` | Change the first clock's time zone |
 | `Select Time Zone 2` | Change the second clock's time zone |
-| `Swap Time Zones` | Flip Time Zone 1 and Time Zone 2 |
+| `Swap Time Zones` | Swap Time Zone 1 and Time Zone 2 |
 | `Set Alarm Time` | Add a new alarm |
 | `Edit Alarm` | Change an existing alarm's time |
 | `Toggle Alarm` | Enable or disable an alarm |
@@ -99,14 +99,14 @@ Access via the Command Palette (`Cmd/Ctrl+Shift+P`):
 otak-clock uses VS Code's shared `globalState` as an IPC channel between windows. When you press **Stop** in one window:
 
 1. The dismissal is written to `globalState` (`dismissedOn` field).
-2. All other windows detect the change within ~1 second (focused) or ~1 minute (unfocused) via the periodic tick.
-3. Any active alarm notification session in those windows is stopped automatically.
+2. Other windows detect the change within ~1 second when focused, or ~1 minute when unfocused.
+3. Active alarm notifications in those windows stop automatically.
 
-Snooze state is also shared — snoozing in one window delays the alarm in all windows.
+Snooze state is shared as well. Snoozing in one window delays the alarm in all windows.
 
 ### Settings Sync
 
-Alarm configuration (time and enabled/disabled state) is stored under VS Code's Settings Sync scope and will sync across machines. The runtime state (whether today's alarm already fired, snooze timer, dismissal) is stored locally per device and is not synced.
+Alarm configuration (time and enabled/disabled state) is included in VS Code Settings Sync and syncs across machines. Runtime state (whether today's alarm has already fired, snooze timer, and dismissal state) is stored locally on each device and is not synced.
 
 ## Requirements
 
@@ -130,16 +130,16 @@ Alarm configuration (time and enabled/disabled state) is stored under VS Code's 
 
 ## Related Extensions
 
-- **[otak-monitor](https://marketplace.visualstudio.com/items?itemName=odangoo.otak-monitor)** — Real-time system monitoring in VS Code.
-- **[otak-proxy](https://marketplace.visualstudio.com/items?itemName=odangoo.otak-proxy)** — One-click proxy management for VS Code, Git, npm, and terminals.
+- **[otak-monitor](https://marketplace.visualstudio.com/items?itemName=odangoo.otak-monitor)** — System monitoring in VS Code.
+- **[otak-proxy](https://marketplace.visualstudio.com/items?itemName=odangoo.otak-proxy)** — Proxy management for VS Code, Git, npm, and terminals.
 - **[otak-committer](https://marketplace.visualstudio.com/items?itemName=odangoo.otak-committer)** — AI-assisted commit messages, pull requests, and issues.
-- **[otak-restart](https://marketplace.visualstudio.com/items?itemName=odangoo.otak-restart)** — Quick reload shortcuts.
+- **[otak-restart](https://marketplace.visualstudio.com/items?itemName=odangoo.otak-restart)** — Reload shortcuts.
 - **[otak-pomodoro](https://marketplace.visualstudio.com/items?itemName=odangoo.otak-pomodoro)** — Pomodoro timer in VS Code.
-- **[otak-zen](https://marketplace.visualstudio.com/items?itemName=odangoo.otak-zen)** — Minimal, distraction-free VS Code UI.
+- **[otak-zen](https://marketplace.visualstudio.com/items?itemName=odangoo.otak-zen)** — A minimal VS Code UI.
 
 ## License
 
-MIT License - see the [LICENSE](LICENSE) file for details.
+MIT License. See the [LICENSE](LICENSE) file for details.
 
 ## Links
 

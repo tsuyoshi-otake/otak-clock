@@ -1,5 +1,6 @@
 .vscode/**
 .vscode-test/**
+.claude/**
 src/**
 .gitignore
 .yarnrc
@@ -9,6 +10,8 @@ vsc-extension-quickstart.md
 **/*.map
 **/*.ts
 **/.vscode-test.*
+out/test/**
 **/*.vsix
 package-lock.json
 CHANGELOG.md
+CLAUDE.md
