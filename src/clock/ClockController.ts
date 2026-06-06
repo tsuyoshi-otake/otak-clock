@@ -51,6 +51,11 @@ export class ClockController implements vscode.Disposable {
     private lastPrimaryTooltip: string | undefined;
     private lastSecondaryTooltip: string | undefined;
 
+    // Cached timezone labels (e.g. "JST"); recomputed only when the minute bucket changes.
+    private tzLabel1 = '';
+    private tzLabel2 = '';
+    private labelBucket: number | undefined;
+
     private isFocused: boolean;
     private lastMinuteBucket: number | undefined;
     private tickHandle: NodeJS.Timeout | undefined;
@@ -213,14 +218,27 @@ export class ClockController implements vscode.Disposable {
 
     private updateClockText(now: Date, force: boolean): void {
         const formatters1 = getFormatters(this.timeZone1.timeZoneId);
-        const text1 = formatClockText(now, this.timeZone1, formatters1, this.isFocused, this.showTimeZoneInStatusBar, getStatusBarTimeZoneLabel);
+        const formatters2 = getFormatters(this.timeZone2.timeZoneId);
+
+        // The timezone label is constant within a minute, but getStatusBarTimeZoneLabel runs
+        // Intl.formatToParts. Recompute it only on a minute change so the per-second hot path
+        // avoids that fixed cost (Amdahl: shrink the work that runs every tick).
+        if (this.showTimeZoneInStatusBar) {
+            const minuteBucket = Math.floor(now.getTime() / MS_PER_MINUTE);
+            if (force || minuteBucket !== this.labelBucket) {
+                this.tzLabel1 = getStatusBarTimeZoneLabel(now, this.timeZone1, formatters1);
+                this.tzLabel2 = getStatusBarTimeZoneLabel(now, this.timeZone2, formatters2);
+                this.labelBucket = minuteBucket;
+            }
+        }
+
+        const text1 = formatClockText(now, this.timeZone1, formatters1, this.isFocused, this.showTimeZoneInStatusBar, () => this.tzLabel1);
         if (force || text1 !== this.lastPrimaryText) {
             this.primaryStatusBar.text = text1;
             this.lastPrimaryText = text1;
         }
 
-        const formatters2 = getFormatters(this.timeZone2.timeZoneId);
-        const text2 = formatClockText(now, this.timeZone2, formatters2, this.isFocused, this.showTimeZoneInStatusBar, getStatusBarTimeZoneLabel);
+        const text2 = formatClockText(now, this.timeZone2, formatters2, this.isFocused, this.showTimeZoneInStatusBar, () => this.tzLabel2);
         if (force || text2 !== this.lastSecondaryText) {
             this.secondaryStatusBar.text = text2;
             this.lastSecondaryText = text2;

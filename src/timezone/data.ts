@@ -76,6 +76,12 @@ export function localizeRegion(region: string, i18n: I18nManager): string {
     return key ? i18n.t(key) : region;
 }
 
+// O(1) lookup index, built once at module load. Keeps findTimeZoneById constant-time
+// even if the timezone table grows (Gustafson: scales with the data set size).
+const timeZonesById: Map<string, TimeZoneInfo> = new Map(
+    timeZones.map((tz) => [tz.timeZoneId, tz])
+);
+
 export function findTimeZoneById(timeZoneId: string): TimeZoneInfo | undefined {
-    return timeZones.find(tz => tz.timeZoneId === timeZoneId);
+    return timeZonesById.get(timeZoneId);
 }
