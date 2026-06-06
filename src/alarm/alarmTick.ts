@@ -1,5 +1,5 @@
 import { AlarmSettings } from './AlarmSettings';
-import { NOTIFICATION_COOLDOWN_MS } from '../clock/constants';
+import { NOTIFICATION_COOLDOWN_MS } from './constants';
 
 interface WallClockTime {
     year: number;

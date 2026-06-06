@@ -1,4 +1,4 @@
-import { getFormatters, getStatusBarTimeZoneLabel } from '../clock/formatters';
+import { getFormatters, getStatusBarTimeZoneLabel } from '../timezone/formatters';
 import { TimeZoneInfo } from '../timezone/types';
 import { findTimeZoneById } from '../timezone/data';
 import { formatTime } from './AlarmSettings';

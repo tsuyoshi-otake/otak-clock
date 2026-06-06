@@ -1,5 +1,5 @@
 import * as assert from 'assert';
-import { getFormatters, getStatusBarTimeZoneLabel } from '../clock/formatters';
+import { getFormatters, getStatusBarTimeZoneLabel } from '../timezone/formatters';
 import { TimeZoneInfo } from '../timezone/types';
 
 suite('formatters', () => {

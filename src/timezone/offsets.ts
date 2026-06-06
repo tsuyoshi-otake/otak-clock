@@ -1,5 +1,4 @@
-import { FORMATTER_CACHE_MAX_SIZE } from '../clock/constants';
-import { evictOldestIfOverCapacity } from '../utils/cache';
+import { evictOldestIfOverCapacity, FORMATTER_CACHE_MAX_SIZE } from '../utils/cache';
 import { TimeZoneInfo } from './types';
 
 export function formatUtcOffsetLabel(offsetMinutes: number): string {

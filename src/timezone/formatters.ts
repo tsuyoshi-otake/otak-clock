@@ -1,6 +1,5 @@
-import { FormatterPair, TimeZoneInfo } from '../timezone/types';
-import { FORMATTER_CACHE_MAX_SIZE } from './constants';
-import { evictOldestIfOverCapacity } from '../utils/cache';
+import { FormatterPair, TimeZoneInfo } from './types';
+import { evictOldestIfOverCapacity, FORMATTER_CACHE_MAX_SIZE } from '../utils/cache';
 
 const formatterCache = new Map<string, FormatterPair>();
 

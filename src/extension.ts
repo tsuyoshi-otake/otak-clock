@@ -45,7 +45,7 @@ export function activate(context: vscode.ExtensionContext): void {
     const alarmManager = new AlarmManager(context, [primaryStatusBar, secondaryStatusBar]);
     context.subscriptions.push(alarmManager);
 
-    const clockController = new ClockController(context, primaryStatusBar, secondaryStatusBar, alarmManager);
+    const clockController = new ClockController(context, primaryStatusBar, secondaryStatusBar, (now) => alarmManager.tick(now));
     context.subscriptions.push(clockController);
 
     // コマンドを登録

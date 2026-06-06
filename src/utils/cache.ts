@@ -1,3 +1,6 @@
+/** Maximum number of cached Intl.DateTimeFormat instances kept per formatter cache. */
+export const FORMATTER_CACHE_MAX_SIZE = 32;
+
 /**
  * Removes the oldest entry when the map is at or above `maxSize`.
  * Note: This is insertion-order eviction (not a true LRU).

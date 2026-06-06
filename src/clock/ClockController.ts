@@ -1,9 +1,8 @@
 import * as vscode from 'vscode';
 import { TimeZoneInfo } from '../timezone/types';
 import { findTimeZoneById, UTC_FALLBACK_TIMEZONE } from '../timezone/data';
-import { AlarmManager } from '../alarm/AlarmManager';
 import { I18nManager } from '../i18n/I18nManager';
-import { getFormatters, getStatusBarTimeZoneLabel } from './formatters';
+import { getFormatters, getStatusBarTimeZoneLabel } from '../timezone/formatters';
 import { buildTooltipText, formatClockText } from './tooltips';
 import { msUntilNextSecond, msUntilNextMinute, MS_PER_MINUTE } from '../utils/timing';
 import { isRecord } from '../utils/guards';
@@ -40,7 +39,8 @@ export class ClockController implements vscode.Disposable {
     private readonly context: vscode.ExtensionContext;
     private readonly primaryStatusBar: vscode.StatusBarItem;
     private readonly secondaryStatusBar: vscode.StatusBarItem;
-    private readonly alarmManager: AlarmManager;
+    /** Injected callback fired once per minute boundary; drives alarm evaluation. */
+    private readonly onMinuteTick: (now: Date) => void;
     private readonly i18n: I18nManager;
 
     private timeZone1: TimeZoneInfo;
@@ -63,12 +63,12 @@ export class ClockController implements vscode.Disposable {
         context: vscode.ExtensionContext,
         primaryStatusBar: vscode.StatusBarItem,
         secondaryStatusBar: vscode.StatusBarItem,
-        alarmManager: AlarmManager
+        onMinuteTick: (now: Date) => void
     ) {
         this.context = context;
         this.primaryStatusBar = primaryStatusBar;
         this.secondaryStatusBar = secondaryStatusBar;
-        this.alarmManager = alarmManager;
+        this.onMinuteTick = onMinuteTick;
         this.i18n = I18nManager.getInstance();
 
         this.isFocused = vscode.window.state.focused;
@@ -203,8 +203,8 @@ export class ClockController implements vscode.Disposable {
         }
         this.lastMinuteBucket = minuteBucket;
 
-        // Alarm logic runs even when the VS Code window is not focused.
-        this.alarmManager.tick(now);
+        // Drives alarm evaluation (injected). Runs even when the window is unfocused.
+        this.onMinuteTick(now);
 
         if (this.isFocused) {
             this.updateTooltips(now, false);

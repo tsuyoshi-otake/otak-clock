@@ -1,5 +1,7 @@
 import * as vscode from 'vscode';
-import { FLASH_INTERVAL_MS } from '../clock/constants';
+
+/** Interval (ms) between status bar background flashes during an active alarm. */
+const FLASH_INTERVAL_MS = 500;
 
 /**
  * Flashes the status bar background color a few times to get attention.

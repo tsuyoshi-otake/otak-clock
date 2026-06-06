@@ -7,11 +7,11 @@ import {
 import { evaluateAlarmTick, toLocalDateKey } from './alarmTick';
 import { I18nManager } from '../i18n/I18nManager';
 import { sleep } from '../utils/timing';
-import { MAX_ALARMS } from './constants';
 import {
+    MAX_ALARMS,
     STATUS_BAR_ALARM_PRIORITY,
     PROGRESS_NOTIFICATION_DISPLAY_MS
-} from '../clock/constants';
+} from './constants';
 import { buildAlarmStatusBarState } from './AlarmStatus';
 import {
     loadAlarmsFromGlobalState,
