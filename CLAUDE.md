@@ -69,4 +69,4 @@ Strict mode with `noImplicitReturns`, `noUnusedParameters`, `noUnusedLocals`, `n
 | `otak-clock.showTimeZoneInStatusBar` | `true` | Show timezone label next to clock |
 | `otak-clock.alarmSoundEnabled` | `true` | Enable alarm sound on trigger |
 | `otak-clock.alarmSoundType` | `"classic-alarm"` | Sound variant: `"classic-alarm"` or `"snake-ish"` |
-| `otak-clock.alarmTimeZone` | `"auto"` | Alarm evaluation timezone. `"auto"` uses each alarm's saved timezone; specific IANA ID overrides all alarms |
+| `otak-clock.alarmTimeZone` | `"auto"` | Alarm evaluation timezone. `"auto"` uses each device's current system timezone; specific IANA ID overrides all alarms |

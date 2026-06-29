@@ -1,4 +1,5 @@
 {
+  "extension.description": "VS Code durum çubuğunda iki saat dilimi saati ve en fazla beş günlük alarm.",
   "command.selectTimeZone1": "Saat dilimi 1'i seç",
   "command.selectTimeZone2": "Saat dilimi 2'yi seç",
   "command.swapTimeZones": "Saat dilimlerini takas et",
@@ -8,7 +9,11 @@
   "command.deleteAlarm": "Alarmı sil",
   "command.manageAlarm": "Alarmı yönet",
   "config.showTimeZoneInStatusBar": "Durum çubuğunda her saatin yanında kısa bir saat dilimi etiketi (ör. UTC, JST) göster.",
-  "config.alarmTimeZone": "Alarm değerlendirmesi için kullanılan saat dilimi. \"auto\" olarak ayarlandığında, her alarm oluşturulurken kaydedilen saat dilimini kullanır. Tüm alarmlara uygulamak için belirli bir saat dilimi seçin.",
-  "config.alarmTimeZone.auto": "Her alarmın kaydedilmiş saat diliminden otomatik algıla (varsayılan)"
+  "config.alarmSoundEnabled": "Alarm bildirimleri göründüğünde kısa bir ses çal.",
+  "config.alarmSoundType": "Alarm sesi desenini seç.",
+  "config.alarmSoundType.classic": "Klasik alarm (A6/C7 stili)",
+  "config.alarmSoundType.snake": "Snake-ish (retro oyun tarzı)",
+  "config.alarmTimeZone": "Alarm değerlendirmesi için kullanılan saat dilimi. \"auto\" olarak ayarlandığında, alarmlar her cihazdaki geçerli sistem saat dilimini kullanır. Tüm alarmlara uygulamak için belirli bir saat dilimi seçin.",
+  "config.alarmTimeZone.auto": "Her cihazdaki geçerli sistem saat dilimini kullan (varsayılan)"
 }
 

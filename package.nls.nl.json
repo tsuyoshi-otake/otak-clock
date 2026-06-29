@@ -1,4 +1,5 @@
 {
+  "extension.description": "Klokken voor twee tijdzones en maximaal vijf dagelijkse alarmen in de VS Code-statusbalk.",
   "command.selectTimeZone1": "Tijdzone 1 selecteren",
   "command.selectTimeZone2": "Tijdzone 2 selecteren",
   "command.swapTimeZones": "Tijdzones omwisselen",
@@ -8,7 +9,11 @@
   "command.deleteAlarm": "Alarm verwijderen",
   "command.manageAlarm": "Alarm beheren",
   "config.showTimeZoneInStatusBar": "Toon een korte tijdzoneaanduiding (bijv. UTC, JST) naast elke klok in de statusbalk.",
-  "config.alarmTimeZone": "Tijdzone gebruikt voor alarmbeoordeling. Bij \"auto\" gebruikt elk alarm de tijdzone die is opgeslagen bij het aanmaken. Kies een specifieke tijdzone om alle alarmen te overschrijven.",
-  "config.alarmTimeZone.auto": "Automatisch detecteren vanuit de opgeslagen tijdzone van elk alarm (standaard)"
+  "config.alarmSoundEnabled": "Speel een kort geluid af wanneer alarmmeldingen verschijnen.",
+  "config.alarmSoundType": "Selecteer het alarmgeluidspatroon.",
+  "config.alarmSoundType.classic": "Klassiek alarm (A6/C7-stijl)",
+  "config.alarmSoundType.snake": "Snake-ish (retro-gamestijl)",
+  "config.alarmTimeZone": "Tijdzone gebruikt voor alarmbeoordeling. Bij \"auto\" gebruiken alarmen de huidige systeem-tijdzone op elk apparaat. Kies een specifieke tijdzone om alle alarmen te overschrijven.",
+  "config.alarmTimeZone.auto": "Gebruik de huidige systeem-tijdzone op elk apparaat (standaard)"
 }
 

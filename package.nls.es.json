@@ -1,4 +1,5 @@
 {
+  "extension.description": "Relojes de dos zonas horarias y hasta cinco alarmas diarias en la barra de estado de VS Code.",
   "command.selectTimeZone1": "Seleccionar zona horaria 1",
   "command.selectTimeZone2": "Seleccionar zona horaria 2",
   "command.swapTimeZones": "Intercambiar zonas horarias",
@@ -8,7 +9,11 @@
   "command.deleteAlarm": "Eliminar alarma",
   "command.manageAlarm": "Gestionar alarma",
   "config.showTimeZoneInStatusBar": "Mostrar una etiqueta corta de zona horaria (p. ej., UTC, JST) junto a cada reloj en la barra de estado.",
-  "config.alarmTimeZone": "Zona horaria utilizada para la evaluación de alarmas. Con \"auto\", cada alarma usa la zona horaria guardada al crearla. Elija una zona horaria específica para aplicar a todas las alarmas.",
-  "config.alarmTimeZone.auto": "Detección automática desde la zona horaria guardada de cada alarma (predeterminado)"
+  "config.alarmSoundEnabled": "Reproducir un sonido breve cuando aparezcan notificaciones de alarma.",
+  "config.alarmSoundType": "Selecciona el patrón de sonido de alarma.",
+  "config.alarmSoundType.classic": "Alarma clásica (estilo A6/C7)",
+  "config.alarmSoundType.snake": "Snake-ish (estilo juego retro)",
+  "config.alarmTimeZone": "Zona horaria utilizada para la evaluación de alarmas. Con \"auto\", las alarmas usan la zona horaria actual del sistema en cada dispositivo. Elija una zona horaria específica para aplicar a todas las alarmas.",
+  "config.alarmTimeZone.auto": "Usar la zona horaria actual del sistema en cada dispositivo (predeterminado)"
 }
 

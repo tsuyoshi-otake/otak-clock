@@ -1,4 +1,5 @@
 {
+  "extension.description": "Orologi per due fusi orari e fino a cinque sveglie giornaliere nella barra di stato di VS Code.",
   "command.selectTimeZone1": "Seleziona fuso orario 1",
   "command.selectTimeZone2": "Seleziona fuso orario 2",
   "command.swapTimeZones": "Scambia fusi orari",
@@ -8,7 +9,11 @@
   "command.deleteAlarm": "Elimina sveglia",
   "command.manageAlarm": "Gestisci sveglia",
   "config.showTimeZoneInStatusBar": "Mostra un'etichetta breve del fuso orario (ad es. UTC, JST) accanto a ogni orologio nella barra di stato.",
-  "config.alarmTimeZone": "Fuso orario utilizzato per la valutazione degli allarmi. Con \"auto\", ogni allarme usa il fuso orario salvato alla creazione. Scegli un fuso orario specifico per applicarlo a tutti gli allarmi.",
-  "config.alarmTimeZone.auto": "Rilevamento automatico dal fuso orario salvato di ogni allarme (predefinito)"
+  "config.alarmSoundEnabled": "Riproduci un breve suono quando appaiono le notifiche della sveglia.",
+  "config.alarmSoundType": "Seleziona il pattern sonoro della sveglia.",
+  "config.alarmSoundType.classic": "Sveglia classica (stile A6/C7)",
+  "config.alarmSoundType.snake": "Snake-ish (stile gioco retro)",
+  "config.alarmTimeZone": "Fuso orario utilizzato per la valutazione delle sveglie. Con \"auto\", le sveglie usano il fuso orario di sistema corrente su ogni dispositivo. Scegli un fuso orario specifico per applicarlo a tutte le sveglie.",
+  "config.alarmTimeZone.auto": "Usa il fuso orario di sistema corrente su ogni dispositivo (predefinito)"
 }
 

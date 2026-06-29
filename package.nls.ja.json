@@ -1,4 +1,5 @@
 {
+  "extension.description": "VS Codeのステータスバーに2つのタイムゾーン時計と最大5つの日次アラームを表示します。",
   "command.selectTimeZone1": "タイムゾーン1を選択",
   "command.selectTimeZone2": "タイムゾーン2を選択",
   "command.swapTimeZones": "タイムゾーンを入れ替え",

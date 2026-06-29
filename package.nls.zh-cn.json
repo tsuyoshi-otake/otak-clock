@@ -1,4 +1,5 @@
 {
+  "extension.description": "在 VS Code 状态栏显示双时区时钟和最多五个每日闹钟。",
   "command.selectTimeZone1": "选择时区 1",
   "command.selectTimeZone2": "选择时区 2",
   "command.swapTimeZones": "交换时区",
@@ -8,7 +9,11 @@
   "command.deleteAlarm": "删除闹钟",
   "command.manageAlarm": "管理闹钟",
   "config.showTimeZoneInStatusBar": "在状态栏中在每个时钟旁显示简短的时区标签（例如 UTC、JST）。",
-  "config.alarmTimeZone": "用于闹钟判定的时区。设置为「auto」时，使用每个闹钟创建时保存的时区。选择特定时区可覆盖所有闹钟。",
-  "config.alarmTimeZone.auto": "自动使用每个闹钟保存的时区（默认）"
+  "config.alarmSoundEnabled": "闹钟通知出现时播放短音。",
+  "config.alarmSoundType": "选择闹钟声音模式。",
+  "config.alarmSoundType.classic": "经典闹钟（A6/C7 风格）",
+  "config.alarmSoundType.snake": "Snake-ish（复古游戏风格）",
+  "config.alarmTimeZone": "用于闹钟判定的时区。设置为“auto”时，闹钟使用每台设备当前的系统时区。选择特定时区可覆盖所有闹钟。",
+  "config.alarmTimeZone.auto": "使用每台设备当前的系统时区（默认）"
 }
 

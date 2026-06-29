@@ -1,4 +1,5 @@
 {
+  "extension.description": "Đồng hồ hai múi giờ và tối đa năm báo thức hằng ngày trên thanh trạng thái VS Code.",
   "command.selectTimeZone1": "Chọn múi giờ 1",
   "command.selectTimeZone2": "Chọn múi giờ 2",
   "command.swapTimeZones": "Hoán đổi múi giờ",
@@ -8,7 +9,11 @@
   "command.deleteAlarm": "Xóa báo thức",
   "command.manageAlarm": "Quản lý báo thức",
   "config.showTimeZoneInStatusBar": "Hiển thị nhãn múi giờ ngắn (ví dụ: UTC, JST) bên cạnh mỗi đồng hồ trên thanh trạng thái.",
-  "config.alarmTimeZone": "Múi giờ được sử dụng để đánh giá chuông báo. Khi đặt thành \"auto\", mỗi chuông báo sử dụng múi giờ đã lưu khi tạo. Chọn múi giờ cụ thể để áp dụng cho tất cả chuông báo.",
-  "config.alarmTimeZone.auto": "Tự động phát hiện từ múi giờ đã lưu của mỗi chuông báo (mặc định)"
+  "config.alarmSoundEnabled": "Phát âm thanh ngắn khi thông báo báo thức xuất hiện.",
+  "config.alarmSoundType": "Chọn mẫu âm thanh báo thức.",
+  "config.alarmSoundType.classic": "Báo thức cổ điển (kiểu A6/C7)",
+  "config.alarmSoundType.snake": "Snake-ish (kiểu trò chơi retro)",
+  "config.alarmTimeZone": "Múi giờ được sử dụng để đánh giá báo thức. Khi đặt thành \"auto\", báo thức sử dụng múi giờ hệ thống hiện tại trên mỗi thiết bị. Chọn múi giờ cụ thể để áp dụng cho tất cả báo thức.",
+  "config.alarmTimeZone.auto": "Sử dụng múi giờ hệ thống hiện tại trên mỗi thiết bị (mặc định)"
 }
 

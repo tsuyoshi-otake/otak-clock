@@ -1,4 +1,5 @@
 {
+  "extension.description": "Relógios de dois fusos horários e até cinco alarmes diários na barra de status do VS Code.",
   "command.selectTimeZone1": "Selecionar fuso horário 1",
   "command.selectTimeZone2": "Selecionar fuso horário 2",
   "command.swapTimeZones": "Trocar fusos horários",
@@ -8,7 +9,11 @@
   "command.deleteAlarm": "Excluir alarme",
   "command.manageAlarm": "Gerenciar alarme",
   "config.showTimeZoneInStatusBar": "Mostrar um rótulo curto de fuso horário (por exemplo, UTC, JST) ao lado de cada relógio na barra de status.",
-  "config.alarmTimeZone": "Fuso horário usado para avaliação de alarmes. Com \"auto\", cada alarme usa o fuso horário salvo na criação. Escolha um fuso horário específico para aplicar a todos os alarmes.",
-  "config.alarmTimeZone.auto": "Detecção automática a partir do fuso horário salvo de cada alarme (padrão)"
+  "config.alarmSoundEnabled": "Reproduzir um som curto quando as notificações de alarme aparecerem.",
+  "config.alarmSoundType": "Selecione o padrão de som do alarme.",
+  "config.alarmSoundType.classic": "Alarme clássico (estilo A6/C7)",
+  "config.alarmSoundType.snake": "Snake-ish (estilo jogo retrô)",
+  "config.alarmTimeZone": "Fuso horário usado para avaliação de alarmes. Com \"auto\", os alarmes usam o fuso horário atual do sistema em cada dispositivo. Escolha um fuso horário específico para aplicar a todos os alarmes.",
+  "config.alarmTimeZone.auto": "Usar o fuso horário atual do sistema em cada dispositivo (padrão)"
 }
 

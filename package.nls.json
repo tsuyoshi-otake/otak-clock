@@ -1,4 +1,5 @@
 {
+  "extension.description": "Dual time zone clocks and up to five daily alarms in the VS Code status bar.",
   "command.selectTimeZone1": "Select Time Zone 1",
   "command.selectTimeZone2": "Select Time Zone 2",
   "command.swapTimeZones": "Swap Time Zones",
