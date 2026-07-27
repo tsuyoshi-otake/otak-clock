@@ -4,10 +4,3 @@ export interface TimeZoneInfo {
     region: string;
     baseUtcOffset: number;
 }
-
-export type FormatterPair = {
-    timeWithSeconds: Intl.DateTimeFormat;
-    timeNoSeconds: Intl.DateTimeFormat;
-    date: Intl.DateTimeFormat;
-    timeZoneName: Intl.DateTimeFormat;
-};

@@ -107,6 +107,35 @@ function parseRuntimeMap(rawRuntime: unknown, alarmIds: string[]): { runtimeById
     return { runtimeById, needsPersist };
 }
 
+/**
+ * The three raw globalState values alarm state is reconstructed from, captured as-is.
+ *
+ * `AlarmStore.refresh()` runs on every minute tick, forever, in every window - and almost
+ * every one of those ticks finds nothing changed. Holding the raw values lets that common
+ * case be settled with three reference comparisons instead of a full parse, validation and
+ * rebuild of the alarm array. VS Code's Memento hands back the stored object itself, so the
+ * references are stable until something actually writes; if a future implementation ever
+ * returned fresh copies, the comparison simply stops matching and the full path runs, so
+ * this can lose its speedup but cannot become incorrect.
+ */
+export interface AlarmStateSnapshot {
+    config: unknown;
+    runtime: unknown;
+    legacy: unknown;
+}
+
+export function readAlarmStateSnapshot(context: vscode.ExtensionContext): AlarmStateSnapshot {
+    return {
+        config: context.globalState.get<unknown>(ALARM_CONFIG_KEY),
+        runtime: context.globalState.get<unknown>(ALARM_RUNTIME_KEY),
+        legacy: context.globalState.get<unknown>(LEGACY_ALARM_STATE_KEY)
+    };
+}
+
+export function isSameAlarmStateSnapshot(a: AlarmStateSnapshot, b: AlarmStateSnapshot): boolean {
+    return a.config === b.config && a.runtime === b.runtime && a.legacy === b.legacy;
+}
+
 export function loadAlarmsFromGlobalState(context: vscode.ExtensionContext): AlarmSettings[] {
     let needsConfigPersist = false;
     let needsRuntimePersist = false;

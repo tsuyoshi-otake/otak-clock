@@ -1,6 +1,7 @@
 import * as assert from 'assert';
-import { formatClockText, buildTooltipText } from '../clock/tooltips';
-import { FormatterPair, TimeZoneInfo } from '../timezone/types';
+import { buildTooltipText } from '../clock/tooltips';
+import { getZoneMinuteState } from '../timezone/formatters';
+import { TimeZoneInfo } from '../timezone/types';
 import { I18nManager } from '../i18n/I18nManager';
 
 suite('tooltips', () => {
@@ -11,49 +12,6 @@ suite('tooltips', () => {
         baseUtcOffset: 9
     };
 
-    function makeMockFormatters(timeZoneId: string = 'Asia/Tokyo'): FormatterPair {
-        return {
-            timeWithSeconds: new Intl.DateTimeFormat('en-US', {
-                hour: '2-digit', minute: '2-digit', second: '2-digit',
-                hour12: false, timeZone: timeZoneId
-            }),
-            timeNoSeconds: new Intl.DateTimeFormat('en-US', {
-                hour: '2-digit', minute: '2-digit',
-                hour12: false, timeZone: timeZoneId
-            }),
-            date: new Intl.DateTimeFormat('en-US', {
-                year: 'numeric', month: '2-digit', day: '2-digit',
-                timeZone: timeZoneId
-            }),
-            timeZoneName: new Intl.DateTimeFormat('en-US', {
-                timeZone: timeZoneId, timeZoneName: 'short'
-            })
-        };
-    }
-
-    suite('formatClockText', () => {
-        test('formats with seconds when focused', () => {
-            const now = new Date('2024-06-15T03:30:45Z'); // 12:30:45 JST
-            const formatters = makeMockFormatters();
-            const result = formatClockText(now, mockTimeZone, formatters, true, false, () => 'JST');
-            assert.strictEqual(result, '12:30:45');
-        });
-
-        test('formats without seconds when unfocused', () => {
-            const now = new Date('2024-06-15T03:30:45Z'); // 12:30 JST
-            const formatters = makeMockFormatters();
-            const result = formatClockText(now, mockTimeZone, formatters, false, false, () => 'JST');
-            assert.strictEqual(result, '12:30');
-        });
-
-        test('appends timezone label when showTimeZoneInStatusBar is true', () => {
-            const now = new Date('2024-06-15T03:30:45Z');
-            const formatters = makeMockFormatters();
-            const result = formatClockText(now, mockTimeZone, formatters, false, true, () => 'JST');
-            assert.strictEqual(result, '12:30 JST');
-        });
-    });
-
     suite('buildTooltipText', () => {
         let i18n: I18nManager;
 
@@ -62,12 +20,20 @@ suite('tooltips', () => {
             i18n.initialize('en');
         });
 
+        function build(timeZone: TimeZoneInfo, iso: string): string {
+            const timeMs = Date.parse(iso);
+            return buildTooltipText(getZoneMinuteState(timeMs, timeZone.timeZoneId), timeZone, i18n);
+        }
+
         test('includes timezone label and IANA id', () => {
-            const now = new Date('2024-01-15T03:30:00Z');
-            const formatters = makeMockFormatters();
-            const result = buildTooltipText(now, mockTimeZone, formatters, i18n);
+            const result = build(mockTimeZone, '2024-01-15T03:30:00Z');
             assert.ok(result.includes('Japan (Tokyo)'));
             assert.ok(result.includes('Asia/Tokyo'));
+        });
+
+        test('includes the local date', () => {
+            const result = build(mockTimeZone, '2024-01-15T03:30:00Z');
+            assert.ok(result.includes('01/15/2024'), `Expected local date in tooltip: ${result}`);
         });
 
         test('shows DST info for New York in summer', () => {
@@ -78,30 +44,46 @@ suite('tooltips', () => {
                 baseUtcOffset: -5
             };
             // June = EDT (UTC-4), base is UTC-5 => DST
-            const now = new Date('2024-06-15T12:00:00Z');
-            const formatters = makeMockFormatters('America/New_York');
-            const result = buildTooltipText(now, nyTz, formatters, i18n);
+            const result = build(nyTz, '2024-06-15T12:00:00Z');
             assert.ok(result.includes('DST'), `Expected DST info in tooltip: ${result}`);
+            assert.ok(result.includes('UTC-04:00'), `Expected the DST offset in tooltip: ${result}`);
+        });
+
+        test('does not show DST info for New York in winter', () => {
+            const nyTz: TimeZoneInfo = {
+                label: 'US Eastern (New York)',
+                timeZoneId: 'America/New_York',
+                region: 'Americas',
+                baseUtcOffset: -5
+            };
+            const result = build(nyTz, '2024-01-15T12:00:00Z');
+            assert.ok(!result.includes('DST'), `Unexpected DST info in tooltip: ${result}`);
+            assert.ok(result.includes('UTC-05:00'), `Expected the standard offset in tooltip: ${result}`);
         });
 
         test('does not show DST info for Tokyo (no DST)', () => {
-            const now = new Date('2024-06-15T03:30:00Z');
-            const formatters = makeMockFormatters();
-            const result = buildTooltipText(now, mockTimeZone, formatters, i18n);
+            const result = build(mockTimeZone, '2024-06-15T03:30:00Z');
             assert.ok(!result.includes('DST'), `Unexpected DST info in tooltip: ${result}`);
         });
 
         test('includes UTC offset string', () => {
-            const now = new Date('2024-06-15T03:30:00Z');
-            const formatters = makeMockFormatters();
-            const result = buildTooltipText(now, mockTimeZone, formatters, i18n);
+            const result = build(mockTimeZone, '2024-06-15T03:30:00Z');
             assert.ok(result.includes('UTC+09:00'), `Expected UTC offset in tooltip: ${result}`);
         });
 
+        test('formats a half-hour offset', () => {
+            const indiaTz: TimeZoneInfo = {
+                label: 'India (New Delhi)',
+                timeZoneId: 'Asia/Kolkata',
+                region: 'Asia',
+                baseUtcOffset: 5.5
+            };
+            const result = build(indiaTz, '2024-06-15T03:30:00Z');
+            assert.ok(result.includes('UTC+05:30'), `Expected UTC+05:30 in tooltip: ${result}`);
+        });
+
         test('includes click-to-change hint', () => {
-            const now = new Date('2024-06-15T03:30:00Z');
-            const formatters = makeMockFormatters();
-            const result = buildTooltipText(now, mockTimeZone, formatters, i18n);
+            const result = build(mockTimeZone, '2024-06-15T03:30:00Z');
             assert.ok(result.includes('Click to change'), `Expected click hint in tooltip: ${result}`);
         });
     });

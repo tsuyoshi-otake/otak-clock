@@ -2,8 +2,8 @@ import * as vscode from 'vscode';
 import { TimeZoneInfo } from '../timezone/types';
 import { findTimeZoneById, UTC_FALLBACK_TIMEZONE } from '../timezone/data';
 import { I18nManager } from '../i18n/I18nManager';
-import { getFormatters, getStatusBarTimeZoneLabel } from '../timezone/formatters';
-import { buildTooltipText, formatClockText } from './tooltips';
+import { getZoneMinuteState } from '../timezone/formatters';
+import { ClockBar } from './ClockBar';
 import { msUntilNextSecond, msUntilNextMinute, MS_PER_MINUTE } from '../utils/timing';
 import { isRecord } from '../utils/guards';
 import {
@@ -37,24 +37,11 @@ export function coerceTimeZoneId(value: unknown): string | undefined {
 
 export class ClockController implements vscode.Disposable {
     private readonly context: vscode.ExtensionContext;
-    private readonly primaryStatusBar: vscode.StatusBarItem;
-    private readonly secondaryStatusBar: vscode.StatusBarItem;
+    private readonly primaryBar: ClockBar;
+    private readonly secondaryBar: ClockBar;
     /** Injected callback fired once per minute boundary; drives alarm evaluation. */
     private readonly onMinuteTick: (now: Date) => void;
     private readonly i18n: I18nManager;
-
-    private timeZone1: TimeZoneInfo;
-    private timeZone2: TimeZoneInfo;
-
-    private lastPrimaryText: string | undefined;
-    private lastSecondaryText: string | undefined;
-    private lastPrimaryTooltip: string | undefined;
-    private lastSecondaryTooltip: string | undefined;
-
-    // Cached timezone labels (e.g. "JST"); recomputed only when the minute bucket changes.
-    private tzLabel1 = '';
-    private tzLabel2 = '';
-    private labelBucket: number | undefined;
 
     private isFocused: boolean;
     private lastMinuteBucket: number | undefined;
@@ -71,24 +58,13 @@ export class ClockController implements vscode.Disposable {
         onMinuteTick: (now: Date) => void
     ) {
         this.context = context;
-        this.primaryStatusBar = primaryStatusBar;
-        this.secondaryStatusBar = secondaryStatusBar;
         this.onMinuteTick = onMinuteTick;
         this.i18n = I18nManager.getInstance();
 
         this.isFocused = vscode.window.state.focused;
 
-        const loaded1 = this.loadTimeZone(TIME_ZONE_1_KEY, DEFAULT_TIME_ZONE_1_ID);
-        this.timeZone1 = loaded1.timeZone;
-        if (loaded1.needsPersist) {
-            void this.context.globalState.update(TIME_ZONE_1_KEY, this.timeZone1.timeZoneId);
-        }
-
-        const loaded2 = this.loadTimeZone(TIME_ZONE_2_KEY, DEFAULT_TIME_ZONE_2_ID);
-        this.timeZone2 = loaded2.timeZone;
-        if (loaded2.needsPersist) {
-            void this.context.globalState.update(TIME_ZONE_2_KEY, this.timeZone2.timeZoneId);
-        }
+        this.primaryBar = new ClockBar(primaryStatusBar, this.loadTimeZone(TIME_ZONE_1_KEY, DEFAULT_TIME_ZONE_1_ID));
+        this.secondaryBar = new ClockBar(secondaryStatusBar, this.loadTimeZone(TIME_ZONE_2_KEY, DEFAULT_TIME_ZONE_2_ID));
 
         this.showTimeZoneInStatusBar = readShowTimeZoneInStatusBar();
         this.configurationDisposable = vscode.workspace.onDidChangeConfiguration((e) => {
@@ -102,90 +78,82 @@ export class ClockController implements vscode.Disposable {
             }
 
             this.showTimeZoneInStatusBar = next;
-            this.refresh(true);
+            this.refresh();
         });
 
         this.windowStateDisposable = vscode.window.onDidChangeWindowState((e) => {
-            const wasFocused = this.isFocused;
             this.isFocused = e.focused;
 
-            const now = new Date();
-            this.runMinuteTick(now, false);
+            const nowMs = Date.now();
+            this.runMinuteTick(nowMs, false);
             // Switch between HH:mm:ss (focused) and HH:mm (unfocused) immediately.
-            this.updateClockText(now, true);
-
-            if (this.isFocused && !wasFocused) {
-                this.updateTooltips(now, true);
+            this.renderText(nowMs);
+            if (this.isFocused) {
+                this.renderTooltips(nowMs);
             }
 
             this.scheduleNextTick(true);
         });
 
-        this.refresh(true);
+        this.refresh();
         this.scheduleNextTick(true);
     }
 
     setTimeZone1(timeZone: TimeZoneInfo): void {
-        if (timeZone.timeZoneId === this.timeZone1.timeZoneId) {
-            return;
-        }
-
-        this.timeZone1 = timeZone;
-        void this.context.globalState.update(TIME_ZONE_1_KEY, timeZone.timeZoneId);
-        this.refresh(true);
+        this.applyTimeZone(this.primaryBar, TIME_ZONE_1_KEY, timeZone);
     }
 
     setTimeZone2(timeZone: TimeZoneInfo): void {
-        if (timeZone.timeZoneId === this.timeZone2.timeZoneId) {
-            return;
-        }
-
-        this.timeZone2 = timeZone;
-        void this.context.globalState.update(TIME_ZONE_2_KEY, timeZone.timeZoneId);
-        this.refresh(true);
+        this.applyTimeZone(this.secondaryBar, TIME_ZONE_2_KEY, timeZone);
     }
 
     swapTimeZones(): void {
-        const tmp = this.timeZone1;
-        this.timeZone1 = this.timeZone2;
-        this.timeZone2 = tmp;
-
-        void this.context.globalState.update(TIME_ZONE_1_KEY, this.timeZone1.timeZoneId);
-        void this.context.globalState.update(TIME_ZONE_2_KEY, this.timeZone2.timeZoneId);
-        this.refresh(true);
+        const primary = this.primaryBar.getTimeZone();
+        this.applyTimeZone(this.primaryBar, TIME_ZONE_1_KEY, this.secondaryBar.getTimeZone());
+        this.applyTimeZone(this.secondaryBar, TIME_ZONE_2_KEY, primary);
     }
 
-    private loadTimeZone(key: string, fallbackId: string): { timeZone: TimeZoneInfo; needsPersist: boolean } {
+    private applyTimeZone(bar: ClockBar, key: string, timeZone: TimeZoneInfo): void {
+        if (!bar.setTimeZone(timeZone)) {
+            return;
+        }
+        void this.context.globalState.update(key, timeZone.timeZoneId);
+        this.refresh();
+    }
+
+    private loadTimeZone(key: string, fallbackId: string): TimeZoneInfo {
         const fallback = findTimeZoneById(fallbackId) ?? UTC_FALLBACK_TIMEZONE;
 
         const stored = this.context.globalState.get<unknown>(key);
         const storedId = coerceTimeZoneId(stored);
-        if (!storedId) {
-            return { timeZone: fallback, needsPersist: true };
+        const timeZone = storedId ? findTimeZoneById(storedId) : undefined;
+
+        if (timeZone) {
+            // Validate that the runtime supports the IANA timeZoneId.
+            try {
+                void getZoneMinuteState(Date.now(), timeZone.timeZoneId);
+                // Migrate old versions that stored the entire object to a string ID.
+                if (typeof stored !== 'string') {
+                    void this.context.globalState.update(key, timeZone.timeZoneId);
+                }
+                return timeZone;
+            } catch {
+                // Fall through to the default below.
+            }
         }
 
-        const timeZone = findTimeZoneById(storedId);
-        if (!timeZone) {
-            return { timeZone: fallback, needsPersist: true };
-        }
-
-        // Validate that the runtime supports the IANA timeZoneId.
-        try {
-            void getFormatters(timeZone.timeZoneId);
-        } catch {
-            return { timeZone: fallback, needsPersist: true };
-        }
-
-        const storedAsString = typeof stored === 'string';
-        // Migrate old versions that stored the entire object to a string ID.
-        return { timeZone, needsPersist: !storedAsString };
+        void this.context.globalState.update(key, fallback.timeZoneId);
+        return fallback;
     }
 
-    private refresh(forceTooltips: boolean): void {
-        const now = new Date();
-        this.updateClockText(now, true);
-        this.runMinuteTick(now, true);
-        this.updateTooltips(now, forceTooltips);
+    /** Full redraw: text, tooltips and the alarm tick, regardless of what changed. */
+    private refresh(): void {
+        const nowMs = Date.now();
+        this.primaryBar.invalidate();
+        this.secondaryBar.invalidate();
+        this.renderText(nowMs);
+        this.runMinuteTick(nowMs, true);
+        this.renderTooltips(nowMs);
     }
 
     private onTick(): void {
@@ -194,69 +162,38 @@ export class ClockController implements vscode.Disposable {
             return;
         }
 
-        const now = new Date();
-        this.runMinuteTick(now, false);
-        this.updateClockText(now, false);
+        // Date.now() rather than `new Date()`: the per-second path never needs a Date object,
+        // and one is only constructed on the minute boundary where the alarm tick wants it.
+        const nowMs = Date.now();
+        this.runMinuteTick(nowMs, false);
+        this.renderText(nowMs);
 
         this.scheduleNextTick(false);
     }
 
-    private runMinuteTick(now: Date, force: boolean): void {
-        const minuteBucket = Math.floor(now.getTime() / MS_PER_MINUTE);
+    private runMinuteTick(nowMs: number, force: boolean): void {
+        const minuteBucket = Math.floor(nowMs / MS_PER_MINUTE);
         if (!force && this.lastMinuteBucket === minuteBucket) {
             return;
         }
         this.lastMinuteBucket = minuteBucket;
 
         // Drives alarm evaluation (injected). Runs even when the window is unfocused.
-        this.onMinuteTick(now);
+        this.onMinuteTick(new Date(nowMs));
 
         if (this.isFocused) {
-            this.updateTooltips(now, false);
+            this.renderTooltips(nowMs);
         }
     }
 
-    private updateClockText(now: Date, force: boolean): void {
-        const formatters1 = getFormatters(this.timeZone1.timeZoneId);
-        const formatters2 = getFormatters(this.timeZone2.timeZoneId);
-
-        // The timezone label is constant within a minute, but getStatusBarTimeZoneLabel runs
-        // Intl.formatToParts. Recompute it only on a minute change so the per-second hot path
-        // avoids that fixed cost (Amdahl: shrink the work that runs every tick).
-        if (this.showTimeZoneInStatusBar) {
-            const minuteBucket = Math.floor(now.getTime() / MS_PER_MINUTE);
-            if (force || minuteBucket !== this.labelBucket) {
-                this.tzLabel1 = getStatusBarTimeZoneLabel(now, this.timeZone1, formatters1);
-                this.tzLabel2 = getStatusBarTimeZoneLabel(now, this.timeZone2, formatters2);
-                this.labelBucket = minuteBucket;
-            }
-        }
-
-        const text1 = formatClockText(now, this.timeZone1, formatters1, this.isFocused, this.showTimeZoneInStatusBar, () => this.tzLabel1);
-        if (force || text1 !== this.lastPrimaryText) {
-            this.primaryStatusBar.text = text1;
-            this.lastPrimaryText = text1;
-        }
-
-        const text2 = formatClockText(now, this.timeZone2, formatters2, this.isFocused, this.showTimeZoneInStatusBar, () => this.tzLabel2);
-        if (force || text2 !== this.lastSecondaryText) {
-            this.secondaryStatusBar.text = text2;
-            this.lastSecondaryText = text2;
-        }
+    private renderText(nowMs: number): void {
+        this.primaryBar.renderText(nowMs, this.isFocused, this.showTimeZoneInStatusBar);
+        this.secondaryBar.renderText(nowMs, this.isFocused, this.showTimeZoneInStatusBar);
     }
 
-    private updateTooltips(now: Date, force: boolean): void {
-        const tooltip1 = buildTooltipText(now, this.timeZone1, getFormatters(this.timeZone1.timeZoneId), this.i18n);
-        if (force || tooltip1 !== this.lastPrimaryTooltip) {
-            this.primaryStatusBar.tooltip = tooltip1;
-            this.lastPrimaryTooltip = tooltip1;
-        }
-
-        const tooltip2 = buildTooltipText(now, this.timeZone2, getFormatters(this.timeZone2.timeZoneId), this.i18n);
-        if (force || tooltip2 !== this.lastSecondaryTooltip) {
-            this.secondaryStatusBar.tooltip = tooltip2;
-            this.lastSecondaryTooltip = tooltip2;
-        }
+    private renderTooltips(nowMs: number): void {
+        this.primaryBar.renderTooltip(nowMs, this.i18n);
+        this.secondaryBar.renderTooltip(nowMs, this.i18n);
     }
 
     private scheduleNextTick(forceReschedule: boolean): void {

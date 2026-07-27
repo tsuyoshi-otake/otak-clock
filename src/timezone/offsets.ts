@@ -1,79 +1,47 @@
-import { evictOldestIfOverCapacity, FORMATTER_CACHE_MAX_SIZE } from '../utils/cache';
 import { TimeZoneInfo } from './types';
+import { getZonedDateTime } from './zonedTime';
+import { pad2 } from '../utils/digits';
 
 export function formatUtcOffsetLabel(offsetMinutes: number): string {
     const sign = offsetMinutes >= 0 ? '+' : '-';
     const totalMinutes = Math.abs(offsetMinutes);
-    const hh = Math.floor(totalMinutes / 60).toString().padStart(2, '0');
-    const mm = (totalMinutes % 60).toString().padStart(2, '0');
-    return `UTC${sign}${hh}:${mm}`;
+    return `UTC${sign}${pad2(Math.floor(totalMinutes / 60))}:${pad2(totalMinutes % 60)}`;
 }
 
 export function getBaseUtcOffsetMinutes(timeZone: TimeZoneInfo): number {
     return Math.round(timeZone.baseUtcOffset * 60);
 }
 
-export function getEffectiveUtcOffsetMinutes(date: Date, timeZone: TimeZoneInfo): number {
+/**
+ * Applies the "Intl gave us nothing useful" guard to an already-resolved offset: an offset
+ * of exactly 0 for a zone whose table entry says otherwise means the lookup failed (see
+ * zonedTime.ts's UTC degradation), so the table's base offset is the better answer.
+ *
+ * Split out from `getEffectiveUtcOffsetMinutes` so callers that already hold the zone's
+ * offset for the current minute do not pay for a second Intl resolution.
+ */
+export function applyBaseOffsetFallback(offsetMinutes: number, timeZone: TimeZoneInfo): number {
     const baseOffsetMinutes = getBaseUtcOffsetMinutes(timeZone);
-    try {
-        const offsetMinutes = getUtcOffsetMinutes(date, timeZone.timeZoneId);
-        if (offsetMinutes === 0 && baseOffsetMinutes !== 0) {
-            return baseOffsetMinutes;
-        }
-        return offsetMinutes;
-    } catch {
+    if (offsetMinutes === 0 && baseOffsetMinutes !== 0) {
         return baseOffsetMinutes;
     }
+    return offsetMinutes;
 }
 
-const offsetPartsFormatterCache = new Map<string, Intl.DateTimeFormat>();
-
-function getOffsetPartsFormatter(timeZoneId: string): Intl.DateTimeFormat {
-    const cached = offsetPartsFormatterCache.get(timeZoneId);
-    if (cached) {
-        return cached;
+export function getEffectiveUtcOffsetMinutes(date: Date, timeZone: TimeZoneInfo): number {
+    try {
+        return applyBaseOffsetFallback(getUtcOffsetMinutes(date, timeZone.timeZoneId), timeZone);
+    } catch {
+        return getBaseUtcOffsetMinutes(timeZone);
     }
-
-    const formatter = new Intl.DateTimeFormat('en-US', {
-        timeZone: timeZoneId,
-        year: 'numeric',
-        month: '2-digit',
-        day: '2-digit',
-        hour: '2-digit',
-        minute: '2-digit',
-        second: '2-digit',
-        hour12: false,
-        hourCycle: 'h23'
-    });
-
-    evictOldestIfOverCapacity(offsetPartsFormatterCache, FORMATTER_CACHE_MAX_SIZE);
-
-    offsetPartsFormatterCache.set(timeZoneId, formatter);
-    return formatter;
 }
 
+/**
+ * UTC offset (local - UTC, in minutes) for an instant in an IANA timezone.
+ *
+ * Backed by the shared formatter cache in zonedTime.ts, which resolves the offset from the
+ * same single formatToParts() call that yields the zone's wall-clock fields.
+ */
 export function getUtcOffsetMinutes(date: Date, timeZoneId: string): number {
-    const parts = getOffsetPartsFormatter(timeZoneId).formatToParts(date);
-    const values = Object.fromEntries(parts.map(p => [p.type, p.value]));
-
-    const year = Number(values.year);
-    const month = Number(values.month);
-    const day = Number(values.day);
-    const hour = Number(values.hour);
-    const minute = Number(values.minute);
-    const second = Number(values.second);
-
-    if (
-        Number.isNaN(year) ||
-        Number.isNaN(month) ||
-        Number.isNaN(day) ||
-        Number.isNaN(hour) ||
-        Number.isNaN(minute) ||
-        Number.isNaN(second)
-    ) {
-        return 0;
-    }
-
-    const asUtc = Date.UTC(year, month - 1, day, hour, minute, second);
-    return Math.round((asUtc - date.getTime()) / 60000);
+    return getZonedDateTime(date.getTime(), timeZoneId).offsetMinutes;
 }

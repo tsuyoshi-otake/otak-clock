@@ -35,6 +35,8 @@ export class AlarmManager implements vscode.Disposable {
     private readonly configurationDisposable: vscode.Disposable;
     /** Bound per-alarm resolver, passed to UI helpers that render a list of alarms in different timezones. */
     private readonly resolveTimeZoneFor: AlarmTimeZoneResolver = (alarm) => this.resolveAlarmTimeZone(alarm);
+    private globalAlarmTimeZone: string | undefined;
+    private globalAlarmTimeZoneCached = false;
     private isDisposed = false;
 
     constructor(context: vscode.ExtensionContext, statusBars: vscode.StatusBarItem[]) {
@@ -63,16 +65,26 @@ export class AlarmManager implements vscode.Disposable {
             if (!e.affectsConfiguration(ALARM_TIME_ZONE_SETTING)) {
                 return;
             }
+            this.globalAlarmTimeZoneCached = false;
             this.updateAlarmStatusBar();
         });
     }
 
+    /**
+     * Reading configuration is not free, and resolveAlarmTimeZone() is called once per alarm on
+     * every minute tick plus once per rendered row in every alarm UI. The value can only change
+     * through onDidChangeConfiguration, which invalidates this cache, so it is read at most once
+     * per settings change instead of several times a minute forever.
+     */
     private getGlobalAlarmTimeZone(): string | undefined {
-        const raw = vscode.workspace.getConfiguration('otak-clock').get<string>('alarmTimeZone', 'auto');
-        if (raw === 'auto' || !raw) {
-            return undefined;
+        if (this.globalAlarmTimeZoneCached) {
+            return this.globalAlarmTimeZone;
         }
-        return findTimeZoneById(raw) ? raw : undefined;
+
+        const raw = vscode.workspace.getConfiguration('otak-clock').get<string>('alarmTimeZone', 'auto');
+        this.globalAlarmTimeZone = raw === 'auto' || !raw || !findTimeZoneById(raw) ? undefined : raw;
+        this.globalAlarmTimeZoneCached = true;
+        return this.globalAlarmTimeZone;
     }
 
     /**
@@ -289,12 +301,15 @@ export class AlarmManager implements vscode.Disposable {
             return;
         }
 
-        const next = [...this.store.getAll()];
-        const triggered: AlarmSettings[] = [];
-        let changed = false;
+        const current = this.store.getAll();
+        // Almost every tick leaves every alarm untouched, so the working copy is only allocated
+        // once something actually needs to be written back.
+        let next: AlarmSettings[] | undefined;
+        let triggered: AlarmSettings[] | undefined;
 
-        for (let i = 0; i < next.length; i += 1) {
-            const alarm = next[i];
+        for (let i = 0; i < current.length; i += 1) {
+            // Reading from `current` is safe: index i has not been written yet this pass.
+            const alarm = current[i];
             const alarmId = alarm.id;
             if (!alarmId) {
                 continue;
@@ -308,8 +323,8 @@ export class AlarmManager implements vscode.Disposable {
                 case 'none':
                     break;
                 case 'save':
+                    next = next ?? [...current];
                     next[i] = result.alarm;
-                    changed = true;
                     break;
                 case 'trigger': {
                     const updated: AlarmSettings = {
@@ -317,19 +332,19 @@ export class AlarmManager implements vscode.Disposable {
                         triggered: true,
                         lastTriggeredOn: result.todayKey
                     };
+                    next = next ?? [...current];
                     next[i] = updated;
                     this.lastNotificationTimeMsById.set(alarmId, now.getTime());
-                    triggered.push(updated);
-                    changed = true;
+                    (triggered = triggered ?? []).push(updated);
                     break;
                 }
             }
         }
 
-        if (changed) {
+        if (next) {
             this.saveAlarms(next);
         }
-        if (triggered.length > 0) {
+        if (triggered) {
             this.notifier.startOrMerge(triggered, now.getTime());
         }
     }
