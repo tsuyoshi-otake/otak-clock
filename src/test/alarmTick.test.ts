@@ -247,4 +247,147 @@ suite('alarmTick', () => {
             assert.strictEqual(result.action, 'trigger');
         });
     });
+
+    suite('catch-up window (sleep/timer drift)', () => {
+        function makeAlarm(overrides?: Partial<AlarmSettings>): AlarmSettings {
+            return {
+                enabled: true,
+                hour: 9,
+                minute: 0,
+                triggered: false,
+                ...overrides
+            };
+        }
+
+        test('fires when a sleep/resume causes the exact minute to be missed (8:59 sleep -> 9:03 resume)', () => {
+            const alarm = makeAlarm({ hour: 9, minute: 0 });
+            const now = new Date(2024, 5, 15, 9, 3, 0);
+            const result = evaluateAlarmTick(alarm, now, 0);
+            assert.strictEqual(result.action, 'trigger');
+        });
+
+        test('does not fire once past the catch-up window (9:00 alarm, 9:30 now)', () => {
+            const alarm = makeAlarm({ hour: 9, minute: 0 });
+            const now = new Date(2024, 5, 15, 9, 30, 0);
+            const result = evaluateAlarmTick(alarm, now, 0);
+            assert.strictEqual(result.action, 'none');
+        });
+
+        test('does not double-fire via catch-up when already triggered and lastTriggeredOn is today', () => {
+            const alarm = makeAlarm({ hour: 9, minute: 0, triggered: true, lastTriggeredOn: '2024-06-15' });
+            // Still within the catch-up window relative to the alarm time, but the
+            // triggered/lastTriggeredOn guard must take priority over the time match.
+            const now = new Date(2024, 5, 15, 9, 3, 0);
+            const result = evaluateAlarmTick(alarm, now, 0);
+            assert.strictEqual(result.action, 'none');
+        });
+
+        test('does not trigger a 23:58 alarm at 0:01 the next day (negative rawDelta across midnight)', () => {
+            const alarm = makeAlarm({ hour: 23, minute: 58 });
+            const now = new Date(2024, 5, 16, 0, 1, 0);
+            const result = evaluateAlarmTick(alarm, now, 0);
+            assert.strictEqual(result.action, 'none');
+        });
+
+        test('dismissedOn for today still blocks firing even inside the catch-up window', () => {
+            const alarm = makeAlarm({ hour: 9, minute: 0, dismissedOn: '2024-06-15' });
+            const now = new Date(2024, 5, 15, 9, 3, 0);
+            const result = evaluateAlarmTick(alarm, now, 0);
+            assert.strictEqual(result.action, 'none');
+        });
+
+        test('a catch-up match delayed by cooldown re-fires once the cooldown clears (intended: lastTriggeredOn alone does not suppress a later re-check)', () => {
+            // This models the state right after a snooze/notification cooldown save: triggered
+            // is still false and lastTriggeredOn already equals today (e.g. set by an earlier
+            // save path), so only the NOTIFICATION_COOLDOWN_MS check — not the day guard — should
+            // gate firing. This is intentional: the alarm was legitimately due and merely deferred.
+            const alarm = makeAlarm({ hour: 9, minute: 0, triggered: false, lastTriggeredOn: '2024-06-15' });
+            const now = new Date(2024, 5, 15, 9, 3, 0);
+
+            const withinCooldown = evaluateAlarmTick(alarm, now, now.getTime() - 30_000);
+            assert.strictEqual(withinCooldown.action, 'none');
+
+            const afterCooldown = evaluateAlarmTick(alarm, now, 0);
+            assert.strictEqual(afterCooldown.action, 'trigger');
+        });
+    });
+
+    suite('DST spring-forward gap handling', () => {
+        function makeAlarm(overrides?: Partial<AlarmSettings>): AlarmSettings {
+            return {
+                enabled: true,
+                hour: 2,
+                minute: 30,
+                triggered: false,
+                ...overrides
+            };
+        }
+
+        // America/New_York springs forward on 2026-03-08: 01:59:59 EST is immediately
+        // followed by 03:00:00 EDT, so 02:00-02:59 does not exist that day. Verified via
+        // Intl.DateTimeFormat: 2026-03-08T06:59:00Z -> 01:59 EST, 2026-03-08T07:00:00Z -> 03:00 EDT.
+        test('fires a 2:30 alarm during the 3:00-ish tick after the DST gap (America/New_York, 2026-03-08)', () => {
+            const alarm = makeAlarm({ hour: 2, minute: 30 });
+            const now = new Date('2026-03-08T07:05:00Z'); // 03:05 EDT
+            const result = evaluateAlarmTick(alarm, now, 0, 'America/New_York');
+            assert.strictEqual(result.action, 'trigger');
+        });
+
+        test('does not fire a normal alarm outside the gap on the same DST day (8:00 alarm, 9:30 now)', () => {
+            const alarm = makeAlarm({ hour: 8, minute: 0 });
+            const now = new Date('2026-03-08T13:30:00Z'); // 09:30 EDT, well past 8:00 and past the catch-up window
+            const result = evaluateAlarmTick(alarm, now, 0, 'America/New_York');
+            assert.strictEqual(result.action, 'none');
+        });
+
+        test('does not fire the 2:30 alarm once past the post-gap catch-up window', () => {
+            const alarm = makeAlarm({ hour: 2, minute: 30 });
+            // 03:00 EDT is the effective (post-gap) alarm minute; well past its catch-up window.
+            const now = new Date('2026-03-08T08:00:00Z'); // 04:00 EDT
+            const result = evaluateAlarmTick(alarm, now, 0, 'America/New_York');
+            assert.strictEqual(result.action, 'none');
+        });
+    });
+
+    suite('cross-midnight snooze', () => {
+        function makeAlarm(overrides?: Partial<AlarmSettings>): AlarmSettings {
+            return {
+                enabled: true,
+                hour: 23,
+                minute: 59,
+                triggered: false,
+                ...overrides
+            };
+        }
+
+        test('a snooze set at 23:59 targeting 0:02 the next day is not cleared before its deadline', () => {
+            // Regression test for the original bug: the day-key guard used to run before the
+            // "is it even due yet" check, so a snooze whose target crossed midnight was wiped
+            // out the moment todayKey/snoozeDayKey briefly disagreed, even while still pending.
+            const snoozeUntilMs = new Date(2024, 5, 16, 0, 2, 0).getTime();
+            const alarm = makeAlarm({ snoozeUntilMs });
+            const now = new Date(2024, 5, 15, 23, 59, 30); // still the same evening, snooze not due yet
+            const result = evaluateAlarmTick(alarm, now, 0);
+            assert.strictEqual(result.action, 'none');
+        });
+
+        test('a snooze set at 23:59 (targeting 0:02 the next day) fires once its deadline passes', () => {
+            const snoozeUntilMs = new Date(2024, 5, 16, 0, 2, 0).getTime();
+            const alarm = makeAlarm({ snoozeUntilMs });
+            const now = new Date(2024, 5, 16, 0, 3, 0);
+            const result = evaluateAlarmTick(alarm, now, 0);
+            assert.strictEqual(result.action, 'trigger');
+        });
+
+        test('a snooze left over from a previous day is still discarded without firing (no regression)', () => {
+            const snoozeUntilMs = new Date(2024, 5, 15, 23, 59, 0).getTime();
+            const alarm = makeAlarm({ snoozeUntilMs });
+            const now = new Date(2024, 5, 16, 8, 0, 0);
+            const result = evaluateAlarmTick(alarm, now, 0);
+            assert.strictEqual(result.action, 'save');
+            if (result.action === 'save') {
+                assert.strictEqual(result.alarm.snoozeUntilMs, undefined);
+            }
+        });
+    });
 });

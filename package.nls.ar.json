@@ -9,10 +9,6 @@
   "command.deleteAlarm": "حذف المنبه",
   "command.manageAlarm": "إدارة المنبه",
   "config.showTimeZoneInStatusBar": "إظهار تسمية قصيرة للمنطقة الزمنية (مثل UTC وJST) بجانب كل ساعة في شريط الحالة.",
-  "config.alarmSoundEnabled": "تشغيل صوت قصير عند ظهور إشعارات المنبه.",
-  "config.alarmSoundType": "اختر نمط صوت المنبه.",
-  "config.alarmSoundType.classic": "تنبيه كلاسيكي (نمط A6/C7)",
-  "config.alarmSoundType.snake": "Snake-ish (بطابع لعبة قديمة)",
   "config.alarmTimeZone": "المنطقة الزمنية المستخدمة لتقييم المنبهات. عند تعيينها على \"auto\"، تستخدم المنبهات المنطقة الزمنية الحالية للنظام على كل جهاز. اختر منطقة زمنية محددة لتطبيقها على جميع المنبهات.",
   "config.alarmTimeZone.auto": "استخدام المنطقة الزمنية الحالية للنظام على كل جهاز (افتراضي)"
 }

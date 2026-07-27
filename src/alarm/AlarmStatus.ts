@@ -7,10 +7,15 @@ export interface AlarmStatusBarState {
     tooltip: string;
 }
 
+/** Resolves the effective timezone to display a given alarm's time in. */
+export type AlarmTimeZoneResolver = (alarm: AlarmSettings) => string | undefined;
+
+const resolveNothing: AlarmTimeZoneResolver = () => undefined;
+
 export function buildAlarmStatusBarState(
     alarms: AlarmSettings[],
     i18n: I18nManager,
-    alarmTimeZone?: string
+    resolveTimeZone: AlarmTimeZoneResolver = resolveNothing
 ): AlarmStatusBarState {
     const now = new Date();
 
@@ -26,7 +31,7 @@ export function buildAlarmStatusBarState(
 
     if (alarms.length === 1) {
         const alarm = alarms[0];
-        const time = formatLocalAlarmTime(alarm.hour, alarm.minute, now, alarmTimeZone);
+        const time = formatLocalAlarmTime(alarm.hour, alarm.minute, now, resolveTimeZone(alarm));
         const text = alarm.enabled ? `$(bell) ${time}` : `$(bell-slash) ${time}`;
 
         const status = alarm.enabled ? i18n.t('alarm.status.enabled') : i18n.t('alarm.status.disabled');
@@ -44,12 +49,12 @@ export function buildAlarmStatusBarState(
 
     const displayAlarm = alarms.find((alarm) => alarm.enabled) ?? alarms[0];
     const icon = alarms.some((alarm) => alarm.enabled) ? '$(bell)' : '$(bell-slash)';
-    const text = `${icon} ${formatLocalAlarmTime(displayAlarm.hour, displayAlarm.minute, now, alarmTimeZone)}`;
+    const text = `${icon} ${formatLocalAlarmTime(displayAlarm.hour, displayAlarm.minute, now, resolveTimeZone(displayAlarm))}`;
 
     const lines: string[] = alarms.map((alarm, index) => {
         const status = alarm.enabled ? i18n.t('alarm.status.enabled') : i18n.t('alarm.status.disabled');
         const fired = alarm.enabled && alarm.triggered ? i18n.t('alarm.status.firedTodaySuffix') : '';
-        return `${index + 1}. ${formatLocalAlarmTime(alarm.hour, alarm.minute, now, alarmTimeZone)} (${status})${fired}`;
+        return `${index + 1}. ${formatLocalAlarmTime(alarm.hour, alarm.minute, now, resolveTimeZone(alarm))} (${status})${fired}`;
     });
     lines.push(i18n.t('alarm.statusBar.clickToManage'));
 

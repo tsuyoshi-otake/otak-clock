@@ -26,8 +26,24 @@ export interface AlarmNotificationControllerOptions {
     refreshAlarms: () => void;
     /** Persists dismissedOn for the given alarm IDs so other windows can stop their sessions. */
     dismissAlarms: (alarmIds: string[]) => void;
-    /** Returns the resolved alarm timezone ID, or undefined for system local. */
-    getAlarmTimeZone: () => string | undefined;
+    /** Returns the resolved timezone ID for a specific alarm, or undefined for system local. */
+    getAlarmTimeZone: (alarm: AlarmSettings) => string | undefined;
+}
+
+/**
+ * Returns a copy of `alarm` with `dismissedOn` removed.
+ * Snoozing must clear any prior dismissal: otherwise, snoozing right after another
+ * window pressed Stop leaves `dismissedOn` equal to today's key, so the next
+ * evaluateAlarmTick() dismissedOn-guard silently swallows the snooze.
+ * (Equivalent to the non-exported `withoutDismissed()` in alarmTick.ts.)
+ */
+function withoutDismissed(alarm: AlarmSettings): AlarmSettings {
+    if (alarm.dismissedOn === undefined) {
+        return alarm;
+    }
+    const next = { ...alarm };
+    delete next.dismissedOn;
+    return next;
 }
 
 export class AlarmNotificationController implements vscode.Disposable {
@@ -148,9 +164,17 @@ export class AlarmNotificationController implements vscode.Disposable {
     }
 
     private isSessionDismissed(alarmIds: string[]): boolean {
-        const todayKey = toLocalDateKey(new Date(), this.options.getAlarmTimeZone());
         const alarms = this.collectSessionAlarms(alarmIds);
-        return alarms.length > 0 && alarms.every((alarm) => alarm.dismissedOn === todayKey);
+        if (alarms.length === 0) {
+            return false;
+        }
+        // Each alarm may resolve to a different timezone (per-alarm timeZoneId vs.
+        // the global override), so dismissedOn must be compared against that
+        // alarm's own todayKey rather than a single session-wide key.
+        return alarms.every((alarm) => {
+            const todayKey = toLocalDateKey(new Date(), this.options.getAlarmTimeZone(alarm));
+            return alarm.dismissedOn === todayKey;
+        });
     }
 
     /**
@@ -178,10 +202,6 @@ export class AlarmNotificationController implements vscode.Disposable {
         this.flashDisposable = flashStatusBars(this.options.statusBars);
     }
 
-    private playAlarmSound(): void {
-        // 音は無効化: 通知はトーストとステータスバー点滅のみで運用する
-    }
-
     private showToast(sessionId: string, alarmIds: string[]): void {
         const session = this.session;
         if (!session || session.id !== sessionId || session.stopped) {
@@ -195,8 +215,7 @@ export class AlarmNotificationController implements vscode.Disposable {
         }
 
         const now = new Date();
-        const alarmTimeZone = this.options.getAlarmTimeZone();
-        const times = alarms.map((alarm) => formatLocalAlarmTime(alarm.hour, alarm.minute, now, alarmTimeZone));
+        const times = alarms.map((alarm) => formatLocalAlarmTime(alarm.hour, alarm.minute, now, this.options.getAlarmTimeZone(alarm)));
         const title = times.length === 1
             ? this.options.i18n.t('alarm.notification.singleTitle', { time: times[0] })
             : this.options.i18n.t('alarm.notification.multiTitle', { count: String(times.length), times: times.join(', ') });
@@ -210,7 +229,6 @@ export class AlarmNotificationController implements vscode.Disposable {
         }
 
         this.activeToastSessionId = sessionId;
-        this.playAlarmSound();
         this.flashAlarmIndicators();
 
         void vscode.window.showInformationMessage(title, stopLabel, snoozeLabel, manageLabel).then((picked) => {
@@ -245,7 +263,10 @@ export class AlarmNotificationController implements vscode.Disposable {
                     if (!alarm.id || !sessionIdSet.has(alarm.id)) {
                         return alarm;
                     }
-                    return { ...alarm, triggered: false, snoozeUntilMs };
+                    // Clear dismissedOn: if another window pressed Stop moments before this
+                    // Snooze, dismissedOn would still equal today's key and silently defeat
+                    // the snooze via evaluateAlarmTick()'s dismissedOn guard.
+                    return { ...withoutDismissed(alarm), triggered: false, snoozeUntilMs };
                 });
                 this.options.saveAlarms(updated);
                 this.stopSession(sessionId);

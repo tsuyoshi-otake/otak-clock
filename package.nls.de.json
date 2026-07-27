@@ -9,10 +9,6 @@
   "command.deleteAlarm": "Wecker löschen",
   "command.manageAlarm": "Wecker verwalten",
   "config.showTimeZoneInStatusBar": "Kurzes Zeitzonenlabel (z. B. UTC, JST) neben jeder Uhr in der Statusleiste anzeigen.",
-  "config.alarmSoundEnabled": "Einen kurzen Ton abspielen, wenn Alarmbenachrichtigungen erscheinen.",
-  "config.alarmSoundType": "Alarmtonmuster auswählen.",
-  "config.alarmSoundType.classic": "Classic Alarm (A6/C7-Stil)",
-  "config.alarmSoundType.snake": "Snake-ish (Retro-Spielstil)",
   "config.alarmTimeZone": "Zeitzone für die Alarmbewertung. Bei \"auto\" verwenden Alarme die aktuelle Systemzeitzone auf jedem Gerät. Wählen Sie eine bestimmte Zeitzone, um alle Alarme zu überschreiben.",
   "config.alarmTimeZone.auto": "Aktuelle Systemzeitzone auf jedem Gerät verwenden (Standard)"
 }

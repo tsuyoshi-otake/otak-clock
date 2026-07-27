@@ -9,10 +9,6 @@
   "command.deleteAlarm": "Delete Alarm",
   "command.manageAlarm": "Manage Alarm",
   "config.showTimeZoneInStatusBar": "Show a short time zone label (e.g., UTC, JST) next to each clock in the status bar.",
-  "config.alarmSoundEnabled": "Play a short sound when alarm notifications appear.",
-  "config.alarmSoundType": "Select the alarm sound pattern.",
-  "config.alarmSoundType.classic": "Classic Alarm (A6/C7 style)",
-  "config.alarmSoundType.snake": "Snake-ish (retro game-like)",
   "config.alarmTimeZone": "Time zone used for alarm evaluation. When set to \"auto\", alarms use the current system time zone on each device. Choose a specific time zone to override all alarms.",
   "config.alarmTimeZone.auto": "Use the current system time zone on each device (default)"
 }

@@ -9,10 +9,6 @@
   "command.deleteAlarm": "Alarmı sil",
   "command.manageAlarm": "Alarmı yönet",
   "config.showTimeZoneInStatusBar": "Durum çubuğunda her saatin yanında kısa bir saat dilimi etiketi (ör. UTC, JST) göster.",
-  "config.alarmSoundEnabled": "Alarm bildirimleri göründüğünde kısa bir ses çal.",
-  "config.alarmSoundType": "Alarm sesi desenini seç.",
-  "config.alarmSoundType.classic": "Klasik alarm (A6/C7 stili)",
-  "config.alarmSoundType.snake": "Snake-ish (retro oyun tarzı)",
   "config.alarmTimeZone": "Alarm değerlendirmesi için kullanılan saat dilimi. \"auto\" olarak ayarlandığında, alarmlar her cihazdaki geçerli sistem saat dilimini kullanır. Tüm alarmlara uygulamak için belirli bir saat dilimi seçin.",
   "config.alarmTimeZone.auto": "Her cihazdaki geçerli sistem saat dilimini kullan (varsayılan)"
 }
