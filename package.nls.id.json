@@ -9,10 +9,6 @@
   "command.deleteAlarm": "Hapus alarm",
   "command.manageAlarm": "Kelola alarm",
   "config.showTimeZoneInStatusBar": "Tampilkan label zona waktu singkat (mis. UTC, JST) di samping setiap jam di bilah status.",
-  "config.alarmSoundEnabled": "Putar suara singkat saat notifikasi alarm muncul.",
-  "config.alarmSoundType": "Pilih pola suara alarm.",
-  "config.alarmSoundType.classic": "Alarm klasik (gaya A6/C7)",
-  "config.alarmSoundType.snake": "Snake-ish (seperti game retro)",
   "config.alarmTimeZone": "Zona waktu yang digunakan untuk evaluasi alarm. Jika diatur ke \"auto\", alarm menggunakan zona waktu sistem saat ini di setiap perangkat. Pilih zona waktu tertentu untuk menerapkannya ke semua alarm.",
   "config.alarmTimeZone.auto": "Gunakan zona waktu sistem saat ini di setiap perangkat (default)"
 }

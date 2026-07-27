@@ -1,5 +1,7 @@
 import { AlarmSettings } from './AlarmSettings';
-import { NOTIFICATION_COOLDOWN_MS } from './constants';
+import { NOTIFICATION_COOLDOWN_MS, ALARM_CATCH_UP_WINDOW_MINUTES, ALARM_DST_GAP_SEARCH_MINUTES } from './constants';
+import { getUtcOffsetMinutes } from '../timezone/offsets';
+import { evictOldestIfOverCapacity, FORMATTER_CACHE_MAX_SIZE } from '../utils/cache';
 
 interface WallClockTime {
     year: number;
@@ -7,6 +9,35 @@ interface WallClockTime {
     day: number;
     hour: number;
     minute: number;
+}
+
+// Same caching pattern as src/timezone/offsets.ts's offsetPartsFormatterCache:
+// constructing Intl.DateTimeFormat is the expensive part, not formatToParts(), so we
+// keep one formatter per timeZone ID around instead of rebuilding it on every call.
+// This matters here because the DST-gap handling below can call getWallClock()/
+// wallTimeExists() many times per tick.
+const wallClockFormatterCache = new Map<string, Intl.DateTimeFormat>();
+
+function getWallClockFormatter(alarmTimeZone: string): Intl.DateTimeFormat {
+    const cached = wallClockFormatterCache.get(alarmTimeZone);
+    if (cached) {
+        return cached;
+    }
+
+    const formatter = new Intl.DateTimeFormat('en-US', {
+        timeZone: alarmTimeZone,
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: false,
+        hourCycle: 'h23'
+    });
+
+    evictOldestIfOverCapacity(wallClockFormatterCache, FORMATTER_CACHE_MAX_SIZE);
+    wallClockFormatterCache.set(alarmTimeZone, formatter);
+    return formatter;
 }
 
 /**
@@ -24,16 +55,7 @@ function getWallClock(now: Date, alarmTimeZone: string | undefined): WallClockTi
         };
     }
 
-    const formatter = new Intl.DateTimeFormat('en-US', {
-        timeZone: alarmTimeZone,
-        year: 'numeric',
-        month: '2-digit',
-        day: '2-digit',
-        hour: '2-digit',
-        minute: '2-digit',
-        hour12: false,
-        hourCycle: 'h23'
-    });
+    const formatter = getWallClockFormatter(alarmTimeZone);
     const parts: Record<string, string> = {};
     for (const p of formatter.formatToParts(now)) {
         parts[p.type] = p.value;
@@ -63,6 +85,139 @@ export type AlarmTickResult =
 
 function minuteOfDay(hour: number, minute: number): number {
     return hour * 60 + minute;
+}
+
+/**
+ * Checks whether the given wall-clock time exists today for the system-local timezone,
+ * using the Date constructor's own DST normalization as the round-trip check: if the
+ * requested hour/minute falls inside a "spring forward" gap, the engine silently rolls
+ * the components forward, so the read-back components will no longer match the input.
+ */
+function wallTimeExistsLocally(year: number, month: number, day: number, hour: number, minute: number): boolean {
+    const probe = new Date(year, month - 1, day, hour, minute, 0, 0);
+    return (
+        probe.getFullYear() === year &&
+        probe.getMonth() === month - 1 &&
+        probe.getDate() === day &&
+        probe.getHours() === hour &&
+        probe.getMinutes() === minute
+    );
+}
+
+/**
+ * Estimates the UTC instant corresponding to a wall-clock time in an IANA timezone,
+ * without a timezone-conversion library. The wall-clock components are first treated
+ * as if they were UTC to get a baseline instant, the zone's offset is looked up there,
+ * and a first estimate is refined by looking up the offset again at that estimate
+ * (rather than at the baseline) — this second lookup is what makes the estimate land
+ * on the correct side of a DST transition. This estimate is only meant to be fed back
+ * into `wallTimeExists()`'s round-trip check; it is not guaranteed correct in general
+ * (e.g. for the ambiguous "fall back" hour, where either offset is valid).
+ */
+function estimateUtcInstantForWallTime(
+    year: number,
+    month: number,
+    day: number,
+    hour: number,
+    minute: number,
+    timeZoneId: string
+): number {
+    const localAsUtc = Date.UTC(year, month - 1, day, hour, minute);
+    const firstOffsetMinutes = getUtcOffsetMinutes(new Date(localAsUtc), timeZoneId);
+    const firstEstimate = localAsUtc - firstOffsetMinutes * 60_000;
+    const secondOffsetMinutes = getUtcOffsetMinutes(new Date(firstEstimate), timeZoneId);
+    return localAsUtc - secondOffsetMinutes * 60_000;
+}
+
+/**
+ * Cheap offset lookup used purely as a pre-check to decide whether it's worth doing the
+ * expensive round-trip DST check at all. For the system-local case this is a native
+ * getter (no Intl involved); for a named timezone it goes through offsets.ts's own
+ * cached formatter. Sign convention matches getUtcOffsetMinutes (local - UTC, in minutes).
+ */
+function offsetMinutesAt(date: Date, alarmTimeZone: string | undefined): number {
+    if (!alarmTimeZone) {
+        return -date.getTimezoneOffset();
+    }
+    return getUtcOffsetMinutes(date, alarmTimeZone);
+}
+
+/**
+ * Determines whether the given wall-clock date/time actually occurs in the specified
+ * timezone (or system-local time when `alarmTimeZone` is undefined). Returns false for
+ * times that fall inside a DST "spring forward" gap (e.g. 2:30 AM on the day
+ * America/New_York jumps from 2:00 AM to 3:00 AM).
+ */
+function wallTimeExists(
+    year: number,
+    month: number,
+    day: number,
+    hour: number,
+    minute: number,
+    alarmTimeZone: string | undefined
+): boolean {
+    if (!alarmTimeZone) {
+        return wallTimeExistsLocally(year, month, day, hour, minute);
+    }
+
+    const estimated = estimateUtcInstantForWallTime(year, month, day, hour, minute, alarmTimeZone);
+    const roundTrip = getWallClock(new Date(estimated), alarmTimeZone);
+    return (
+        roundTrip.year === year &&
+        roundTrip.month === month &&
+        roundTrip.day === day &&
+        roundTrip.hour === hour &&
+        roundTrip.minute === minute
+    );
+}
+
+/**
+ * Resolves the effective minute-of-day at which the alarm should be considered due.
+ * Normally this is just the alarm's own hour/minute. But when that wall-clock time
+ * does not exist today (DST gap), the nominal minute can never actually be observed,
+ * so we resolve to the first minute after the gap that does exist — i.e. the moment
+ * the wall clock resumes — which is when the alarm should fire instead. This mirrors
+ * how mobile OS alarms behave when their scheduled time is skipped by a DST jump.
+ */
+function resolveEffectiveAlarmMinuteOfDay(
+    year: number,
+    month: number,
+    day: number,
+    alarmHour: number,
+    alarmMinute: number,
+    alarmTimeZone: string | undefined
+): number {
+    const nominal = minuteOfDay(alarmHour, alarmMinute);
+
+    for (let offset = 1; offset <= ALARM_DST_GAP_SEARCH_MINUTES; offset++) {
+        const candidateMinuteOfDay = nominal + offset;
+        if (candidateMinuteOfDay >= 24 * 60) {
+            break;
+        }
+        const candidateHour = Math.floor(candidateMinuteOfDay / 60);
+        const candidateMinute = candidateMinuteOfDay % 60;
+        if (wallTimeExists(year, month, day, candidateHour, candidateMinute, alarmTimeZone)) {
+            return candidateMinuteOfDay;
+        }
+    }
+
+    // Should not happen under real-world DST rules (gaps are at most a couple of hours).
+    // Fall back to the nominal minute so we degrade to "never quite catches up today"
+    // rather than throwing.
+    return nominal;
+}
+
+function attemptTrigger(
+    alarm: AlarmSettings,
+    todayKey: string,
+    nowMs: number,
+    lastNotificationTimeMs: number
+): AlarmTickResult {
+    // 同じ分内での重複通知を防ぐ
+    if (nowMs - lastNotificationTimeMs < NOTIFICATION_COOLDOWN_MS) {
+        return { action: 'none' };
+    }
+    return { action: 'trigger', alarm, todayKey };
 }
 
 function withoutSnooze(alarm: AlarmSettings): AlarmSettings {
@@ -139,13 +294,19 @@ export function evaluateAlarmTick(
     }
 
     if (typeof snoozeUntilMs === 'number') {
+        // 日付キーの一致ではなく、まず「まだ未来か」で判定する。日付ガードを先に見てしまうと、
+        // 23:59にスヌーズして翌0:02に期限が来るような正常なスヌーズが、期限前（まだ当日=前日）の
+        // ティックで「日付が違う」と誤判定されて即座に破棄されてしまう（このガードは本来、
+        // 前日以前に切れて放置された古いスヌーズを翌日に持ち越さないためのものだった）。
+        if (nowMs < snoozeUntilMs) {
+            return { action: 'none' };
+        }
+
+        // ここに来るのはスヌーズ期限が既に過ぎているケースのみ。日付キーが今日と異なるのは
+        // 「明らかに古い」（前日以前に切れて放置された）場合に限られるので、その時だけ破棄する。
         const snoozeDayKey = toLocalDateKey(new Date(snoozeUntilMs), alarmTimeZone);
         if (snoozeDayKey !== todayKey) {
             return { action: 'save', alarm: withoutDismissed(withoutSnooze(alarm)) };
-        }
-
-        if (nowMs < snoozeUntilMs) {
-            return { action: 'none' };
         }
 
         const alarmWithoutSnooze = withoutSnooze(alarm);
@@ -155,12 +316,46 @@ export function evaluateAlarmTick(
         return { action: 'trigger', alarm: alarmWithoutSnooze, todayKey };
     }
 
-    if (alarm.hour === nowHour && alarm.minute === nowMinute) {
-        // 同じ分内での重複通知を防ぐ
-        if (nowMs - lastNotificationTimeMs < NOTIFICATION_COOLDOWN_MS) {
-            return { action: 'none' };
+    const alarmMinuteOfDay = minuteOfDay(alarm.hour, alarm.minute);
+    const nowMinuteOfDay = minuteOfDay(nowHour, nowMinute);
+    const rawDelta = nowMinuteOfDay - alarmMinuteOfDay;
+
+    // 通常ケース: 厳密一致、またはスリープ復帰・タイマー遅延による取りこぼしを猶予幅内で救済。
+    // 上限を必ず設ける（無制限だと朝のアラームが夕方の起動で鳴ってしまう）。
+    if (rawDelta >= 0 && rawDelta <= ALARM_CATCH_UP_WINDOW_MINUTES) {
+        return attemptTrigger(alarm, todayKey, nowMs, lastNotificationTimeMs);
+    }
+
+    // DSTの春時間移行でアラーム時刻の壁時計表現がその日存在しない場合、通常の猶予幅（数分）では
+    // 取りこぼしを救済できない（ギャップは通常60分）。猶予幅を単純に広げるのではなく、
+    // 「その時刻が実在するか」を明示的に判定し、実在しない場合のみギャップ明けの最初の
+    // 実在時刻を実質的なアラーム時刻とみなして同じ猶予幅を適用する。
+    //
+    // DSTギャップは年1〜2回・数十分しか起きないのに対し、このブロックはアラーム時刻から
+    // ALARM_DST_GAP_SEARCH_MINUTES 分の間、毎ティック評価される。round-trip 判定
+    // （wallTimeExists / resolveEffectiveAlarmMinuteOfDay）を毎回走らせるのは無駄なので、
+    // まず「now と、猶予幅超過が始まった時点（おおよそ rawDelta 分前）とでオフセットが
+    // 変わっていないか」を安価にチェックする。同じなら区間内に移行は起きていないので
+    // wallTimeExists は必ず true であり、以降の判定を省略できる（＝通常の365日はここで抜ける）。
+    if (rawDelta > ALARM_CATCH_UP_WINDOW_MINUTES && rawDelta <= ALARM_DST_GAP_SEARCH_MINUTES) {
+        const offsetNow = offsetMinutesAt(now, alarmTimeZone);
+        const offsetAroundAlarmTime = offsetMinutesAt(new Date(nowMs - rawDelta * 60_000), alarmTimeZone);
+        const possibleTransitionInRange = offsetNow !== offsetAroundAlarmTime;
+
+        if (possibleTransitionInRange && !wallTimeExists(wc.year, wc.month, wc.day, alarm.hour, alarm.minute, alarmTimeZone)) {
+            const effectiveMinuteOfDay = resolveEffectiveAlarmMinuteOfDay(
+                wc.year,
+                wc.month,
+                wc.day,
+                alarm.hour,
+                alarm.minute,
+                alarmTimeZone
+            );
+            const gapDelta = nowMinuteOfDay - effectiveMinuteOfDay;
+            if (gapDelta >= 0 && gapDelta <= ALARM_CATCH_UP_WINDOW_MINUTES) {
+                return attemptTrigger(alarm, todayKey, nowMs, lastNotificationTimeMs);
+            }
         }
-        return { action: 'trigger', alarm, todayKey };
     }
 
     return { action: 'none' };

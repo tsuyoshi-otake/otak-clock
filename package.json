@@ -68,26 +68,6 @@
           "description": "%config.showTimeZoneInStatusBar%",
           "scope": "application"
         },
-        "otak-clock.alarmSoundEnabled": {
-          "type": "boolean",
-          "default": true,
-          "description": "%config.alarmSoundEnabled%",
-          "scope": "application"
-        },
-        "otak-clock.alarmSoundType": {
-          "type": "string",
-          "default": "classic-alarm",
-          "enum": [
-            "classic-alarm",
-            "snake-ish"
-          ],
-          "enumDescriptions": [
-            "%config.alarmSoundType.classic%",
-            "%config.alarmSoundType.snake%"
-          ],
-          "description": "%config.alarmSoundType%",
-          "scope": "application"
-        },
         "otak-clock.alarmTimeZone": {
           "type": "string",
           "default": "auto",

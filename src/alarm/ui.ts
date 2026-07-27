@@ -2,6 +2,7 @@ import * as vscode from 'vscode';
 import { ALARM_TIME_REGEX, AlarmSettings } from './AlarmSettings';
 import { I18nManager } from '../i18n/I18nManager';
 import { formatLocalAlarmTime } from './localTime';
+import { AlarmTimeZoneResolver } from './AlarmStatus';
 
 type AlarmPickItem = vscode.QuickPickItem & { alarmId: string };
 type AlarmMenuAction = 'set' | 'toggle' | 'edit' | 'delete';
@@ -39,7 +40,7 @@ export async function pickAlarmId(
     alarms: AlarmSettings[],
     i18n: I18nManager,
     placeHolder: string,
-    alarmTimeZone?: string
+    resolveTimeZone: AlarmTimeZoneResolver = () => undefined
 ): Promise<string | undefined> {
     if (alarms.length === 0) {
         return undefined;
@@ -56,7 +57,7 @@ export async function pickAlarmId(
             const status = alarm.enabled ? i18n.t('alarm.status.enabled') : i18n.t('alarm.status.disabled');
             const fired = alarm.enabled && alarm.triggered ? i18n.t('alarm.status.firedTodaySuffix') : '';
             return {
-                label: `${index + 1}. ${formatLocalAlarmTime(alarm.hour, alarm.minute, now, alarmTimeZone)}`,
+                label: `${index + 1}. ${formatLocalAlarmTime(alarm.hour, alarm.minute, now, resolveTimeZone(alarm))}`,
                 description: `${status}${fired}`,
                 alarmId: alarm.id
             };
@@ -70,7 +71,7 @@ export async function showAlarmMenuQuickPick(
     alarms: AlarmSettings[],
     i18n: I18nManager,
     maxAlarms: number,
-    alarmTimeZone?: string
+    resolveTimeZone: AlarmTimeZoneResolver = () => undefined
 ): Promise<AlarmMenuSelection | undefined> {
     const now = new Date();
     const items: AlarmMenuItem[] = [];
@@ -90,7 +91,7 @@ export async function showAlarmMenuQuickPick(
         }
 
         const slot = String(i + 1);
-        const time = formatLocalAlarmTime(alarm.hour, alarm.minute, now, alarmTimeZone);
+        const time = formatLocalAlarmTime(alarm.hour, alarm.minute, now, resolveTimeZone(alarm));
         const status = alarm.enabled ? i18n.t('alarm.status.enabled') : i18n.t('alarm.status.disabled');
         const fired = alarm.enabled && alarm.triggered ? i18n.t('alarm.status.firedTodaySuffix') : '';
         const description = `${time} (${status})${fired}`;

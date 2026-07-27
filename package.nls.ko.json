@@ -9,10 +9,6 @@
   "command.deleteAlarm": "알람 삭제",
   "command.manageAlarm": "알람 관리",
   "config.showTimeZoneInStatusBar": "상태 표시줄의 각 시계 옆에 짧은 시간대 라벨(예: UTC, JST)을 표시합니다.",
-  "config.alarmSoundEnabled": "알람 알림이 표시될 때 짧은 소리를 재생합니다.",
-  "config.alarmSoundType": "알람 소리 패턴을 선택합니다.",
-  "config.alarmSoundType.classic": "클래식 알람(A6/C7 스타일)",
-  "config.alarmSoundType.snake": "Snake-ish(레트로 게임풍)",
   "config.alarmTimeZone": "알람 판정에 사용할 시간대. \"auto\"로 설정하면 각 기기의 현재 시스템 시간대를 사용합니다. 특정 시간대를 선택하면 모든 알람에 적용됩니다.",
   "config.alarmTimeZone.auto": "각 기기의 현재 시스템 시간대 사용(기본값)"
 }

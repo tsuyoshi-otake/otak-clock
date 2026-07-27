@@ -9,10 +9,6 @@
   "command.deleteAlarm": "Excluir alarme",
   "command.manageAlarm": "Gerenciar alarme",
   "config.showTimeZoneInStatusBar": "Mostrar um rótulo curto de fuso horário (por exemplo, UTC, JST) ao lado de cada relógio na barra de status.",
-  "config.alarmSoundEnabled": "Reproduzir um som curto quando as notificações de alarme aparecerem.",
-  "config.alarmSoundType": "Selecione o padrão de som do alarme.",
-  "config.alarmSoundType.classic": "Alarme clássico (estilo A6/C7)",
-  "config.alarmSoundType.snake": "Snake-ish (estilo jogo retrô)",
   "config.alarmTimeZone": "Fuso horário usado para avaliação de alarmes. Com \"auto\", os alarmes usam o fuso horário atual do sistema em cada dispositivo. Escolha um fuso horário específico para aplicar a todos os alarmes.",
   "config.alarmTimeZone.auto": "Usar o fuso horário atual do sistema em cada dispositivo (padrão)"
 }

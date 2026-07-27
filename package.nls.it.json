@@ -9,10 +9,6 @@
   "command.deleteAlarm": "Elimina sveglia",
   "command.manageAlarm": "Gestisci sveglia",
   "config.showTimeZoneInStatusBar": "Mostra un'etichetta breve del fuso orario (ad es. UTC, JST) accanto a ogni orologio nella barra di stato.",
-  "config.alarmSoundEnabled": "Riproduci un breve suono quando appaiono le notifiche della sveglia.",
-  "config.alarmSoundType": "Seleziona il pattern sonoro della sveglia.",
-  "config.alarmSoundType.classic": "Sveglia classica (stile A6/C7)",
-  "config.alarmSoundType.snake": "Snake-ish (stile gioco retro)",
   "config.alarmTimeZone": "Fuso orario utilizzato per la valutazione delle sveglie. Con \"auto\", le sveglie usano il fuso orario di sistema corrente su ogni dispositivo. Scegli un fuso orario specifico per applicarlo a tutte le sveglie.",
   "config.alarmTimeZone.auto": "Usa il fuso orario di sistema corrente su ogni dispositivo (predefinito)"
 }

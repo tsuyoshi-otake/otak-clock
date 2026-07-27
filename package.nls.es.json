@@ -9,10 +9,6 @@
   "command.deleteAlarm": "Eliminar alarma",
   "command.manageAlarm": "Gestionar alarma",
   "config.showTimeZoneInStatusBar": "Mostrar una etiqueta corta de zona horaria (p. ej., UTC, JST) junto a cada reloj en la barra de estado.",
-  "config.alarmSoundEnabled": "Reproducir un sonido breve cuando aparezcan notificaciones de alarma.",
-  "config.alarmSoundType": "Selecciona el patrón de sonido de alarma.",
-  "config.alarmSoundType.classic": "Alarma clásica (estilo A6/C7)",
-  "config.alarmSoundType.snake": "Snake-ish (estilo juego retro)",
   "config.alarmTimeZone": "Zona horaria utilizada para la evaluación de alarmas. Con \"auto\", las alarmas usan la zona horaria actual del sistema en cada dispositivo. Elija una zona horaria específica para aplicar a todas las alarmas.",
   "config.alarmTimeZone.auto": "Usar la zona horaria actual del sistema en cada dispositivo (predeterminado)"
 }
