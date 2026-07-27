@@ -2,6 +2,23 @@
 
 All notable changes to the "otak-clock" extension will be documented in this file.
 
+## [1.1.36] - 2026-07-27
+
+### Fixed
+- Pressing **Stop** in one window now reliably stops the alarm in every other window. The change-detection used when reloading alarms ignored the `dismissedOn` field that Stop writes, so other windows kept re-notifying every 30 seconds.
+- An alarm is no longer missed for the whole day when a single tick is dropped (sleep/resume, timer drift). Alarms now fire within a five-minute catch-up window after their scheduled time.
+- Alarms carried to another machine by Settings Sync now fire at the time zone they were created in. `AlarmConfig.timeZoneId` was persisted but never used during evaluation. Priority is `otak-clock.alarmTimeZone` setting > the alarm's own time zone > the system time zone.
+- An alarm scheduled inside a DST "spring forward" gap now fires at the first minute after the gap instead of being skipped entirely.
+- A snooze that crosses midnight is no longer discarded.
+- Changing `otak-clock.alarmTimeZone` now redraws the status bar immediately.
+- Snoozing no longer leaves a stale dismissal marker behind.
+
+### Removed
+- `otak-clock.alarmSoundEnabled` and `otak-clock.alarmSoundType`. Both settings were surfaced in the UI but had no implementation behind them.
+
+### Added
+- Regression tests for every fix above, including catch-up window, DST gap and cross-midnight snooze cases.
+
 ## [1.1.32] - 2026-02-23
 
 ### Fixed
