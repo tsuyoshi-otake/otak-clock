@@ -1,81 +1,17 @@
 import { AlarmSettings } from './AlarmSettings';
 import { NOTIFICATION_COOLDOWN_MS, ALARM_CATCH_UP_WINDOW_MINUTES, ALARM_DST_GAP_SEARCH_MINUTES } from './constants';
-import { getUtcOffsetMinutes } from '../timezone/offsets';
-import { evictOldestIfOverCapacity, FORMATTER_CACHE_MAX_SIZE } from '../utils/cache';
+import { getWallClock, getZonedDateTime } from '../timezone/zonedTime';
+import { pad2 } from '../utils/digits';
 
-interface WallClockTime {
-    year: number;
-    month: number;
-    day: number;
-    hour: number;
-    minute: number;
-}
-
-// Same caching pattern as src/timezone/offsets.ts's offsetPartsFormatterCache:
-// constructing Intl.DateTimeFormat is the expensive part, not formatToParts(), so we
-// keep one formatter per timeZone ID around instead of rebuilding it on every call.
-// This matters here because the DST-gap handling below can call getWallClock()/
-// wallTimeExists() many times per tick.
-const wallClockFormatterCache = new Map<string, Intl.DateTimeFormat>();
-
-function getWallClockFormatter(alarmTimeZone: string): Intl.DateTimeFormat {
-    const cached = wallClockFormatterCache.get(alarmTimeZone);
-    if (cached) {
-        return cached;
-    }
-
-    const formatter = new Intl.DateTimeFormat('en-US', {
-        timeZone: alarmTimeZone,
-        year: 'numeric',
-        month: '2-digit',
-        day: '2-digit',
-        hour: '2-digit',
-        minute: '2-digit',
-        hour12: false,
-        hourCycle: 'h23'
-    });
-
-    evictOldestIfOverCapacity(wallClockFormatterCache, FORMATTER_CACHE_MAX_SIZE);
-    wallClockFormatterCache.set(alarmTimeZone, formatter);
-    return formatter;
-}
-
-/**
- * Extracts wall-clock components for the given instant in the specified timezone.
- * When alarmTimeZone is undefined (auto mode), falls back to system-local Date methods.
- */
-function getWallClock(now: Date, alarmTimeZone: string | undefined): WallClockTime {
-    if (!alarmTimeZone) {
-        return {
-            year: now.getFullYear(),
-            month: now.getMonth() + 1,
-            day: now.getDate(),
-            hour: now.getHours(),
-            minute: now.getMinutes()
-        };
-    }
-
-    const formatter = getWallClockFormatter(alarmTimeZone);
-    const parts: Record<string, string> = {};
-    for (const p of formatter.formatToParts(now)) {
-        parts[p.type] = p.value;
-    }
-
-    return {
-        year: Number(parts['year']),
-        month: Number(parts['month']),
-        day: Number(parts['day']),
-        hour: Number(parts['hour']),
-        minute: Number(parts['minute'])
-    };
-}
+// Wall-clock resolution goes through the extension-wide formatter cache in
+// src/timezone/zonedTime.ts. Alarm evaluation used to keep a third private cache of
+// Intl.DateTimeFormat instances alongside the clock's and the offset helper's, which meant
+// the same timezone was represented several times over in memory for no benefit -
+// constructing the formatter is the expensive part, and one instance per zone is enough.
 
 export function toLocalDateKey(now: Date, alarmTimeZone?: string): string {
-    const wc = getWallClock(now, alarmTimeZone);
-    const yyyy = wc.year;
-    const mm = wc.month.toString().padStart(2, '0');
-    const dd = wc.day.toString().padStart(2, '0');
-    return `${yyyy}-${mm}-${dd}`;
+    const wc = getWallClock(now.getTime(), alarmTimeZone);
+    return `${wc.year}-${pad2(wc.month)}-${pad2(wc.day)}`;
 }
 
 export type AlarmTickResult =
@@ -123,23 +59,20 @@ function estimateUtcInstantForWallTime(
     timeZoneId: string
 ): number {
     const localAsUtc = Date.UTC(year, month - 1, day, hour, minute);
-    const firstOffsetMinutes = getUtcOffsetMinutes(new Date(localAsUtc), timeZoneId);
+    const firstOffsetMinutes = getZonedDateTime(localAsUtc, timeZoneId).offsetMinutes;
     const firstEstimate = localAsUtc - firstOffsetMinutes * 60_000;
-    const secondOffsetMinutes = getUtcOffsetMinutes(new Date(firstEstimate), timeZoneId);
+    const secondOffsetMinutes = getZonedDateTime(firstEstimate, timeZoneId).offsetMinutes;
     return localAsUtc - secondOffsetMinutes * 60_000;
 }
 
 /**
  * Cheap offset lookup used purely as a pre-check to decide whether it's worth doing the
  * expensive round-trip DST check at all. For the system-local case this is a native
- * getter (no Intl involved); for a named timezone it goes through offsets.ts's own
- * cached formatter. Sign convention matches getUtcOffsetMinutes (local - UTC, in minutes).
+ * getter (no Intl involved); for a named timezone it goes through the shared formatter
+ * cache. Sign convention matches getUtcOffsetMinutes (local - UTC, in minutes).
  */
-function offsetMinutesAt(date: Date, alarmTimeZone: string | undefined): number {
-    if (!alarmTimeZone) {
-        return -date.getTimezoneOffset();
-    }
-    return getUtcOffsetMinutes(date, alarmTimeZone);
+function offsetMinutesAt(timeMs: number, alarmTimeZone: string | undefined): number {
+    return getWallClock(timeMs, alarmTimeZone).offsetMinutes;
 }
 
 /**
@@ -161,7 +94,7 @@ function wallTimeExists(
     }
 
     const estimated = estimateUtcInstantForWallTime(year, month, day, hour, minute, alarmTimeZone);
-    const roundTrip = getWallClock(new Date(estimated), alarmTimeZone);
+    const roundTrip = getWallClock(estimated, alarmTimeZone);
     return (
         roundTrip.year === year &&
         roundTrip.month === month &&
@@ -273,8 +206,9 @@ export function evaluateAlarmTick(
         return { action: 'none' };
     }
 
-    const wc = getWallClock(now, alarmTimeZone);
-    const todayKey = `${wc.year}-${wc.month.toString().padStart(2, '0')}-${wc.day.toString().padStart(2, '0')}`;
+    const nowMs = now.getTime();
+    const wc = getWallClock(nowMs, alarmTimeZone);
+    const todayKey = `${wc.year}-${pad2(wc.month)}-${pad2(wc.day)}`;
 
     // If the user manually dismissed this alarm today (e.g., Stop pressed in another window),
     // treat it as already handled for today.
@@ -284,7 +218,6 @@ export function evaluateAlarmTick(
 
     const nowHour = wc.hour;
     const nowMinute = wc.minute;
-    const nowMs = now.getTime();
     const snoozeUntilMs = alarm.snoozeUntilMs;
 
     if (alarm.triggered) {
@@ -338,8 +271,8 @@ export function evaluateAlarmTick(
     // 変わっていないか」を安価にチェックする。同じなら区間内に移行は起きていないので
     // wallTimeExists は必ず true であり、以降の判定を省略できる（＝通常の365日はここで抜ける）。
     if (rawDelta > ALARM_CATCH_UP_WINDOW_MINUTES && rawDelta <= ALARM_DST_GAP_SEARCH_MINUTES) {
-        const offsetNow = offsetMinutesAt(now, alarmTimeZone);
-        const offsetAroundAlarmTime = offsetMinutesAt(new Date(nowMs - rawDelta * 60_000), alarmTimeZone);
+        const offsetNow = offsetMinutesAt(nowMs, alarmTimeZone);
+        const offsetAroundAlarmTime = offsetMinutesAt(nowMs - rawDelta * 60_000, alarmTimeZone);
         const possibleTransitionInRange = offsetNow !== offsetAroundAlarmTime;
 
         if (possibleTransitionInRange && !wallTimeExists(wc.year, wc.month, wc.day, alarm.hour, alarm.minute, alarmTimeZone)) {

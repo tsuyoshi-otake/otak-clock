@@ -11,7 +11,8 @@ vsc-extension-quickstart.md
 **/*.map
 **/*.ts
 **/.vscode-test.*
-out/test/**
+esbuild.mjs
+out/**
 **/*.vsix
 package-lock.json
 CHANGELOG.md

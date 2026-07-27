@@ -2,6 +2,19 @@
 
 All notable changes to the "otak-clock" extension will be documented in this file.
 
+## [1.1.37] - 2026-07-27
+
+### Changed
+- Cut the cost of the per-second status bar redraw by ~44x (1.55 µs -> 0.035 µs for two clocks). `Intl.DateTimeFormat` is no longer touched once per second: the hour, minute, date and UTC offset are resolved once per minute and the seconds are derived arithmetically. This is exact rather than an approximation - IANA offset transitions always land on a minute boundary, and every time zone in use today has a whole-minute offset, so the seconds field is time zone independent.
+- The status bar time zone label is now recomputed only when the zone's UTC offset changes (a DST transition, roughly twice a year) instead of every minute, and the tooltip only when the date or offset changes (about once a day).
+- Consolidated three separate `Intl.DateTimeFormat` caches (clock formatting, offset lookup, alarm evaluation) into one shared per-zone cache, cutting retained formatter memory from 6 instances per time zone to 1 (22.4 KB -> 4.0 KB for 8 zones).
+- The clock now allocates one `Date` per minute instead of one per second.
+- Reloading alarms on each minute tick now compares the raw `globalState` values first, skipping the parse, validation and rebuild entirely when nothing changed. The alarm time zone setting is cached until it actually changes, and the per-tick working copy of the alarm list is only allocated when something needs to be written back.
+- The extension now ships as a single esbuild bundle, so activation loads one 35 KB file instead of resolving 32 CommonJS modules.
+
+### Added
+- `src/timezone/zonedTime.ts`, which resolves wall-clock fields and the UTC offset from a single `formatToParts` call, plus unit tests covering DST transitions, half-hour and 12:45 offsets, and midnight handling.
+
 ## [1.1.36] - 2026-07-27
 
 ### Fixed
